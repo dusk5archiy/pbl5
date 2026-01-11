@@ -28,11 +28,18 @@ sudo systemctl start kiosk
 
 sudo systemctl enable snapd
 sudo systemctl start snapd
-sudo snap install ubuntu-frame --classic
+
+sudo snap install ubuntu-frame
 sudo snap set ubuntu-frame daemon=true
-sudo snap install chromium --classic
+sudo snap install chromium
 sudo snap set chromium url=http://localhost:3000
 sudo snap connect chromium:wayland
+
+sudo systemctl enable ubuntu-frame
+sudo systemctl start ubuntu-frame
+
+sudo systemctl enable chromium
+sudo systemctl start chromium
 
 cd front
 if [[ ! -d "node_modules" ]]; then
