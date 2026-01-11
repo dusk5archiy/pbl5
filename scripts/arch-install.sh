@@ -1,4 +1,4 @@
-sudo pacman -S --no-confirm \
+sudo pacman -S --noconfirm \
   node npm \
   python \
   vim \
