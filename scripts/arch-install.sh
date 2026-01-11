@@ -1,4 +1,4 @@
-sudo pacman -S --noconfirm \
+sudo pacman -S --needed --noconfirm \
   nodejs npm \
   python \
   vim \
@@ -20,6 +20,8 @@ ExecStart=/bin/bash /home/$USER/pbl5/scripts/run.sh
 WantedBy=basic.target
 EOF
 
+sudo systemctl enable --now kiosk-pbl5
+
 sudo tee /etc/systemd/system/kiosk-openbox.service >/dev/null <<EOF
 [Unit]
 Description=kiosk-openbox
@@ -30,6 +32,8 @@ ExecStart=/usr/bin/startx /usr/bin/openbox-session -- vt1
 [Install]
 WantedBy=basic.target
 EOF
+
+sudo systemctl enable --now kiosk-openbox
 
 cd front
 if [[ ! -d "node_modules" ]]; then
