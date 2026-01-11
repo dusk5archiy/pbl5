@@ -1,6 +1,8 @@
-sudo apt --no-install-recommends --no-install-suggests install nodejs npm python3
+sudo apt update
+sudo apt install --no-install-recommends --no-install-suggests -y install nodejs npm python3
 
 cd front
-rm -rf node_modules
-npm install
+if [[ ! -d "node_modules" ]]; then
+  npm install
+fi
 npm run build
