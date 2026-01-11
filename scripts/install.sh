@@ -1,4 +1,4 @@
-sudo apt install nodejs npm python
+sudo apt install nodejs npm python3
 
 cd front
 rm -rf node_modules
