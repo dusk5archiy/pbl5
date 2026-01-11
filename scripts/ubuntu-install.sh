@@ -1,3 +1,6 @@
+# Minimized Ubuntu Server 24.04.3 (LTS)
+# Installed: OpenSSH
+
 sudo apt update
 sudo apt install --no-install-recommends --no-install-suggests -y python3
 sudo snap install node --classic
@@ -24,15 +27,12 @@ EOF
 
 sudo systemctl enable snapd
 sudo systemctl start snapd
+
 sudo systemctl enable kiosk
 sudo systemctl start kiosk
 
-sudo systemctl enable snapd
-sudo systemctl start snapd
-
 sudo snap install ubuntu-frame
 sudo snap install chromium
-sudo snap set chromium url=http://localhost:3000
 sudo snap connect chromium:wayland
 
 sudo snap enable ubuntu-frame
@@ -40,6 +40,7 @@ sudo snap set ubuntu-frame daemon=true
 sudo snap start ubuntu-frame
 
 sudo snap enable chromium
+sudo snap set chromium url=http://localhost:3000
 sudo snap set chromium daemon=true
 sudo snap start chromium
 
