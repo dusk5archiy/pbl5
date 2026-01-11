@@ -2,7 +2,7 @@ sudo apt update
 sudo apt install --no-install-recommends --no-install-suggests -y nodejs npm python3
 
 sudo systemctl stop kiosk || true
-cat >~/kiosk.service <<EOF
+sudo tee /etc/systemd/system/kiosk.service >/dev/null <<'EOF'
 [Unit]
 Before=snapd.service
 
@@ -13,8 +13,6 @@ ExecStart=/bin/bash /home/$USER/pbl5/scripts/run.sh
 [Install]
 WantedBy=basic.target
 EOF
-
-mv ~/kiosk.service /etc/systemd/system/kiosk.service
 
 sudo systemctl enable kiosk
 sudo systemctl start kiosk
