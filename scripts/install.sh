@@ -1,5 +1,6 @@
 sudo apt update
-sudo apt install --no-install-recommends --no-install-suggests -y nodejs npm python3
+sudo apt install --no-install-recommends --no-install-suggests -y npm python3
+sudo snap install node --classic
 
 sudo mkdir -p /etc/systemd/system/getty@tty1.service.d
 sudo touch /etc/systemd/system/getty@tty1.service.d/override.conf
