@@ -1,6 +1,7 @@
 sudo pacman -S --needed --noconfirm \
   nodejs npm \
   python \
+  python-pyxdg \
   vim \
   which \
   firefox \
@@ -28,9 +29,10 @@ Description=kiosk-openbox
 
 [Service]
 User=$USER
-Environment=DISPLAY=:0
-Environment=XAUTHORITY=/home/$USER/.Xauthority
+Environment="DISPLAY=:0"
+Environment="XAUTHORITY=/home/$USER/.Xauthority"
 ExecStart=/usr/bin/startx /usr/bin/openbox-session -- vt1
+ExecStart=/bin/sh -c '/usr/bin/startx /usr/bin/firefox --kiosk --no-remote http://localhost:3000 -- :0 vt1'
 
 [Install]
 WantedBy=multi-user.target
