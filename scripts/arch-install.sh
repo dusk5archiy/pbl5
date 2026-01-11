@@ -31,11 +31,10 @@ Description=kiosk-openbox
 User=$USER
 Environment="DISPLAY=:0"
 Environment="XAUTHORITY=/home/$USER/.Xauthority"
-ExecStart=/usr/bin/startx /usr/bin/openbox-session -- vt1
-ExecStart=/bin/sh -c '/usr/bin/startx /usr/bin/firefox --kiosk --no-remote http://localhost:3000 -- :0 vt1'
+ExecStart=/usr/bin/startx /usr/bin/firefox --kiosk http://localhost:3000 -- :0 vt1
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=basic.target
 EOF
 
 sudo systemctl enable --now kiosk-openbox
