@@ -26,9 +26,9 @@ sudo systemctl start kiosk
 
 sudo systemctl enable snapd
 sudo systemctl start snapd
-sudo snap install ubuntu-frame
+sudo snap install ubuntu-frame --classic
 sudo snap set ubuntu-frame daemon=true
-sudo snap install chromium
+sudo snap install chromium --classic
 sudo snap set chromium url=http://localhost:3000
 sudo snap connect chromium:wayland
 
