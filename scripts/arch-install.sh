@@ -1,5 +1,5 @@
 sudo pacman -S --noconfirm \
-  node npm \
+  nodejs npm \
   python \
   vim \
   which \
