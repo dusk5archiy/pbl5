@@ -21,6 +21,8 @@ ExecStart=/bin/bash /home/$USER/pbl5/scripts/run.sh
 WantedBy=basic.target
 EOF
 
+sudo systemctl enable snapd
+sudo systemctl start snapd
 sudo systemctl enable kiosk
 sudo systemctl start kiosk
 
