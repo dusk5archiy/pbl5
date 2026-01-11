@@ -30,3 +30,9 @@ ExecStart=/usr/bin/startx /usr/bin/openbox-session -- vt1
 [Install]
 WantedBy=basic.target
 EOF
+
+cd front
+if [[ ! -d "node_modules" ]]; then
+  npm install
+fi
+npm run build
