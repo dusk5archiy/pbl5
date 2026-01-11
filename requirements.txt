@@ -1,0 +1,10 @@
+matplotlib
+opencv-python
+pygame
+torch
+torchvision
+tqdm
+ipykernel
+ipywidgets
+scikit-learn
+ultralytics
