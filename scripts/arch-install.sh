@@ -27,10 +27,13 @@ sudo tee /etc/systemd/system/kiosk-openbox.service >/dev/null <<EOF
 Description=kiosk-openbox
 
 [Service]
+User=$USER
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=/home/$USER/.Xauthority
 ExecStart=/usr/bin/startx /usr/bin/openbox-session -- vt1
 
 [Install]
-WantedBy=basic.target
+WantedBy=multi-user.target
 EOF
 
 sudo systemctl enable --now kiosk-openbox
