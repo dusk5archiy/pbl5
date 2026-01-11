@@ -1,5 +1,5 @@
 sudo apt update
-sudo apt install --no-install-recommends --no-install-suggests -y install nodejs npm python3
+sudo apt install --no-install-recommends --no-install-suggests -y nodejs npm python3
 
 sudo cat >/etc/systemd/system/kiosk.service <<EOF
 [Unit]
