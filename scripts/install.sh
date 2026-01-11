@@ -30,7 +30,7 @@ sudo snap install ubuntu-frame
 sudo snap set ubuntu-frame daemon=true
 sudo snap install chromium
 sudo snap set chromium url=http://localhost:3000
-snap connect chromium:wayland
+sudo snap connect chromium:wayland
 
 cd front
 if [[ ! -d "node_modules" ]]; then
