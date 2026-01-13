@@ -1,66 +1,82 @@
-{
-  "Kv.01": {
+[
+  {
+    "id": "Kv.01",
     "title": "Trả tiền sửa đường",
     "content": "Trả 40k / 1 nhà\nTrả 115k / 1 khách sạn"
   },
-  "Kv.02": {
+  {
+    "id": "Kv.02",
     "title": "Đoạt giải Á Hậu",
     "content": "Lãnh 10k"
   },
-  "Kv.03": {
+  {
+    "id": "Kv.03",
     "title": "Nhà Bank lộn tiền",
     "content": "Lãnh 200k"
   },
-  "Kv.04": {
+  {
+    "id": "Kv.04",
     "title": "Lãnh tiền thừa kế",
     "content": "Lãnh 100k"
   },
-  "Kv.05": {
+  {
+    "id": "Kv.05",
     "title": "Trả tiền khám bệnh",
     "content": "Trả 50k"
   },
-  "Kv.06": {
+  {
+    "id": "Kv.06",
     "title": "Trả tiền bệnh viện",
     "content": "Trả 100k"
   },
-  "Kv.07": {
+  {
+    "id": "Kv.07",
     "title": "Quà Giáng Sinh",
     "content": "Lãnh 100k"
   },
-  "Kv.08": {
+  {
+    "id": "Kv.08",
     "title": "Cho con đi học",
     "content": "Trả 150k"
   },
-  "Kv.09": {
+  {
+    "id": "Kv.09",
     "title": "Nhận tiền phục vụ",
     "content": "Lãnh 25k"
   },
-  "Kv.10": {
+  {
+    "id": "Kv.10",
     "title": "Đến ô Bắt Đầu",
     "content": "Lãnh 200k"
   },
-  "Kv.11": {
+  {
+    "id": "Kv.11",
     "title": "Khai trương nhà hát",
     "content": "Thu mỗi người chơi 50k"
   },
-  "Kv.12": {
+  {
+    "id": "Kv.12",
     "title": "Lãnh lương hưu",
     "content": "Lãnh 200k"
   },
-  "Kv.13": {
+  {
+    "id": "Kv.13",
     "title": "Tự Do Ra Tù",
     "content": "Giữ lại để sử dụng hoặc bán."
   },
-  "Kv.14": {
+  {
+    "id": "Kv.14",
     "title": "Vào Tù",
     "content": "Đi thẳng vào tù\nKhông đi ngang ô Bắt đầu\nKhông được lãnh lương 200k"
   },
-  "Kv.15": {
+  {
+    "id": "Kv.15",
     "title": "Quà khuyến mãi",
     "content": "Lãnh 50k"
   },
-  "Kv.16": {
+  {
+    "id": "Kv.16",
     "title": "Làm thêm giờ",
     "content": "Lãnh 20k"
   }
-}
+]

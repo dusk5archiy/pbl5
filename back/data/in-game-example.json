@@ -1,0 +1,63 @@
+{
+  "kv_queue": [
+    "Kv.06",
+    "Kv.07",
+    "Kv.08"
+  ],
+  "ch_queue": [
+    "Ch.06",
+    "Ch.07",
+    "Ch.08"
+  ],
+  "bds": {
+    "A1": {
+      "owner": "red",
+      "level": 0
+    },
+    "A2": {
+      "owner": "red",
+      "level": 0
+    },
+    "C1": {
+      "owner": "blue",
+      "level": 0
+    },
+    "D1": {
+      "owner": "green",
+      "level": 0
+    },
+    "E3": {
+      "owner": "green",
+      "level": 0
+    },
+    "G1": {
+      "owner": "blue",
+      "level": 0
+    }
+  },
+  "cards": {
+    "Kv.13": "red",
+    "Ch.09": "blue"
+  },
+  "player_queue": [
+    "red",
+    "green",
+    "blue"
+  ],
+  "players": {
+    "red": {
+      "budget": 1500,
+      "at": "BDAU"
+    },
+    "green": {
+      "budget": 1500,
+      "at": "BDAU"
+    },
+    "blue": {
+      "budget": 1500,
+      "at": "BDAU"
+    }
+  },
+  "current_player": "red",
+  "double_roll_stack": 0
+}

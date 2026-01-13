@@ -1,0 +1,35 @@
+{
+  "kv_queue": [
+    "Kv.06",
+    "Kv.07",
+    "Kv.08"
+  ],
+  "ch_queue": [
+    "Ch.06",
+    "Ch.07",
+    "Ch.08"
+  ],
+  "bds": {},
+  "cards": {},
+  "player_queue": [
+    "red",
+    "green",
+    "blue"
+  ],
+  "players": {
+    "red": {
+      "budget": 1500,
+      "at": "BDAU"
+    },
+    "green": {
+      "budget": 1500,
+      "at": "BDAU"
+    },
+    "blue": {
+      "budget": 1500,
+      "at": "BDAU"
+    }
+  },
+  "current_player": "red",
+  "double_roll_stack": 0
+}

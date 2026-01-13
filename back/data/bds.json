@@ -1,5 +1,6 @@
-{
-  "A1": {
+[
+  {
+    "id": "A1",
     "group": "A",
     "name": "NGUYỄN HUỆ",
     "price": 60,
@@ -14,7 +15,8 @@
     "mortgage": 30,
     "upgrade": 50
   },
-  "A2": {
+  {
+    "id": "A2",
     "group": "A",
     "price": 80,
     "name": "LÊ LỢI",
@@ -29,7 +31,8 @@
     "mortgage": 40,
     "upgrade": 50
   },
-  "B1": {
+  {
+    "id": "B1",
     "group": "B",
     "price": 100,
     "name": "LƯƠNG ĐỊNH CỦA",
@@ -44,7 +47,8 @@
     "mortgage": 50,
     "upgrade": 50
   },
-  "B2": {
+  {
+    "id": "B2",
     "group": "B",
     "price": 100,
     "name": "VÕ THỊ SÁU",
@@ -59,7 +63,8 @@
     "mortgage": 50,
     "upgrade": 50
   },
-  "B3": {
+  {
+    "id": "B3",
     "group": "B",
     "price": 120,
     "name": "HAI BÀ TRƯNG",
@@ -74,7 +79,8 @@
     "mortgage": 60,
     "upgrade": 50
   },
-  "C1": {
+  {
+    "id": "C1",
     "group": "C",
     "price": 140,
     "name": "NGUYỄN TẤT THÀNH",
@@ -89,7 +95,8 @@
     "mortgage": 70,
     "upgrade": 100
   },
-  "C2": {
+  {
+    "id": "C2",
     "group": "C",
     "price": 140,
     "name": "NGUYỄN TRÃI",
@@ -104,7 +111,8 @@
     "mortgage": 70,
     "upgrade": 100
   },
-  "C3": {
+  {
+    "id": "C3",
     "group": "C",
     "price": 160,
     "name": "AN DƯƠNG VƯƠNG",
@@ -119,7 +127,8 @@
     "mortgage": 80,
     "upgrade": 100
   },
-  "D1": {
+  {
+    "id": "D1",
     "group": "D",
     "price": 180,
     "name": "HẬU GIANG",
@@ -134,7 +143,8 @@
     "mortgage": 90,
     "upgrade": 100
   },
-  "D2": {
+  {
+    "id": "D2",
     "group": "D",
     "price": 180,
     "name": "HÙNG VƯƠNG",
@@ -149,7 +159,8 @@
     "mortgage": 90,
     "upgrade": 100
   },
-  "D3": {
+  {
+    "id": "D3",
     "group": "D",
     "price": 200,
     "name": "HUỲNH TẤN PHÁT",
@@ -164,7 +175,8 @@
     "mortgage": 100,
     "upgrade": 100
   },
-  "E1": {
+  {
+    "id": "E1",
     "group": "E",
     "price": 220,
     "name": "PHẠM THẾ HIỂN",
@@ -179,7 +191,8 @@
     "mortgage": 110,
     "upgrade": 150
   },
-  "E2": {
+  {
+    "id": "E2",
     "group": "E",
     "price": 220,
     "name": "KHA VẠNG CÂN",
@@ -194,7 +207,8 @@
     "mortgage": 110,
     "upgrade": 150
   },
-  "E3": {
+  {
+    "id": "E3",
     "group": "E",
     "price": 240,
     "name": "NGUYỄN TRI PHƯƠNG",
@@ -209,7 +223,8 @@
     "mortgage": 120,
     "upgrade": 150
   },
-  "F1": {
+  {
+    "id": "F1",
     "group": "F",
     "price": 260,
     "name": "LÊ ĐẠI HÀNH",
@@ -224,7 +239,8 @@
     "mortgage": 130,
     "upgrade": 150
   },
-  "F2": {
+  {
+    "id": "F2",
     "group": "F",
     "price": 260,
     "name": "TRƯỜNG CHINH",
@@ -239,7 +255,8 @@
     "mortgage": 130,
     "upgrade": 150
   },
-  "F3": {
+  {
+    "id": "F3",
     "group": "F",
     "price": 280,
     "name": "HOÀNG VĂN THỤ",
@@ -254,7 +271,8 @@
     "mortgage": 140,
     "upgrade": 150
   },
-  "G1": {
+  {
+    "id": "G1",
     "group": "G",
     "price": 300,
     "name": "CỘNG HÒA",
@@ -269,7 +287,8 @@
     "mortgage": 150,
     "upgrade": 200
   },
-  "G2": {
+  {
+    "id": "G2",
     "group": "G",
     "price": 300,
     "name": "NGUYỄN KIỆM",
@@ -284,7 +303,8 @@
     "mortgage": 150,
     "upgrade": 200
   },
-  "G3": {
+  {
+    "id": "G3",
     "group": "G",
     "price": 320,
     "name": "QUANG TRUNG",
@@ -299,7 +319,8 @@
     "mortgage": 160,
     "upgrade": 200
   },
-  "H1": {
+  {
+    "id": "H1",
     "group": "H",
     "price": 350,
     "name": "LŨY BÁN BÍCH",
@@ -314,7 +335,8 @@
     "mortgage": 175,
     "upgrade": 200
   },
-  "H2": {
+  {
+    "id": "H2",
     "group": "H",
     "price": 400,
     "name": "TÂN KỲ TÂN QUÝ",
@@ -329,7 +351,8 @@
     "mortgage": 200,
     "upgrade": 200
   },
-  "R1": {
+  {
+    "id": "R1",
     "group": "R",
     "price": 200,
     "name": "BẾN XE CẦN GIUỘC",
@@ -341,7 +364,8 @@
     ],
     "mortgage": 100
   },
-  "R2": {
+  {
+    "id": "R2",
     "group": "R",
     "price": 200,
     "name": "BẾN XE MIỀN TÂY",
@@ -353,7 +377,8 @@
     ],
     "mortgage": 100
   },
-  "R3": {
+  {
+    "id": "R3",
     "group": "R",
     "price": 200,
     "name": "BẾN XE CHỢ LỚN",
@@ -365,7 +390,8 @@
     ],
     "mortgage": 100
   },
-  "R4": {
+  {
+    "id": "R4",
     "group": "R",
     "price": 200,
     "name": "BẾN XE MIỀN ĐÔNG",
@@ -377,7 +403,8 @@
     ],
     "mortgage": 100
   },
-  "U1": {
+  {
+    "id": "U1",
     "group": "U",
     "price": 150,
     "name": "CÔNG TY ĐIỆN LỰC",
@@ -387,7 +414,8 @@
     ],
     "mortgage": 75
   },
-  "U2": {
+  {
+    "id": "U2",
     "group": "U",
     "price": 150,
     "name": "CÔNG TY CÂP NƯỚC",
@@ -397,4 +425,4 @@
     ],
     "mortgage": 75
   }
-}
+]
