@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import { ColorType } from '@/app/utils/ColorType';
 
 const COLORS: ColorType[] = [
@@ -19,7 +19,7 @@ interface SequenceDisplayProps {
 
 function SequenceDisplay({ selectedColors, onReset }: SequenceDisplayProps) {
   return (
-    <div className="flex items-center gap-4 p-4 rounded h-[30vh]">
+    <div className="flex items-center gap-4 p-2 rounded h-[30vh]">
       <div className="flex items-center gap-2">
         <button
           onClick={onReset}
@@ -72,7 +72,7 @@ function ColorSelection({ selectedColors, onColorClick, onContinue }: ColorSelec
         <button
           onClick={onContinue}
           disabled={selectedColors.length <= 1}
-          className={`px-6 py-3 border-4 border-green-600 rounded-lg font-bold ${selectedColors.length > 1
+          className={`px-4 py-2 border-4 border-green-600 rounded-lg font-bold ${selectedColors.length > 1
             ? 'bg-green-100 hover:bg-green-200 cursor-pointer'
             : 'bg-gray-100 opacity-50 cursor-not-allowed'
             }`}
@@ -85,13 +85,13 @@ function ColorSelection({ selectedColors, onColorClick, onContinue }: ColorSelec
 }
 
 interface ChooseColorScreenProps {
+  selectedColors: ColorType[],
+  setSelectedColors: Dispatch<SetStateAction<ColorType[]>>,
   onContinue: (selectedColors: ColorType[]) => void;
   onBack: () => void;
 }
 
-export default function ChooseColorScreen({ onContinue, onBack }: ChooseColorScreenProps) {
-  const [selectedColors, setSelectedColors] = useState<ColorType[]>([]);
-
+export default function ChooseColorScreen({ onContinue, onBack, selectedColors, setSelectedColors }: ChooseColorScreenProps) {
   const handleColorClick = (color: ColorType) => {
     if (!selectedColors.find(c => c.id === color.id)) {
       setSelectedColors([...selectedColors, color]);
@@ -111,13 +111,13 @@ export default function ChooseColorScreen({ onContinue, onBack }: ChooseColorScr
   return (
     <div className="flex flex-col gap-4 h-screen bg-gray-100">
       <div className="flex flex-col m-4 grow gap-6">
-        <div className="border-4 border-green-500 h-full rounded-lg px-[4vw] py-[6vh] bg-white">
+        <div className="border-4 border-green-500 h-full rounded px-[4vw] py-[6vh] bg-white">
           <div className="flex items-center gap-4 h-[10vh]">
             <button
               onClick={onBack}
               className="aspect-square h-full text-2xl font-bold text-gray-600 hover:text-gray-800 rounded hover:bg-gray-100 bg-blue-200"
             >
-              ‹
+              ↩
             </button>
             <h2 className="font-bold">Chọn màu & thứ tự chơi</h2>
           </div>

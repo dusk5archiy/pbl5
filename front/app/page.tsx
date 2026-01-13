@@ -3,11 +3,15 @@
 import { useState } from 'react';
 import WelcomeScreen from '@/app/screen/WelcomeScreen';
 import ChooseColorScreen from '@/app/screen/ChooseColorScreen';
+import CheckCameraScreen from '@/app/screen/CheckCameraScreen';
+import GameScreen from '@/app/screen/GameScreen';
+import { ColorType } from '@/app/utils/ColorType';
 
-type Screen = 'welcome' | 'chooseColors';
+type Screen = 'welcome' | 'chooseColors' | 'checkCamera' | 'game';
 
 export default function Home() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
+  const [selectedColors, setSelectedColors] = useState<ColorType[]>([]);
 
   switch (currentScreen) {
     case 'welcome':
@@ -15,11 +19,27 @@ export default function Home() {
     case 'chooseColors':
       return (
         <ChooseColorScreen
+          selectedColors={selectedColors}
+          setSelectedColors={setSelectedColors}
           onContinue={(colors) => {
-            alert('Bắt đầu trò chơi với thứ tự: ' + colors.map(c => c.name).join(' → '));
-            // TODO: Transition to game screen when implemented
+            setSelectedColors(colors);
+            setCurrentScreen('checkCamera');
           }}
           onBack={() => setCurrentScreen('welcome')}
+        />
+      );
+    case 'checkCamera':
+      return (
+        <CheckCameraScreen
+          onContinue={() => setCurrentScreen('game')}
+          onBack={() => setCurrentScreen('chooseColors')}
+        />
+      );
+    case 'game':
+      return (
+        <GameScreen
+          selectedColors={selectedColors}
+          onBack={() => setCurrentScreen('checkCamera')}
         />
       );
     default:
