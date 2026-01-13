@@ -1,0 +1,400 @@
+{
+  "A1": {
+    "group": "A",
+    "name": "NGUYỄN HUỆ",
+    "price": 60,
+    "rent": [
+      2,
+      10,
+      30,
+      90,
+      160,
+      250
+    ],
+    "mortgage": 30,
+    "upgrade": 50
+  },
+  "A2": {
+    "group": "A",
+    "price": 80,
+    "name": "LÊ LỢI",
+    "rent": [
+      4,
+      20,
+      60,
+      180,
+      320,
+      450
+    ],
+    "mortgage": 40,
+    "upgrade": 50
+  },
+  "B1": {
+    "group": "B",
+    "price": 100,
+    "name": "LƯƠNG ĐỊNH CỦA",
+    "rent": [
+      6,
+      30,
+      90,
+      270,
+      400,
+      550
+    ],
+    "mortgage": 50,
+    "upgrade": 50
+  },
+  "B2": {
+    "group": "B",
+    "price": 100,
+    "name": "VÕ THỊ SÁU",
+    "rent": [
+      6,
+      30,
+      90,
+      270,
+      400,
+      550
+    ],
+    "mortgage": 50,
+    "upgrade": 50
+  },
+  "B3": {
+    "group": "B",
+    "price": 120,
+    "name": "HAI BÀ TRƯNG",
+    "rent": [
+      8,
+      40,
+      100,
+      300,
+      450,
+      600
+    ],
+    "mortgage": 60,
+    "upgrade": 50
+  },
+  "C1": {
+    "group": "C",
+    "price": 140,
+    "name": "NGUYỄN TẤT THÀNH",
+    "rent": [
+      10,
+      50,
+      150,
+      450,
+      625,
+      750
+    ],
+    "mortgage": 70,
+    "upgrade": 100
+  },
+  "C2": {
+    "group": "C",
+    "price": 140,
+    "name": "NGUYỄN TRÃI",
+    "rent": [
+      10,
+      50,
+      150,
+      450,
+      625,
+      750
+    ],
+    "mortgage": 70,
+    "upgrade": 100
+  },
+  "C3": {
+    "group": "C",
+    "price": 160,
+    "name": "AN DƯƠNG VƯƠNG",
+    "rent": [
+      12,
+      60,
+      180,
+      500,
+      700,
+      900
+    ],
+    "mortgage": 80,
+    "upgrade": 100
+  },
+  "D1": {
+    "group": "D",
+    "price": 180,
+    "name": "HẬU GIANG",
+    "rent": [
+      14,
+      70,
+      200,
+      550,
+      750,
+      950
+    ],
+    "mortgage": 90,
+    "upgrade": 100
+  },
+  "D2": {
+    "group": "D",
+    "price": 180,
+    "name": "HÙNG VƯƠNG",
+    "rent": [
+      14,
+      70,
+      200,
+      550,
+      750,
+      950
+    ],
+    "mortgage": 90,
+    "upgrade": 100
+  },
+  "D3": {
+    "group": "D",
+    "price": 200,
+    "name": "HUỲNH TẤN PHÁT",
+    "rent": [
+      16,
+      80,
+      220,
+      600,
+      800,
+      1000
+    ],
+    "mortgage": 100,
+    "upgrade": 100
+  },
+  "E1": {
+    "group": "E",
+    "price": 220,
+    "name": "PHẠM THẾ HIỂN",
+    "rent": [
+      18,
+      90,
+      250,
+      700,
+      875,
+      1050
+    ],
+    "mortgage": 110,
+    "upgrade": 150
+  },
+  "E2": {
+    "group": "E",
+    "price": 220,
+    "name": "KHA VẠNG CÂN",
+    "rent": [
+      18,
+      90,
+      250,
+      700,
+      875,
+      1050
+    ],
+    "mortgage": 110,
+    "upgrade": 150
+  },
+  "E3": {
+    "group": "E",
+    "price": 240,
+    "name": "NGUYỄN TRI PHƯƠNG",
+    "rent": [
+      20,
+      100,
+      300,
+      750,
+      925,
+      1100
+    ],
+    "mortgage": 120,
+    "upgrade": 150
+  },
+  "F1": {
+    "group": "F",
+    "price": 260,
+    "name": "LÊ ĐẠI HÀNH",
+    "rent": [
+      22,
+      110,
+      330,
+      800,
+      975,
+      1150
+    ],
+    "mortgage": 130,
+    "upgrade": 150
+  },
+  "F2": {
+    "group": "F",
+    "price": 260,
+    "name": "TRƯỜNG CHINH",
+    "rent": [
+      22,
+      110,
+      330,
+      800,
+      975,
+      1150
+    ],
+    "mortgage": 130,
+    "upgrade": 150
+  },
+  "F3": {
+    "group": "F",
+    "price": 280,
+    "name": "HOÀNG VĂN THỤ",
+    "rent": [
+      24,
+      120,
+      360,
+      850,
+      1025,
+      1200
+    ],
+    "mortgage": 140,
+    "upgrade": 150
+  },
+  "G1": {
+    "group": "G",
+    "price": 300,
+    "name": "CỘNG HÒA",
+    "rent": [
+      26,
+      130,
+      390,
+      900,
+      1100,
+      1275
+    ],
+    "mortgage": 150,
+    "upgrade": 200
+  },
+  "G2": {
+    "group": "G",
+    "price": 300,
+    "name": "NGUYỄN KIỆM",
+    "rent": [
+      26,
+      130,
+      390,
+      900,
+      1100,
+      1275
+    ],
+    "mortgage": 150,
+    "upgrade": 200
+  },
+  "G3": {
+    "group": "G",
+    "price": 320,
+    "name": "QUANG TRUNG",
+    "rent": [
+      28,
+      150,
+      450,
+      1000,
+      1200,
+      1400
+    ],
+    "mortgage": 160,
+    "upgrade": 200
+  },
+  "H1": {
+    "group": "H",
+    "price": 350,
+    "name": "LŨY BÁN BÍCH",
+    "rent": [
+      35,
+      175,
+      500,
+      1100,
+      1300,
+      1500
+    ],
+    "mortgage": 175,
+    "upgrade": 200
+  },
+  "H2": {
+    "group": "H",
+    "price": 400,
+    "name": "TÂN KỲ TÂN QUÝ",
+    "rent": [
+      50,
+      200,
+      600,
+      1400,
+      1700,
+      2000
+    ],
+    "mortgage": 200,
+    "upgrade": 200
+  },
+  "R1": {
+    "group": "R",
+    "price": 200,
+    "name": "BẾN XE CẦN GIUỘC",
+    "rent": [
+      25,
+      50,
+      100,
+      200
+    ],
+    "mortgage": 100
+  },
+  "R2": {
+    "group": "R",
+    "price": 200,
+    "name": "BẾN XE MIỀN TÂY",
+    "rent": [
+      25,
+      50,
+      100,
+      200
+    ],
+    "mortgage": 100
+  },
+  "R3": {
+    "group": "R",
+    "price": 200,
+    "name": "BẾN XE CHỢ LỚN",
+    "rent": [
+      25,
+      50,
+      100,
+      200
+    ],
+    "mortgage": 100
+  },
+  "R4": {
+    "group": "R",
+    "price": 200,
+    "name": "BẾN XE MIỀN ĐÔNG",
+    "rent": [
+      25,
+      50,
+      100,
+      200
+    ],
+    "mortgage": 100
+  },
+  "U1": {
+    "group": "U",
+    "price": 150,
+    "name": "CÔNG TY ĐIỆN LỰC",
+    "rent": [
+      4,
+      10
+    ],
+    "mortgage": 75
+  },
+  "U2": {
+    "group": "U",
+    "price": 150,
+    "name": "CÔNG TY CÂP NƯỚC",
+    "rent": [
+      4,
+      10
+    ],
+    "mortgage": 75
+  }
+}
