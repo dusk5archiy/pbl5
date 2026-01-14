@@ -12,6 +12,7 @@ type Screen = 'welcome' | 'chooseColors' | 'checkCamera' | 'game';
 export default function Home() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
   const [selectedColors, setSelectedColors] = useState<ColorType[]>([]);
+  const [selectedCamera, setSelectedCamera] = useState<string>('');
 
   switch (currentScreen) {
     case 'welcome':
@@ -31,6 +32,8 @@ export default function Home() {
     case 'checkCamera':
       return (
         <CheckCameraScreen
+          selectedCamera={selectedCamera}
+          setSelectedCamera={setSelectedCamera}
           onContinue={() => setCurrentScreen('game')}
           onBack={() => setCurrentScreen('chooseColors')}
         />
@@ -39,6 +42,7 @@ export default function Home() {
       return (
         <GameScreen
           selectedColors={selectedColors}
+          selectedCamera={selectedCamera}
           onBack={() => setCurrentScreen('checkCamera')}
         />
       );

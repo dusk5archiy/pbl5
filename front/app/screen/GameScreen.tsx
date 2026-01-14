@@ -4,10 +4,11 @@ import { ColorType } from '@/app/utils/ColorType';
 
 interface GameScreenProps {
   selectedColors: ColorType[];
+  selectedCamera: string;
   onBack: () => void;
 }
 
-export default function GameScreen({ selectedColors, onBack }: GameScreenProps) {
+export default function GameScreen({ onBack }: GameScreenProps) {
   return (
     <button
       onClick={onBack}

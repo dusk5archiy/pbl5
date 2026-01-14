@@ -1,61 +1,114 @@
 'use client';
 
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, Dispatch, SetStateAction } from 'react';
 
 interface CheckCameraScreenProps {
+  selectedCamera: string;
+  setSelectedCamera: Dispatch<SetStateAction<string>>;
   onBack: () => void;
   onContinue: () => void;
 }
 
-export default function CheckCameraScreen({ onBack, onContinue }: CheckCameraScreenProps) {
+interface CameraSelectProps {
+  cameras: MediaDeviceInfo[];
+  selectedCamera: string;
+  onCameraChange: (deviceId: string) => void;
+}
+
+function CameraSelect({ cameras, selectedCamera, onCameraChange }: CameraSelectProps) {
+  return (
+    <div className="flex flex-col overflow-auto border border-gray-500 rounded w-[30vw] whitespace-nowrap">
+      {cameras.map((camera) => (
+        <div
+          key={camera.deviceId}
+          onClick={() => onCameraChange(camera.deviceId)}
+          className={`px-2 py-1 text-xs ${selectedCamera === camera.deviceId
+            ? 'text-blue-800 font-bold'
+            : 'text-gray-700'
+            }`}
+        >
+          {camera.label || `Camera ${camera.deviceId.slice(0, 8)}...`}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+interface CameraViewProps {
+  videoRef: React.RefObject<HTMLVideoElement | null>;
+}
+
+function CameraView({ videoRef }: CameraViewProps) {
+  return (
+    <div className="flex flex-1 border-2 border-gray-300 rounded p-4 bg-gray-50 justify-center">
+      <div className="flex">
+        <video
+          ref={videoRef}
+          autoPlay
+          playsInline
+          muted
+          className="rounded"
+        />
+      </div>
+    </div>
+  );
+}
+
+export default function CheckCameraScreen({ selectedCamera, setSelectedCamera, onBack, onContinue }: CheckCameraScreenProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [capturedImage, setCapturedImage] = useState<string | null>(null);
-  const [stream, setStream] = useState<MediaStream | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const [cameras, setCameras] = useState<MediaDeviceInfo[]>([]);
 
   useEffect(() => {
-    const startCamera = async () => {
+    const setupCamera = async () => {
       try {
+        // Stop current stream if it exists
+        if (streamRef.current) {
+          streamRef.current.getTracks().forEach(track => track.stop());
+        }
+
+        // Request camera access - use selected camera if available, otherwise default
         const mediaStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'user' }
+          video: selectedCamera ? { deviceId: { exact: selectedCamera } } : true
         });
-        setStream(mediaStream);
+
+        // After permission granted, enumerate available cameras (only on first load)
+        if (cameras.length === 0) {
+          const devices = await navigator.mediaDevices.enumerateDevices();
+          const videoDevices = devices.filter(device => device.kind === 'videoinput');
+          setCameras(videoDevices);
+
+          // Set default camera if none selected
+          if (videoDevices.length > 0 && !selectedCamera) {
+            setSelectedCamera(videoDevices[0].deviceId);
+          }
+        }
+
+        streamRef.current = mediaStream;
         if (videoRef.current) {
           videoRef.current.srcObject = mediaStream;
         }
       } catch (error) {
-        console.error('Error accessing camera:', error);
+        // Browser will handle permission prompt and errors
       }
     };
 
-    startCamera();
+    setupCamera();
 
     return () => {
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+        streamRef.current = null;
       }
     };
-  }, []);
+  }, [selectedCamera, setSelectedCamera, cameras.length]);
 
-  const captureImage = () => {
-    if (videoRef.current && canvasRef.current) {
-      const canvas = canvasRef.current;
-      const video = videoRef.current;
-      const context = canvas.getContext('2d');
-
-      if (context) {
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const imageDataUrl = canvas.toDataURL('image/png');
-        setCapturedImage(imageDataUrl);
-      }
-    }
-  };
-
-  const handleContinue = () => {
-    if (capturedImage) {
-      onContinue();
+  const refreshCameras = async () => {
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoDevices = devices.filter(device => device.kind === 'videoinput');
+      setCameras(videoDevices);
+    } catch (error) {
     }
   };
 
@@ -74,52 +127,24 @@ export default function CheckCameraScreen({ onBack, onContinue }: CheckCameraScr
             <h2 className="font-bold">Thiết lập camera</h2>
           </div>
 
-          <div className="flex gap-4 h-[40vh]">
-            {/* Camera View Window */}
-            <div className="flex flex-1 border-2 border-gray-300 rounded p-4 bg-gray-50 justify-center">
-              <div className="flex">
-                <video
-                  ref={videoRef}
-                  autoPlay
-                  playsInline
-                  muted
-                  className="rounded"
-                />
-              </div>
-            </div>
 
-            {/* Captured Image Window */}
-            <div className="flex flex-1 border-2 border-gray-300 rounded-lg p-4 bg-gray-50 justify-center">
-              {capturedImage ? (
-                <div className="flex">
-                  <img
-                    src={capturedImage}
-                    alt="Captured"
-                    className="rounded"
-                  />
-                </div>
-              ) : (
-                <div className="flex flex-1 border-2 border-gray-300 rounded-lg p-4 bg-gray-50"></div>
-              )}
-            </div>
+          <div className="flex gap-4 h-[40vh]">
+            <CameraSelect
+              cameras={cameras}
+              selectedCamera={selectedCamera}
+              onCameraChange={setSelectedCamera}
+            />
+            <CameraView videoRef={videoRef} />
           </div>
 
-          <canvas ref={canvasRef} className="hidden" />
-
           <div className="flex justify-center gap-4 mt-4">
-            <button
-              onClick={captureImage}
-              className="px-4 py-1 bg-blue-500 text-white font-bold rounded-lg"
+            <button              onClick={refreshCameras}
+              className="px-4 py-2 border-4 border-blue-500 rounded-lg font-bold bg-blue-100 text-gray-800 hover:bg-blue-200"
             >
-              Chụp ảnh
+              Làm mới
             </button>
-            <button
-              onClick={handleContinue}
-              disabled={!capturedImage}
-              className={`px-6 py-3 font-bold rounded-lg ${capturedImage
-                ? 'bg-green-500 text-white'
-                : 'bg-gray-300 text-gray-500'
-                }`}
+            <button              onClick={onContinue}
+              className="px-4 py-2 border-4 border-green-500 rounded-lg font-bold bg-green-100 text-gray-800"
             >
               Tiếp tục
             </button>

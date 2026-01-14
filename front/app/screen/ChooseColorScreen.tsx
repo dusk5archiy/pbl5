@@ -62,7 +62,7 @@ function ColorSelection({ selectedColors, onColorClick, onContinue }: ColorSelec
             key={color.id}
             onClick={() => onColorClick(color)}
             disabled={selectedColors.find(c => c.id === color.id) !== undefined}
-            className={`flex flex-col items-center gap-2 ${selectedColors.find(c => c.id === color.id) ? 'opacity-40 cursor-not-allowed' : ''
+            className={`flex flex-col items-center gap-2 ${selectedColors.find(c => c.id === color.id) ? 'opacity-40' : ''
               }`}
           >
             <div className={`h-10 aspect-square ${color.bgClass} border-4 border-black rounded`}></div>
@@ -73,8 +73,8 @@ function ColorSelection({ selectedColors, onColorClick, onContinue }: ColorSelec
           onClick={onContinue}
           disabled={selectedColors.length <= 1}
           className={`px-4 py-2 border-4 border-green-600 rounded-lg font-bold ${selectedColors.length > 1
-            ? 'bg-green-100 hover:bg-green-200 cursor-pointer'
-            : 'bg-gray-100 opacity-50 cursor-not-allowed'
+            ? 'bg-green-100 hover:bg-green-200'
+            : 'bg-gray-100 opacity-50'
             }`}
         >
           Tiếp tục
