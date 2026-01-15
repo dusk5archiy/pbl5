@@ -34,6 +34,7 @@ sudo systemctl start kiosk
 sudo snap install ubuntu-frame
 sudo snap install chromium
 sudo snap connect chromium:wayland
+sudo snap connect chromium:camera :camera
 
 sudo snap enable ubuntu-frame
 sudo snap set ubuntu-frame daemon=true
