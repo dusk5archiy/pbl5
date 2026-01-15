@@ -8,9 +8,11 @@ fi
 if [ -d ".venv/Scripts" ]; then
   . .venv/Scripts/activate
 else
+  echo "[-- ERROR --] Failed to create a new venv."
   exit
 fi
 
+pip install -r torch-requirements.txt
 pip install -r requirements.txt
 
 echo [-- DONE --]
