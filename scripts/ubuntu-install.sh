@@ -35,21 +35,21 @@ sudo snap enable ubuntu-frame
 sudo snap set ubuntu-frame daemon=true
 sudo snap start ubuntu-frame
 
-# sudo snap install chromium
-# sudo snap connect chromium:wayland
-# sudo snap connect chromium:camera :camera
-# sudo snap enable chromium
-# sudo snap set chromium url=http://localhost:3000
-# sudo snap set chromium daemon=true
-# sudo snap start chromium
+sudo snap install chromium
+sudo snap connect chromium:wayland
+sudo snap connect chromium:camera :camera
+sudo snap enable chromium
+sudo snap set chromium url=http://localhost:3000
+sudo snap set chromium daemon=true
+sudo snap start chromium
 
-sudo snap install wpe-webkit-mir-kiosk
-sudo snap connect wpe-webkit-mir-kiosk:wayland
+# sudo snap install wpe-webkit-mir-kiosk
+# sudo snap connect wpe-webkit-mir-kiosk:wayland
 # sudo snap connect wpe-webkit-mir-kiosk:camera :camera
-sudo snap enable wpe-webkit-mir-kiosk
-sudo snap set wpe-webkit-mir-kiosk url=http://localhost:3000
-sudo snap set wpe-webkit-mir-kiosk daemon=true
-sudo snap start wpe-webkit-mir-kiosk
+# sudo snap enable wpe-webkit-mir-kiosk
+# sudo snap set wpe-webkit-mir-kiosk url=http://localhost:3000
+# sudo snap set wpe-webkit-mir-kiosk daemon=true
+# sudo snap start wpe-webkit-mir-kiosk
 
 if [[ ! -d ".venv" ]]; then
   python3 -m venv .venv
