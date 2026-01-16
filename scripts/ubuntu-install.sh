@@ -2,7 +2,7 @@
 # Installed: OpenSSH
 
 sudo apt update
-sudo apt install --no-install-recommends --no-install-suggests -y python3
+sudo apt install --no-install-recommends --no-install-suggests -y python3 python3-venv
 sudo snap install node --classic
 
 sudo mkdir -p /etc/systemd/system/getty@tty1.service.d
