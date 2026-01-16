@@ -6,7 +6,7 @@ fi
 
 (
   cd ai
-  python api.py
+  python3 api.py
 ) &
 (
   cd front
