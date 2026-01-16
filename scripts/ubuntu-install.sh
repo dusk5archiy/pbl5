@@ -45,11 +45,11 @@ sudo snap set chromium url=http://localhost:3000
 sudo snap set chromium daemon=true
 sudo snap start chromium
 
-if [ ! -d ".venv" ]; then
+if [[ ! -d ".venv" ]]; then
   python3 -m venv .venv
 fi
 
-if [ -d ".venv/bin" ]; then
+if [[ -d ".venv/bin" ]]; then
   . .venv/bin/activate
 else
   exit
