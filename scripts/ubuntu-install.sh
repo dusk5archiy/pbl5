@@ -55,7 +55,7 @@ else
   exit
 fi
 
-TEMP=$HOME/tmp && pip install -r requirements.txt
+TMPDIR=$HOME/tmp && pip install --no-cache-dir -r requirements.txt
 
 (
   cd front
