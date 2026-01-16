@@ -1,6 +1,6 @@
 import torch
-from dice_score_model import DiceScoreModel
-from dice_score_model_train import inter_transform
+from .dice_score_model import DiceScoreModel
+from .dice_score_model_train import inter_transform
 import os
 
 

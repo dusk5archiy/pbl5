@@ -1,9 +1,8 @@
 from PIL import Image
-from dice_score_model import DiceScoreModel
+from .dice_score_model import DiceScoreModel
 from torch.utils.data import DataLoader, random_split
 from torch.utils.data import Dataset
 from torchvision import transforms
-from tqdm import tqdm
 import concurrent.futures
 import os
 import torch
@@ -84,6 +83,8 @@ class ProjectDataset(Dataset):
 
 
 if __name__ == "__main__":
+    from tqdm import tqdm
+
     input_dir = "data/inputs"
     target_dir = "data/targets"
 

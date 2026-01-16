@@ -10,5 +10,5 @@ fi
 ) &
 (
   cd front
-  npm run start
+  npm run dev
 )
