@@ -1,7 +1,6 @@
 echo [-- START --]
 
 if [ ! -d ".venv" ]; then
-  echo [-- INFO --] .venv folder does not exist, attempt create a new one...
   python -m venv .venv
 fi
 

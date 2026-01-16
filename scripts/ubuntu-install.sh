@@ -45,8 +45,20 @@ sudo snap set chromium url=http://localhost:3000
 sudo snap set chromium daemon=true
 sudo snap start chromium
 
-cd front
-if [[ ! -d "node_modules" ]]; then
-  npm install
+if [ ! -d ".venv" ]; then
+  python -m venv .venv
 fi
-npm run build
+
+if [ -d ".venv/bin" ]; then
+  . .venv/bin/activate
+else
+  exit
+fi
+
+pip install -r requirements.txt
+
+(
+  cd front
+  npm install
+  npm run build
+)
