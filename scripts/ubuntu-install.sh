@@ -55,7 +55,7 @@ else
   exit
 fi
 
-pip install -r requirements.txt
+TEMP=$HOME/tmp && pip install -r requirements.txt
 
 (
   cd front
