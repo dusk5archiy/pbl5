@@ -2,9 +2,8 @@
 # Installed: OpenSSH
 
 sudo apt update
-sudo apt install --no-install-recommends --no-install-suggests -y python3 python3-venv
+sudo apt install --no-install-recommends --no-install-suggests -y python3 python3-venv libgl1
 sudo snap install node --classic
-
 sudo mkdir -p /etc/systemd/system/getty@tty1.service.d
 sudo touch /etc/systemd/system/getty@tty1.service.d/override.conf
 sudo tee /etc/systemd/system/getty@tty1.service.d/override.conf >/dev/null <<EOF
@@ -46,7 +45,7 @@ sudo snap start ubuntu-frame
 
 sudo snap install wpe-webkit-mir-kiosk
 sudo snap connect wpe-webkit-mir-kiosk:wayland
-sudo snap connect wpe-webkit-mir-kiosk:camera :camera
+# sudo snap connect wpe-webkit-mir-kiosk:camera :camera
 sudo snap enable wpe-webkit-mir-kiosk
 sudo snap set wpe-webkit-mir-kiosk url=http://localhost:3000
 sudo snap set wpe-webkit-mir-kiosk daemon=true
