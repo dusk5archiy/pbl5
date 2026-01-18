@@ -1,36 +1,44 @@
-# Cài đặt kiosk trên Minimized Ubuntu Server
+# Cài đặt trên Minimized Ubuntu Server
 
-## Start và Enable daemon `snapd`
+Cập nhật lúc: 18-01-2026.
 
-```bash
-sudo systemctl start snapd
-sudo systemctl enable snapd
-```
+## Cài đặt Minimized Ubuntu Server
 
-Kiểm tra trạng thái hoạt động của `snapd`:
+Tải file .iso Ubuntu Server dựa trên các thông tin sau:
 
-```bash
-sudo systemctl status snapd
-```
+- Phiên bản `24.04.3 LTS`.
+- [Link tải Ubuntu Server](https://ubuntu.com/download/server)
 
-## Tải về các gói chương trình
+Trong quá trình cài đặt:
 
-```bash
-sudo snap install ubuntu-frame
-sudo snap set ubuntu-frame daemon=true
-sudo snap install chromium
-sudo snap set chromium url=...
-sudo snap set chromium daemon=true
-snap connect chromium:wayland
-```
+- Phải có màn hình hiển thị
+- Chọn cài Minimized Ubuntu Server
+- Có kết nối internet
+- Chọn cài OpenSSH
 
-Kiểm tra trạng thái bằng lệnh `snap services`.
+Sau khi đã cài đặt hệ điều hành thành công, ta sẽ tiến hành clone dự án vào máy.
 
-Chuyển URL:
+## Cài đặt repo dự án
+
+Tải `git` bằng lệnh sau:
 
 ```bash
-sudo snap set chromium url=...
-sudo snap restart chromium
+sudo apt install git
 ```
 
-## Tự động đăng nhập
+sau đó, clone repo này vào thư mục `~`, rồi thiết lập như sau:
+
+```bash
+cd ~
+git clone https://github.com/dusk5archiy/pbl5.git
+cd pbl5
+chmod +x scripts/*
+scripts/usetup.sh
+```
+
+Sau khi thiết lập xong, khởi động lại máy bằng lệnh:
+
+```bash
+sudo reboot
+```
+Sau khi khởi động lại xong, chương trình sẽ tự động được chạy.

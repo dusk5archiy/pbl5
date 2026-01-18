@@ -1,3 +1,7 @@
+#!/bin/bash
+
+# How to run: scripts/setup.sh
+
 echo [-- START --]
 
 if [ ! -d ".venv" ]; then

@@ -1,3 +1,7 @@
+#!/bin/bash
+
+# How to run: scripts/train.sh
+
 . scripts/venv.sh
 
 if [[ ! -f "output/dice-score-model.pth" ]]; then

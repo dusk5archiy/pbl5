@@ -1,8 +1,6 @@
-# How to run:
-#
-# ```bash
-# . scripts/venv.sh
-# ```
+#!/bin/bash
+
+# How to run: . scripts/venv.sh
 
 if [ -d ".venv/Scripts" ]; then
   . .venv/Scripts/activate
