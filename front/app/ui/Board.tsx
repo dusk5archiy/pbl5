@@ -58,7 +58,7 @@ const Board: React.FC<BoardProps> = ({
   // Position calculation (same as Python vt() function)
   const vt = (x: number): number => Math.floor((x * BOARD_SIZE) / 13);
 
-  const fontSize = Math.floor(unitSize * 40 / 100);
+  const fontSize = Math.floor(unitSize * 45 / 100);
 
   // Generate number sets (from Python banco_numberset1, 2, 3, 4)
 
@@ -233,7 +233,7 @@ const Board: React.FC<BoardProps> = ({
 
         {/* LAYER 2: Middle layer (2-15) */}
         <rect x={vt(0)} y={vt(0)} width={vt(13)} height={vt(13)} fill={CO1} stroke={OUTL} strokeWidth="1" />
-        <rect x={vt(2)} y={vt(2)} width={vt(11)} height={vt(11)} fill="lightgreen" stroke="brown" strokeWidth="1" />
+        <rect x={vt(2)} y={vt(2)} width={vt(11)} height={vt(11)} fill="lightgreen" stroke={OUTL} strokeWidth="1" />
 
         {/* Four corners */}
         <rect x={vt(0)} y={vt(0)} width={vt(2)} height={vt(2)} fill={CO1} stroke={OUTL} strokeWidth="1" />
