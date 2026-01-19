@@ -82,14 +82,14 @@ function CameraCapture({ onCapture }: { onCapture: (imageData: string, result: D
 
   return (
     <div className="flex flex-col items-center ">
-      <div className="flex flex-1 border-4 border-green-500 rounded p-4 bg-gray-800 justify-center">
+      <div className="flex flex-1 border-4 border-green-500 rounded bg-gray-800 justify-center">
         <div className="flex">
-          <video ref={videoRef} autoPlay playsInline muted className="rounded max-h-96" />
+          <video ref={videoRef} autoPlay playsInline muted className="camera rounded max-h-96" />
         </div>
       </div>
       <button
         onClick={captureImage}
-        className="px-6 py-3 bg-green-600 text-white text-lg font-bold rounded hover:bg-green-700"
+        className="px-2 py-1 bg-green-600 text-white text-lg font-bold rounded hover:bg-green-700"
         disabled={loading}
       >
         {loading ? 'Đang xử lí...' : 'Chụp xúc xắc'}
@@ -133,7 +133,7 @@ function DetectionResult({ imageData, result, onBack }: { imageData: string; res
     <div className="flex flex-col items-center space-y-2">
       <div className="flex flex-1 border-4 border-green-500 rounded p-4 bg-gray-800 justify-center">
         <div className="flex">
-          <canvas ref={canvasRef} className="rounded max-h-96" />
+          <canvas ref={canvasRef} className="camera rounded max-h-96" />
         </div>
       </div>
       <div className="flex gap-2">
@@ -178,24 +178,30 @@ export default function GameScreen({ selectedColors, onBack }: GameScreenProps) 
       {/* Left Panel */}
       <div className="left-sidebar flex flex-col  pr-4">
         {/* Player Colors */}
-        <div className="money-wrapper bg-gray-800 border-2 border-white p-2 rounded">
-          <div className="space-y-2">
+        <div className="money-wrapper bg-gray-800 border-2 border-white p-2 rounded" style={{ height: '260px' }}>
+          <div className="flex flex-col h-full justify-between">
             {selectedColors.map((color, index) => (
-              <div key={index} className="flex items-center space-x-2">
+              <div 
+                key={index} 
+                className="flex items-center space-x-2"
+                style={{ height: `${260 / selectedColors.length}px` }}
+              >
                 <div
-                  className={`w-8 h-8 ${color.bgClass} border-2 border-white flex items-center justify-center`}
+                  className={`${color.bgClass} border-2 border-white flex items-center justify-center`}
                   style={{
+                    width: `${Math.max(220 / selectedColors.length , 32)}px`,
+                    height: `${Math.max(220 / selectedColors.length , 32)}px`,
                     backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0,0,0,0.2) 5px, rgba(0,0,0,0.2) 10px)'
                   }}
                 />
-                <span className="text-xl font-bold">1.5M</span>
+                <span className="font-bold" style={{ fontSize: `${Math.max(260 / selectedColors.length / 2.5, 20)}px` }}>1.5M</span>
               </div>
             ))}
           </div>
         </div>
 
         {/* Game Board */}
-        <div className="bg-gray-800 border-2 border-white p-2 rounded flex-1">
+        <div className="bg-gray-800 border-2 border-white p-1 rounded flex-1">
           <div className="flex gap-1 h-full">
             {/* Columns */}
             {cols.map((col, colIndex) => (
@@ -203,12 +209,12 @@ export default function GameScreen({ selectedColors, onBack }: GameScreenProps) 
                 {/* Cells for this column */}
                 {Array.from({ length: cols1[colIndex] }, (_, rowIndex) => (
                   <div
-                    key={`${col}-${rowIndex}`}
-                    className="border border-gray-600 bg-gray-700 aspect-square"
+                    key={`${col}${rowIndex+1}`}
+                    className="border bg-white aspect-square"
                   />
                 ))}
                 {/* Column header at bottom */}
-                <div className="b-col text-center text-sm font-bold items-center justify-center mt-1">
+                <div className="b-col text-center text-sm font-bold items-center justify-center">
                   {col}
                 </div>
               </div>
@@ -231,7 +237,7 @@ export default function GameScreen({ selectedColors, onBack }: GameScreenProps) 
       <div className="w-1/2 flex flex-col items-center justify-center">
         <button
           onClick={() => setShowCameraPopup(true)}
-          className="px-8 py-4 bg-green-600 text-white text-xl font-bold rounded hover:bg-green-700"
+          className="px-2 py-2 bg-green-600 text-white text-xl font-bold rounded hover:bg-green-700"
         >
           Chụp xúc xắc
         </button>
@@ -240,8 +246,8 @@ export default function GameScreen({ selectedColors, onBack }: GameScreenProps) 
       {/* Camera Popup */}
       {showCameraPopup && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="bg-gray-900 border-4 border-green-500 rounded-lg p-6 max-w-3xl w-full mx-4">
-            <div className="flex justify-between items-center mb-4">
+          <div className="xx-popup bg-gray-900 border-4 border-green-500 rounded-lg p-4 max-w-3xl mx-3">
+            <div className="flex justify-between items-center mb-2">
               <h2 className="text-2xl font-bold text-green-400">Thảy xúc xắc</h2>
               <button
                 onClick={handleCloseCameraPopup}

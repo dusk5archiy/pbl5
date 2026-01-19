@@ -34,3 +34,12 @@ body {
 .money-wrapper{
   height: 290px !important;
 }
+.xx-popup{
+  height: 900px !important;
+  position: relative;
+  top:150px;
+}
+.camera{
+  width: 400px !important;
+  height: 300px !important;
+}
