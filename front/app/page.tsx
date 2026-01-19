@@ -13,6 +13,29 @@ export default function Home() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
   const [selectedColors, setSelectedColors] = useState<ColorType[]>([]);
   const [selectedCamera, setSelectedCamera] = useState<string>('');
+  const [gameState, setGameState] = useState<any>(null);
+
+  const initGame = async (colors: ColorType[]) => {
+    try {
+      const playerOrder = {
+        players: colors.map(color => color.id)
+      };
+      
+      const response = await fetch('http://localhost:8001/init_game', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(playerOrder),
+      });
+      
+      const data = await response.json();
+      setGameState(data.game_state);
+      console.log('Game initialized:', data.game_state);
+    } catch (error) {
+      console.error('Error initializing game:', error);
+    }
+  };
 
   switch (currentScreen) {
     case 'welcome':
@@ -22,8 +45,9 @@ export default function Home() {
         <ChooseColorScreen
           selectedColors={selectedColors}
           setSelectedColors={setSelectedColors}
-          onContinue={(colors) => {
+          onContinue={async (colors) => {
             setSelectedColors(colors);
+            await initGame(colors);
             setCurrentScreen('checkCamera');
           }}
           onBack={() => setCurrentScreen('welcome')}
@@ -44,6 +68,7 @@ export default function Home() {
          <GameScreen
           selectedColors={selectedColors}
           selectedCamera={selectedCamera}
+          gameState={gameState}
           onBack={() => setCurrentScreen('checkCamera')}
         />
 

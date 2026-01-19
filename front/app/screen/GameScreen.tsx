@@ -6,6 +6,7 @@ import Board from '../ui/Board';
 interface GameScreenProps {
   selectedColors: ColorType[];
   selectedCamera: string;
+  gameState: any;
   onBack: () => void;
 }
 
@@ -149,11 +150,17 @@ function DetectionResult({ imageData, result, onBack }: { imageData: string; res
   );
 }
 
-export default function GameScreen({ selectedColors, onBack }: GameScreenProps) {
+export default function GameScreen({ selectedColors, gameState, onBack }: GameScreenProps) {
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [detectionResult, setDetectionResult] = useState<DetectionResult | null>(null);
   const [showCameraPopup, setShowCameraPopup] = useState(false);
   const [showBoardPopup, setShowBoardPopup] = useState(false);
+
+  useEffect(() => {
+    if (gameState) {
+      console.log('Game state received:', gameState);
+    }
+  }, [gameState]);
 
   const handleCapture = (imageData: string, result: DetectionResult) => {
     setCapturedImage(imageData);
