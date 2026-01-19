@@ -284,7 +284,7 @@ export default function GameScreen({ selectedColors, gameState, onBack }: GameSc
       {/* Board Popup */}
       {showBoardPopup && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-          <div className="bg-gray-900 border-4 border-blue-500 rounded-lg p-6 max-w-4xl w-full mx-4" style={{ maxHeight: '90vh' }}>
+          <div className="bg-gray-900 rounded-lg p-6 max-w-4xl w-full mx-4" style={{ maxHeight: '90vh' }}>
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-3xl font-bold text-blue-400">Bảng trò chơi</h2>
               <button
