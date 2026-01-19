@@ -28,3 +28,9 @@ body {
 .left-sidebar{
   width: 300px;
 }
+.b-col{
+  width: 16px !important;
+}
+.money-wrapper{
+  height: 290px !important;
+}

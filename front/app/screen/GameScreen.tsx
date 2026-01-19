@@ -81,7 +81,7 @@ function CameraCapture({ onCapture }: { onCapture: (imageData: string, result: D
   };
 
   return (
-    <div className="flex flex-col items-center space-y-4">
+    <div className="flex flex-col items-center ">
       <div className="flex flex-1 border-4 border-green-500 rounded p-4 bg-gray-800 justify-center">
         <div className="flex">
           <video ref={videoRef} autoPlay playsInline muted className="rounded max-h-96" />
@@ -170,15 +170,15 @@ export default function GameScreen({ selectedColors, onBack }: GameScreenProps) 
   };
 
   // Game board grid
-  const rows = ['A', 'B', 'C', 'D',];
-  const cols = Array.from({ length: 10 }, (_, i) => i);
+  const cols1 = [2, 3, 3, 3, 3, 3, 3, 2, 4, 2];
+  const cols = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
 
   return (
     <div className="flex h-screen text-white p-1">
       {/* Left Panel */}
-      <div className="left-sidebar flex flex-col space-y-4 pr-4">
+      <div className="left-sidebar flex flex-col  pr-4">
         {/* Player Colors */}
-        <div className="bg-gray-800 border-2 border-white p-2 rounded">
+        <div className="money-wrapper bg-gray-800 border-2 border-white p-2 rounded">
           <div className="space-y-2">
             {selectedColors.map((color, index) => (
               <div key={index} className="flex items-center space-x-2">
@@ -196,41 +196,33 @@ export default function GameScreen({ selectedColors, onBack }: GameScreenProps) 
 
         {/* Game Board */}
         <div className="bg-gray-800 border-2 border-white p-2 rounded flex-1">
-          <div className="grid grid-cols-11 gap-1 h-full">
-            {/* Empty top-left corner */}
-            <div></div>
-            {/* Column headers */}
-            {cols.map((col) => (
-              <div key={col} className="text-center text-sm font-bold flex items-center justify-center">
-                {col}
-              </div>
-            ))}
-            {/* Rows */}
-            {rows.map((row, rowIndex) => (
-              <>
-                {/* Row header */}
-                <div key={row} className="text-center text-sm font-bold flex items-center justify-center">
-                  {row}
-                </div>
-                {/* Cells */}
-                {cols.map((col) => (
+          <div className="flex gap-1 h-full">
+            {/* Columns */}
+            {cols.map((col, colIndex) => (
+              <div key={col} className="flex-1 flex flex-col gap-1 justify-end">
+                {/* Cells for this column */}
+                {Array.from({ length: cols1[colIndex] }, (_, rowIndex) => (
                   <div
-                    key={`${row}-${col}`}
+                    key={`${col}-${rowIndex}`}
                     className="border border-gray-600 bg-gray-700 aspect-square"
                   />
                 ))}
-              </>
+                {/* Column header at bottom */}
+                <div className="b-col text-center text-sm font-bold items-center justify-center mt-1">
+                  {col}
+                </div>
+              </div>
             ))}
           </div>
         </div>
 
         {/* Pause Button */}
-        <div className="bg-gray-800 border-2 border-white p-4 rounded">
+        <div className="bg-gray-800 border-2 border-white p-2 rounded">
           <button
             onClick={onBack}
             className="w-full text-xl font-bold py-2 bg-gray-700 hover:bg-gray-600 rounded"
           >
-            ⏸ Tạm dừng
+            chức năng
           </button>
         </div>
       </div>
