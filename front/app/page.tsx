@@ -30,8 +30,8 @@ export default function Home() {
       });
       
       const data = await response.json();
-      setGameState(data.game_state);
       console.log('Game initialized:', data.game_state);
+      setGameState(data.game_state);
     } catch (error) {
       console.error('Error initializing game:', error);
     }
@@ -45,9 +45,8 @@ export default function Home() {
         <ChooseColorScreen
           selectedColors={selectedColors}
           setSelectedColors={setSelectedColors}
-          onContinue={async (colors) => {
+          onContinue={(colors) => {
             setSelectedColors(colors);
-            await initGame(colors);
             setCurrentScreen('checkCamera');
           }}
           onBack={() => setCurrentScreen('welcome')}
@@ -58,7 +57,10 @@ export default function Home() {
         <CheckCameraScreen
           selectedCamera={selectedCamera}
           setSelectedCamera={setSelectedCamera}
-          onContinue={() => setCurrentScreen('game')}
+          onContinue={async () => {
+            await initGame(selectedColors);
+            setCurrentScreen('game');
+          }}
           onBack={() => setCurrentScreen('chooseColors')}
         />
       );
@@ -66,7 +68,6 @@ export default function Home() {
       return (
         <div className='game-board'>
          <GameScreen
-          selectedColors={selectedColors}
           selectedCamera={selectedCamera}
           gameState={gameState}
           onBack={() => setCurrentScreen('checkCamera')}

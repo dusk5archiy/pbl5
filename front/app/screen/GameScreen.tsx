@@ -4,7 +4,6 @@ import { ColorType } from '@/app/utils/ColorType';
 import { useRef, useState, useEffect } from 'react';
 import Board from '../ui/Board';
 interface GameScreenProps {
-  selectedColors: ColorType[];
   selectedCamera: string;
   gameState: any;
   onBack: () => void;
@@ -150,11 +149,12 @@ function DetectionResult({ imageData, result, onBack }: { imageData: string; res
   );
 }
 
-export default function GameScreen({ selectedColors, gameState, onBack }: GameScreenProps) {
+export default function GameScreen({ gameState, onBack }: GameScreenProps) {
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [detectionResult, setDetectionResult] = useState<DetectionResult | null>(null);
   const [showCameraPopup, setShowCameraPopup] = useState(false);
   const [showBoardPopup, setShowBoardPopup] = useState(false);
+
 
   useEffect(() => {
     if (gameState) {
@@ -181,6 +181,17 @@ export default function GameScreen({ selectedColors, gameState, onBack }: GameSc
   const cols1 = [2, 3, 3, 3, 3, 3, 3, 2, 4, 2];
   const cols = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'R', 'U'];
 
+  // Get players from gameState
+  const players = gameState?.players ? Object.entries(gameState.players).map(([playerId, playerData]: [string, any]) => {
+    console.log('Player Data:', playerId, playerData);
+    return {
+      color: playerId,
+      budget: playerData.budget,
+      at: playerData.at
+    };
+  }) : [];
+  
+  console.log(players);
   return (
     <div className="flex h-screen text-white p-1">
       {/* Left Panel */}
@@ -188,21 +199,23 @@ export default function GameScreen({ selectedColors, gameState, onBack }: GameSc
         {/* Player Colors */}
         <div className="money-wrapper border-2 border-white p-2 rounded" style={{ height: '260px' }}>
           <div className="flex flex-col h-full justify-between">
-            {selectedColors.map((color, index) => (
+            {players.map((player, index) => (
               <div 
-                key={index} 
+                key={player.color} 
                 className="flex items-center space-x-2"
-                style={{ height: `${260 / selectedColors.length}px` }}
+                style={{ height: `${260 / players.length}px` }}
               >
                 <div
-                  className={`${color.bgClass} border-2 border-white flex items-center justify-center`}
+                  className={`${"bg" + player.color} border-2 border-white flex items-center justify-center`}
                   style={{
-                    width: `${Math.max(220 / selectedColors.length , 32)}px`,
-                    height: `${Math.max(220 / selectedColors.length , 32)}px`,
+                    width: `${Math.max(220 / players.length , 32)}px`,
+                    height: `${Math.max(220 / players.length , 32)}px`,
                     backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0,0,0,0.2) 5px, rgba(0,0,0,0.2) 10px)'
                   }}
                 />
-                <span className="font-bold" style={{ fontSize: `${Math.max(260 / selectedColors.length / 2.5, 20)}px` }}>1.5M</span>
+                <span className="font-bold" style={{ fontSize: `${Math.max(260 / players.length / 2.5, 20)}px` }}>
+                  {player.budget} K
+                </span>
               </div>
             ))}
           </div>
@@ -286,15 +299,14 @@ export default function GameScreen({ selectedColors, gameState, onBack }: GameSc
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
           <div className="bg-gray-900 rounded-lg p-6 max-w-4xl w-full mx-4" style={{ maxHeight: '90vh' }}>
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-3xl font-bold text-blue-400">Bảng trò chơi</h2>
               <button
                 onClick={() => setShowBoardPopup(false)}
-                className="text-4xl text-white hover:text-red-500"
+                className="close-popup text-4xl text-white hover:text-red-500"
               >
                 ×
               </button>
             </div>
-            <div className="bg-gray-800 border-2 border-white p-4 rounded" style={{ height: '70vh' }}>
+            <div className="bg-gray-800 p-4 rounded" style={{ height: '70vh' }}>
               <div className="flex gap-2 h-full">
                 {/* Columns */}
                 {cols.map((col, colIndex) => (
