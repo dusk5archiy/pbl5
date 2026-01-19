@@ -1,10 +1,19 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 from game_init import init_game_state
 from game_logic import move_with_dice_path
 from game_model import Card, GameState, BDS
+from pydantic import BaseModel
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # In production, specify the frontend URL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # -----------------------------------------------------------------------------
 
@@ -91,6 +100,7 @@ async def next_player(request: NextPlayerRequest):
     game_state.current_player = player_queue[next_index]
 
     return NextPlayerResponse(new_game_state=game_state)
+
 
 # -----------------------------------------------------------------------------
 
