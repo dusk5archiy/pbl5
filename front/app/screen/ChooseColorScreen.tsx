@@ -4,12 +4,12 @@ import { Dispatch, SetStateAction } from 'react';
 import { ColorType } from '@/app/utils/ColorType';
 
 const COLORS: ColorType[] = [
-  { id: 'red', name: 'Đỏ', bgClass: 'bg-red-500', borderClass: 'border-red-500' },
-  { id: 'orange', name: 'Cam', bgClass: 'bg-orange-500', borderClass: 'border-orange-500' },
-  { id: 'yellow', name: 'Vàng', bgClass: 'bg-yellow-400', borderClass: 'border-yellow-400' },
-  { id: 'green', name: 'Lục', bgClass: 'bg-green-500', borderClass: 'border-green-500' },
-  { id: 'blue', name: 'Lam', bgClass: 'bg-blue-500', borderClass: 'border-blue-500' },
-  { id: 'purple', name: 'Tím', bgClass: 'bg-purple-500', borderClass: 'border-purple-500' },
+  { id: 'red', name: 'Đỏ', bgClass: 'bgred', },
+  { id: 'orange', name: 'Cam', bgClass: 'bgorange' },
+  { id: 'yellow', name: 'Vàng', bgClass: 'bgyellow' },
+  { id: 'green', name: 'Lục', bgClass: 'bggreen'},
+  { id: 'blue', name: 'Lam', bgClass: 'bgblue'},
+  { id: 'purple', name: 'Tím', bgClass: 'bgpurple'},
 ];
 
 interface SequenceDisplayProps {

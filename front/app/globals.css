@@ -19,6 +19,24 @@
 /*     --foreground: #ededed; */
 /*   } */
 /* } */
+.bgred{
+  background-color: #FF8B8B !important;
+}
+.bgorange{
+  background-color: #FFC000 !important;
+}
+.bgyellow{
+  background-color: yellow !important;
+}
+.bggreen{
+  background-color: #B1FFAB !important;
+}
+.bgblue{
+  background-color: #B7F3FF !important;
+}
+.bgpurple{
+  background-color: #EEBBFF !important;
+}
 
 body {
   background: var(--background);
@@ -32,7 +50,11 @@ body {
   width: 16px !important;
 }
 .money-wrapper{
+  background-color: #446655 !important;
   height: 290px !important;
+}
+.bds-wrapper,.func-btn{
+  background-color: #446655 !important;
 }
 .xx-popup{
   height: 900px !important;

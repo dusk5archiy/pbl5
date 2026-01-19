@@ -153,6 +153,7 @@ export default function GameScreen({ selectedColors, onBack }: GameScreenProps) 
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [detectionResult, setDetectionResult] = useState<DetectionResult | null>(null);
   const [showCameraPopup, setShowCameraPopup] = useState(false);
+  const [showBoardPopup, setShowBoardPopup] = useState(false);
 
   const handleCapture = (imageData: string, result: DetectionResult) => {
     setCapturedImage(imageData);
@@ -178,7 +179,7 @@ export default function GameScreen({ selectedColors, onBack }: GameScreenProps) 
       {/* Left Panel */}
       <div className="left-sidebar flex flex-col  pr-4">
         {/* Player Colors */}
-        <div className="money-wrapper bg-gray-800 border-2 border-white p-2 rounded" style={{ height: '260px' }}>
+        <div className="money-wrapper border-2 border-white p-2 rounded" style={{ height: '260px' }}>
           <div className="flex flex-col h-full justify-between">
             {selectedColors.map((color, index) => (
               <div 
@@ -201,7 +202,10 @@ export default function GameScreen({ selectedColors, onBack }: GameScreenProps) 
         </div>
 
         {/* Game Board */}
-        <div className="bg-gray-800 border-2 border-white p-1 rounded flex-1">
+        <div 
+          className="bds-wrapper border-2 border-white p-1 rounded flex-1 cursor-pointer hover:border-green-500 transition-colors"
+          onClick={() => setShowBoardPopup(true)}
+        >
           <div className="flex gap-1 h-full">
             {/* Columns */}
             {cols.map((col, colIndex) => (
@@ -210,7 +214,7 @@ export default function GameScreen({ selectedColors, onBack }: GameScreenProps) 
                 {Array.from({ length: cols1[colIndex] }, (_, rowIndex) => (
                   <div
                     key={`${col}${rowIndex+1}`}
-                    style={{color:'red', fontSize:'13px', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:'900'}}
+                    style={{color:'orange', fontSize:'13px', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:'900'}}
                     className="border bg-white aspect-square"
                   >1</div>
                 ))}
@@ -224,10 +228,10 @@ export default function GameScreen({ selectedColors, onBack }: GameScreenProps) 
         </div>
 
         {/* Pause Button */}
-        <div className="bg-gray-800 border-2 border-white p-2 rounded">
+        <div className="func-btn border-2 border-white p-2 rounded">
           <button
             onClick={onBack}
-            className="w-full text-xl font-bold py-2 bg-gray-700 hover:bg-gray-600 rounded"
+            className="w-full text-xl font-bold py-2 rounded"
           >
             chức năng
           </button>
@@ -266,6 +270,44 @@ export default function GameScreen({ selectedColors, onBack }: GameScreenProps) 
             ) : (
               <CameraCapture onCapture={handleCapture} />
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Board Popup */}
+      {showBoardPopup && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+          <div className="bg-gray-900 border-4 border-blue-500 rounded-lg p-6 max-w-4xl w-full mx-4" style={{ maxHeight: '90vh' }}>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-3xl font-bold text-blue-400">Bảng trò chơi</h2>
+              <button
+                onClick={() => setShowBoardPopup(false)}
+                className="text-4xl text-white hover:text-red-500"
+              >
+                ×
+              </button>
+            </div>
+            <div className="bg-gray-800 border-2 border-white p-4 rounded" style={{ height: '70vh' }}>
+              <div className="flex gap-2 h-full">
+                {/* Columns */}
+                {cols.map((col, colIndex) => (
+                  <div key={col} className="flex-1 flex flex-col gap-2 justify-end">
+                    {/* Cells for this column */}
+                    {Array.from({ length: cols1[colIndex] }, (_, rowIndex) => (
+                      <div
+                        key={`${col}${rowIndex+1}`}
+                        style={{color:'orange', fontSize:'24px', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:'900'}}
+                        className="border-2 bg-white aspect-square rounded"
+                      >1</div>
+                    ))}
+                    {/* Column header at bottom */}
+                    <div className="text-center text-2xl font-bold items-center justify-center">
+                      {col}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       )}
