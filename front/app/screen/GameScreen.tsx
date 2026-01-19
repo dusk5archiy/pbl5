@@ -82,14 +82,14 @@ function CameraCapture({ onCapture }: { onCapture: (imageData: string, result: D
 
   return (
     <div className="flex flex-col items-center space-y-4">
-      <div className="flex flex-1 border-2 border-gray-300 rounded p-4 bg-gray-50 justify-center h-[60vh]">
+      <div className="flex flex-1 border-4 border-green-500 rounded p-4 bg-gray-800 justify-center">
         <div className="flex">
-          <video ref={videoRef} autoPlay playsInline muted className="rounded" />
+          <video ref={videoRef} autoPlay playsInline muted className="rounded max-h-96" />
         </div>
       </div>
       <button
         onClick={captureImage}
-        className="px-4 py-2 bg-blue-500 text-white rounded"
+        className="px-6 py-3 bg-green-600 text-white text-lg font-bold rounded hover:bg-green-700"
         disabled={loading}
       >
         {loading ? 'Đang xử lí...' : 'Chụp xúc xắc'}
@@ -131,16 +131,16 @@ function DetectionResult({ imageData, result, onBack }: { imageData: string; res
 
   return (
     <div className="flex flex-col items-center space-y-2">
-      <div className="flex flex-1 border-2 border-gray-300 rounded p-4 bg-gray-50 justify-center">
-        <div className="flex h-[60vh]">
-          <canvas ref={canvasRef} className="rounded" />
+      <div className="flex flex-1 border-4 border-green-500 rounded p-4 bg-gray-800 justify-center">
+        <div className="flex">
+          <canvas ref={canvasRef} className="rounded max-h-96" />
         </div>
       </div>
       <div className="flex gap-2">
-        <div className="px-4 py-2 border rounded text-center text-sm m-0">{result.scores.join(' ')}</div>
+        <div className="px-4 py-2 border-2 border-green-500 rounded text-center text-lg font-bold">{result.scores.join(' ')}</div>
         <button
           onClick={onBack}
-          className="px-4 py-2 bg-gray-500 text-white rounded"
+          className="px-6 py-3 bg-yellow-600 text-white rounded hover:bg-yellow-700 font-bold"
         >
           Chụp lại
         </button>
@@ -149,9 +149,10 @@ function DetectionResult({ imageData, result, onBack }: { imageData: string; res
   );
 }
 
-export default function GameScreen({ onBack }: GameScreenProps) {
+export default function GameScreen({ selectedColors, onBack }: GameScreenProps) {
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [detectionResult, setDetectionResult] = useState<DetectionResult | null>(null);
+  const [showCameraPopup, setShowCameraPopup] = useState(false);
 
   const handleCapture = (imageData: string, result: DetectionResult) => {
     setCapturedImage(imageData);
@@ -163,22 +164,111 @@ export default function GameScreen({ onBack }: GameScreenProps) {
     setDetectionResult(null);
   };
 
+  const handleCloseCameraPopup = () => {
+    setShowCameraPopup(false);
+    handleBackToCamera();
+  };
+
+  // Game board grid
+  const rows = ['A', 'B', 'C', 'D',];
+  const cols = Array.from({ length: 10 }, (_, i) => i);
+
   return (
-    <div className="flex flex-col items-center justify-center h-full p-4">
-      <button
-        onClick={onBack}
-        className="absolute top-4 left-4 text-2xl font-bold text-gray-600 hover:text-gray-800 rounded hover:bg-gray-100 bg-blue-200 p-2"
-      >
-        ↩
-      </button>
-      {capturedImage && detectionResult ? (
-        <DetectionResult
-          imageData={capturedImage}
-          result={detectionResult}
-          onBack={handleBackToCamera}
-        />
-      ) : (
-        <CameraCapture onCapture={handleCapture} />
+    <div className="flex h-screen text-white p-1">
+      {/* Left Panel */}
+      <div className="left-sidebar flex flex-col space-y-4 pr-4">
+        {/* Player Colors */}
+        <div className="bg-gray-800 border-2 border-white p-2 rounded">
+          <div className="space-y-2">
+            {selectedColors.map((color, index) => (
+              <div key={index} className="flex items-center space-x-2">
+                <div
+                  className={`w-8 h-8 ${color.bgClass} border-2 border-white flex items-center justify-center`}
+                  style={{
+                    backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0,0,0,0.2) 5px, rgba(0,0,0,0.2) 10px)'
+                  }}
+                />
+                <span className="text-xl font-bold">1.5M</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Game Board */}
+        <div className="bg-gray-800 border-2 border-white p-2 rounded flex-1">
+          <div className="grid grid-cols-11 gap-1 h-full">
+            {/* Empty top-left corner */}
+            <div></div>
+            {/* Column headers */}
+            {cols.map((col) => (
+              <div key={col} className="text-center text-sm font-bold flex items-center justify-center">
+                {col}
+              </div>
+            ))}
+            {/* Rows */}
+            {rows.map((row, rowIndex) => (
+              <>
+                {/* Row header */}
+                <div key={row} className="text-center text-sm font-bold flex items-center justify-center">
+                  {row}
+                </div>
+                {/* Cells */}
+                {cols.map((col) => (
+                  <div
+                    key={`${row}-${col}`}
+                    className="border border-gray-600 bg-gray-700 aspect-square"
+                  />
+                ))}
+              </>
+            ))}
+          </div>
+        </div>
+
+        {/* Pause Button */}
+        <div className="bg-gray-800 border-2 border-white p-4 rounded">
+          <button
+            onClick={onBack}
+            className="w-full text-xl font-bold py-2 bg-gray-700 hover:bg-gray-600 rounded"
+          >
+            ⏸ Tạm dừng
+          </button>
+        </div>
+      </div>
+
+      {/* Right Panel - Empty with button to open camera */}
+      <div className="w-1/2 flex flex-col items-center justify-center">
+        <button
+          onClick={() => setShowCameraPopup(true)}
+          className="px-8 py-4 bg-green-600 text-white text-xl font-bold rounded hover:bg-green-700"
+        >
+          Chụp xúc xắc
+        </button>
+      </div>
+
+      {/* Camera Popup */}
+      {showCameraPopup && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="bg-gray-900 border-4 border-green-500 rounded-lg p-6 max-w-3xl w-full mx-4">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold text-green-400">Thảy xúc xắc</h2>
+              <button
+                onClick={handleCloseCameraPopup}
+                className="text-3xl text-white hover:text-red-500"
+              >
+                ×
+              </button>
+            </div>
+            {capturedImage && detectionResult ? (
+              <DetectionResult
+                imageData={capturedImage}
+                result={detectionResult}
+                onBack={handleBackToCamera}
+              />
+            ) : (
+              <CameraCapture onCapture={handleCapture} />
+            )}
+          </div>
+        </div>
       )}
     </div>
   );
