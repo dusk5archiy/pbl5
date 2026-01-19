@@ -2,7 +2,7 @@
 
 import { ColorType } from '@/app/utils/ColorType';
 import { useRef, useState, useEffect } from 'react';
-
+import Board from '../ui/Board';
 interface GameScreenProps {
   selectedColors: ColorType[];
   selectedCamera: string;
@@ -171,7 +171,7 @@ export default function GameScreen({ selectedColors, onBack }: GameScreenProps) 
 
   // Game board grid
   const cols1 = [2, 3, 3, 3, 3, 3, 3, 2, 4, 2];
-  const cols = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+  const cols = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'R', 'U'];
 
   return (
     <div className="flex h-screen text-white p-1">
@@ -232,16 +232,16 @@ export default function GameScreen({ selectedColors, onBack }: GameScreenProps) 
           </button>
         </div>
       </div>
-
+            <Board/>
       {/* Right Panel - Empty with button to open camera */}
-      <div className="w-1/2 flex flex-col items-center justify-center">
+      {/* <div className="w-1/2 flex flex-col items-center justify-center">
         <button
           onClick={() => setShowCameraPopup(true)}
           className="px-2 py-2 bg-green-600 text-white text-xl font-bold rounded hover:bg-green-700"
         >
           Chụp xúc xắc
         </button>
-      </div>
+      </div> */}
 
       {/* Camera Popup */}
       {showCameraPopup && (

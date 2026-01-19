@@ -40,11 +40,15 @@ export default function Home() {
       );
     case 'game':
       return (
-        <GameScreen
+        <div className='game-board'>
+         <GameScreen
           selectedColors={selectedColors}
           selectedCamera={selectedCamera}
           onBack={() => setCurrentScreen('checkCamera')}
         />
+
+
+        </div>
       );
     default:
       return <WelcomeScreen onStart={() => setCurrentScreen('chooseColors')} />;
