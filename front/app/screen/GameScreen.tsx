@@ -214,7 +214,7 @@ export default function GameScreen({ gameState, onBack }: GameScreenProps) {
                   }}
                 />
                 <span className="font-bold" style={{ fontSize: `${Math.max(260 / players.length / 2.5, 20)}px` }}>
-                  {player.budget} K
+                  {player.budget}K
                 </span>
               </div>
             ))}
@@ -234,9 +234,9 @@ export default function GameScreen({ gameState, onBack }: GameScreenProps) {
                 {Array.from({ length: cols1[colIndex] }, (_, rowIndex) => (
                   <div
                     key={`${col}${rowIndex+1}`}
-                    style={{color:'orange', fontSize:'13px', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:'900'}}
-                    className="border bg-white aspect-square"
-                  >1</div>
+                    style={{backgroundColor:'#FF8B8B',color:"black", fontSize:'20px', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:'400',textAlign:'center'}}
+                    className="bds-node border aspect-square"
+                  >3</div>
                 ))}
                 {/* Column header at bottom */}
                 <div className="b-col text-center text-sm font-bold items-center justify-center">

@@ -77,3 +77,8 @@ body {
   top:10px;
   right:11px;
 }
+.bds-node{
+  background-color: gray ;
+  width: 18px !important;
+  height: 24px !important;
+}
