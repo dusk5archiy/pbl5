@@ -43,3 +43,10 @@ body {
   width: 400px !important;
   height: 300px !important;
 }
+.txx-button{
+  position: absolute;
+  top:25%;
+  left: 49%;
+  height: 300px !important;
+  width: 200px !important;
+}

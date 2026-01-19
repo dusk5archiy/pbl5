@@ -210,8 +210,9 @@ export default function GameScreen({ selectedColors, onBack }: GameScreenProps) 
                 {Array.from({ length: cols1[colIndex] }, (_, rowIndex) => (
                   <div
                     key={`${col}${rowIndex+1}`}
+                    style={{color:'red', fontSize:'13px', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:'900'}}
                     className="border bg-white aspect-square"
-                  />
+                  >1</div>
                 ))}
                 {/* Column header at bottom */}
                 <div className="b-col text-center text-sm font-bold items-center justify-center">
@@ -234,14 +235,14 @@ export default function GameScreen({ selectedColors, onBack }: GameScreenProps) 
       </div>
             <Board/>
       {/* Right Panel - Empty with button to open camera */}
-      {/* <div className="w-1/2 flex flex-col items-center justify-center">
+      <div className="txx-button w-1/2 flex flex-col items-center justify-center">
         <button
           onClick={() => setShowCameraPopup(true)}
           className="px-2 py-2 bg-green-600 text-white text-xl font-bold rounded hover:bg-green-700"
         >
           Chụp xúc xắc
         </button>
-      </div> */}
+      </div>
 
       {/* Camera Popup */}
       {showCameraPopup && (
