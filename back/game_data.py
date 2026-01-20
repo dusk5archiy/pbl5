@@ -1,6 +1,6 @@
 import json
 import os
-from game_model import Card, BDS
+from game_model import Card, BDS, Board, ColorPallete, GameData
 
 current_dir = os.path.dirname(os.path.abspath(__file__))  # /back
 
@@ -11,7 +11,15 @@ def load_json(file_path):
         return json.load(f)
 
 
-TRACK_DATA = load_json("data/track.json")
-KV_DATA = [Card(**card) for card in load_json("data/kv.json")]
-CH_DATA = [Card(**card) for card in load_json("data/ch.json")]
-BDS_DATA = [BDS(**property) for property in load_json("data/bds.json")]
+BOARD_DATA = Board(**load_json("data/board.json"))
+
+GAME_DATA = GameData(
+    kv={key: Card(**card) for key, card in load_json("data/kv.json").items()},
+    ch={key: Card(**card) for key, card in load_json("data/ch.json").items()},
+    bds={key: BDS(**bds) for key, bds in load_json("data/bds.json").items()},
+    vt_max=BOARD_DATA.S.__len__() + 4,
+    space=BOARD_DATA.space(),
+    track=BOARD_DATA.track(),
+    color_pallete=ColorPallete(**load_json("data/color_pallete.json")),
+    space_labels=load_json("data/space_labels.json"),
+)

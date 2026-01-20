@@ -2,8 +2,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from game_init import init_game_state
 from game_logic import move_with_dice_path
-from game_model import Card, GameState, BDS
+from game_model import GameState, GameData
 from pydantic import BaseModel
+from game_data import GAME_DATA
 
 app = FastAPI()
 
@@ -106,20 +107,12 @@ async def next_player(request: NextPlayerRequest):
 
 
 class GameDataResponse(BaseModel):
-    kv_data: list[Card]
-    ch_data: list[Card]
-    bds_data: list[BDS]
+    game_data: GameData
 
 
 @app.get("/game_data", response_model=GameDataResponse)
 async def get_game_data():
-    from game_data import KV_DATA, CH_DATA, BDS_DATA
-
-    return GameDataResponse(
-        kv_data=KV_DATA,
-        ch_data=CH_DATA,
-        bds_data=BDS_DATA,
-    )
+    return GameDataResponse(game_data=GAME_DATA)
 
 
 # -----------------------------------------------------------------------------

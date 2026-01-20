@@ -3,6 +3,8 @@
 import { ColorType } from '@/app/utils/ColorType';
 import { useRef, useState, useEffect } from 'react';
 import Board from '../ui/Board';
+import { fetchGameData } from '@/app/game/data';
+import { GameData } from '@/app/game/model';
 interface GameScreenProps {
   selectedCamera: string;
   gameState: any;
@@ -156,6 +158,9 @@ export default function GameScreen({ selectedCamera, gameState, onBack }: GameSc
   const [detectionResult, setDetectionResult] = useState<DetectionResult | null>(null);
   const [showCameraPopup, setShowCameraPopup] = useState(false);
   const [showBoardPopup, setShowBoardPopup] = useState(false);
+  const [gameData, setGameData] = useState<GameData | null>(null);
+  const [gameDataLoading, setGameDataLoading] = useState(true);
+  const [gameDataError, setGameDataError] = useState<string | null>(null);
 
 
   useEffect(() => {
@@ -163,6 +168,23 @@ export default function GameScreen({ selectedCamera, gameState, onBack }: GameSc
       console.log('Game state received:', gameState);
     }
   }, [gameState]);
+
+  // Load game data
+  useEffect(() => {
+    const loadGameData = async () => {
+      try {
+        setGameDataLoading(true);
+        const data = await fetchGameData();
+        setGameData(data);
+      } catch (err) {
+        setGameDataError(err instanceof Error ? err.message : 'Failed to load game data');
+      } finally {
+        setGameDataLoading(false);
+      }
+    };
+
+    loadGameData();
+  }, []);
 
   const handleCapture = (imageData: string, result: DetectionResult) => {
     setCapturedImage(imageData);
@@ -259,7 +281,26 @@ export default function GameScreen({ selectedCamera, gameState, onBack }: GameSc
           </button>
         </div>
       </div>
-            <Board/>
+            {gameDataLoading ? (
+              <div className="flex items-center justify-center" style={{ width: '585px', height: '585px' }}>
+                <div className="text-white text-xl">Đang tải dữ liệu game...</div>
+              </div>
+            ) : gameDataError ? (
+              <div className="flex flex-col items-center justify-center gap-4" style={{ width: '585px', height: '585px' }}>
+                <div className="text-red-400 text-xl text-center">
+                  Lỗi tải dữ liệu game:<br />
+                  {gameDataError}
+                </div>
+                <button
+                  onClick={onBack}
+                  className="px-6 py-3 bg-red-600 text-white text-lg font-bold rounded hover:bg-red-700"
+                >
+                  Quay lại
+                </button>
+              </div>
+            ) : gameData ? (
+              <Board gameData={gameData} />
+            ) : null}
       {/* Right Panel - Empty with button to open camera */}
       <div className="txx-button w-1/2 flex flex-col items-center justify-center">
         <button

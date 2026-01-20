@@ -1,18 +1,11 @@
 import React from 'react';
 import { PlayerState } from './lib/gameLogic';
-import { getSpacePosition } from './lib/positions';
+// import { getSpacePosition } from './lib/positions';
 import { Color } from './lib/colors';
-import {
-  PROPERTY_COLORS,
-  BOARD_COLORS,
-  BANCO_KIHIEU_O,
-  SPECIAL_SPACES,
-  PROPERTY_DATA
-} from './lib/boardData';
+import { GameData } from '@/app/game/model';
+import { Space } from '@/app/game/model'
 
-// Based on Python Monopoly-Impact board layout from bco.py
-// Board is 17x17 units, each unit = 40px = 680px total
-export const DEFAULT_UNIT_SIZE = 35;
+export const DEFAULT_UNIT_SIZE = 45;
 
 interface BoardProps {
   unitSize?: number;
@@ -20,195 +13,222 @@ interface BoardProps {
   movementLines?: { from: string, to: string, isLast?: boolean }[];
   highlightCircle?: { playerIndex: number, position: string } | null;
   currentPlayerColor?: Color;
+  gameData: GameData;
 }
 
 // Board layout constants
-const OUTL = BOARD_COLORS.OUTL;
-const CO1 = BOARD_COLORS.CO1;
-const CCH = BOARD_COLORS.CCH;
-const CKV = BOARD_COLORS.CKV;
+// const OUTL = BOARD_COLORS.OUTL;
+// const CO1 = BOARD_COLORS.CO1;
+// const CCH = BOARD_COLORS.CCH;
+// const CKV = BOARD_COLORS.CKV;
 
 // Get label text for a space
-const getLabelText = (code: string): string => {
-  if (PROPERTY_DATA[code]) {
-    return `${code.toUpperCase()}\n${PROPERTY_DATA[code].price}k`;
-  } else if (SPECIAL_SPACES[code]) {
-    return SPECIAL_SPACES[code];
-  }
-  return code;
-};
+// const getLabelText = (code: string): string => {
+//   return code;
+// };
 
 // Get label color for a space (from Python mau_o_gtt)
-const getLabelColor = (code: string): string => {
-  if (code === 'THUONG') return 'green';
-  if (code === 'BD') return '#FA0000';
-  if (code === 'NTT') return 'blue';
-  return 'black';
-};
+// const getLabelColor = (code: string): string => {
+//   if (code === 'THUONG') return 'green';
+//   if (code === 'BD') return '#FA0000';
+//   if (code === 'NTT') return 'blue';
+//   return 'black';
+// };
 
 const Board: React.FC<BoardProps> = ({
   unitSize = DEFAULT_UNIT_SIZE,
-  playerStates = [],
+  // playerStates = [],
   // movementLines = [],
   // highlightCircle = null,
   // currentPlayerColor
+  gameData
 }) => {
-  const BOARD_SIZE = 17 * unitSize;
+  // Board layout constants
+  const vt_max = gameData.vt_max;
+  const BOARD_SIZE = vt_max * unitSize;
 
-  // Position calculation (same as Python vt() function)
-  const vt = (x: number): number => Math.floor((x * BOARD_SIZE) / 13);
-
-  const fontSize = Math.floor(unitSize * 45 / 100);
+  const vt = (x: number): number => x * unitSize;
+  // const fontSize = Math.floor(unitSize * 0.4);
 
   // Generate number sets (from Python banco_numberset1, 2, 3, 4)
 
-  const banco_numberset2 = Array.from({ length: 9 }, (_, i) => vt(10.5 - i));
-  const banco_numberset4 = [
-    [12, 12], [5, 12], [5, 5], [12, 5],
-    [3, 3], [14, 3], [14, 14], [3.375, 13.625],
-    [2.375, 13.75], [3, 14.625], [1, 1], [16, 1],
-    [16, 16], [1, 16]
-  ];
+  // const banco_numberset2 = Array.from({ length: 9 }, (_, i) => vt(10.5 - i));
+  // const banco_numberset4 = [
+  //   [12, 12], [5, 12], [5, 5], [12, 5],
+  //   [3, 3], [14, 3], [14, 14], [3.375, 13.625],
+  //   [2.375, 13.75], [3, 14.625], [1, 1], [16, 1],
+  //   [16, 16], [1, 16]
+  // ];
 
   // Render all labels following the Python pattern
-  const renderLabels = () => {
-    const labels: React.ReactElement[] = [];
-    let index = 0;
+  // const renderLabels = () => {
+  //   const labels: React.ReactElement[] = [];
+  // let index = 0;
 
-    // Helper to add a label
-    const addLabel = (x: number, y: number) => {
-      if (index >= BANCO_KIHIEU_O.length) return;
-      const code = BANCO_KIHIEU_O[index];
-      const text = getLabelText(code);
-      const color = getLabelColor(code);
+  // Helper to add a label
+  // const addLabel = (x: number, y: number) => {
+  //   if (index >= BANCO_KIHIEU_O.length) return;
+  //   const code = BANCO_KIHIEU_O[index];
+  //   const text = getLabelText(code);
+  //   const color = getLabelColor(code);
+  //
+  //   // TT1 (Thăm) should be rotated 90 degrees (index 94 in the array)
+  //   const shouldRotate = code === 'TT1';
+  //
+  //   // Calculate vertical offset to center multi-line text
+  //   const lines = text.split('\n');
+  //   const lineCount = lines.length;
+  //   const verticalOffset = (lineCount - 1) * fontSize / 2 - 4;
+  //
+  //   labels.push(
+  //     <text
+  //       key={`label-${index}-${code}`}
+  //       x={x}
+  //       y={y - verticalOffset}
+  //       textAnchor="middle"
+  //       fontSize={fontSize}
+  //       fill={color}
+  //       fontFamily="Bahnschrift, Arial, sans-serif"
+  //       fontWeight="normal"
+  //       transform={shouldRotate ? `rotate(90, ${x}, ${y})` : undefined}
+  //     >
+  //       {lines.map((line, i) => (
+  //         <tspan key={i} x={x} dy={i === 0 ? 0 : fontSize}>
+  //           {line}
+  //         </tspan>
+  //       ))}
+  //     </text>
+  //   );
+  //   index++;
+  // };
 
-      // TT1 (Thăm) should be rotated 90 degrees (index 94 in the array)
-      const shouldRotate = code === 'TT1';
+  // let x = 0;
+  // let y = 0;
+  // Bottom side
+  // y = vt(12);
+  // for (const xPos of banco_numberset2) {
+  //   if (![vt(9.5), vt(4.5)].includes(xPos)) {
+  //     addLabel(xPos, y);
+  //   }
+  // }
 
-      // Calculate vertical offset to center multi-line text
-      const lines = text.split('\n');
-      const lineCount = lines.length;
-      const verticalOffset = (lineCount - 1) * fontSize / 2 - 4;
+  // Left side
+  // x = vt(1);
+  // for (const yPos of banco_numberset2) {
+  //   if (![vt(4.5)].includes(yPos)) {
+  //     addLabel(x, yPos);
+  //   }
+  // }
 
-      labels.push(
-        <text
-          key={`label-${index}-${code}`}
-          x={x}
-          y={y - verticalOffset}
-          textAnchor="middle"
-          fontSize={fontSize}
-          fill={color}
-          fontFamily="Bahnschrift, Arial, sans-serif"
-          fontWeight="normal"
-          transform={shouldRotate ? `rotate(90, ${x}, ${y})` : undefined}
-        >
-          {lines.map((line, i) => (
-            <tspan key={i} x={x} dy={i === 0 ? 0 : fontSize}>
-              {line}
-            </tspan>
-          ))}
-        </text>
-      );
-      index++;
-    };
-
-    // Bottom row (y = vt(16))
-    let x = 0;
-    let y = 0;
-    // Layer 2 - Bottom row (y = vt(14))
-    y = vt(12);
-    for (const xPos of banco_numberset2) {
-      if (![vt(9.5), vt(4.5)].includes(xPos)) {
-        addLabel(xPos, y);
-      }
-    }
-
-    // Layer 2 - Left column (x = vt(3))
-    x = vt(1);
-    for (const yPos of banco_numberset2) {
-      if (![vt(4.5)].includes(yPos)) {
-        addLabel(x, yPos);
-      }
-    }
-
-    // Layer 2 - Top row (y = vt(3))
-    y = vt(1);
-    for (const xPos of [...banco_numberset2].reverse()) {
-      if (![vt(3.5)].includes(xPos)) {
-        addLabel(xPos, y);
-      }
-    }
-
-    // Layer 2 - Right column (x = vt(14))
-    x = vt(12);
-    for (const yPos of [...banco_numberset2].reverse()) {
-      if (![vt(4.5), vt(7.5)].includes(yPos)) {
-        addLabel(x, yPos);
-      }
-    }
-    // Special positions (banco_numberset4)
-    for (const pos of banco_numberset4) {
-      addLabel(vt(pos[0]), vt(pos[1]));
-    }
-
-    return labels;
-  };
+  // Top side
+  // y = vt(1);
+  // for (const xPos of [...banco_numberset2].reverse()) {
+  //   if (![vt(3.5)].includes(xPos)) {
+  //     addLabel(xPos, y);
+  //   }
+  // }
+  //
+  // Right side
+  // x = vt(12);
+  // for (const yPos of [...banco_numberset2].reverse()) {
+  //   if (![vt(4.5), vt(7.5)].includes(yPos)) {
+  //     addLabel(x, yPos);
+  //   }
+  // }
+  // Special positions (banco_numberset4)
+  // for (const pos of banco_numberset4) {
+  //   addLabel(vt(pos[0]), vt(pos[1]));
+  // }
+  //
+  //   return labels;
+  // };
 
   // Get position coordinates for a space
-  const getPositionCoords = (spaceCode: string): [number, number] => {
-    const pos = getSpacePosition(spaceCode);
-    if (!pos) {
-      console.error('Position not found:', spaceCode);
-      return [vt(8.5), vt(8.5)]; // Default to center
-    }
-    const [x, y] = pos;
-    return [vt(x), vt(y)];
-  };
+  // const getPositionCoords = (spaceCode: string): [number, number] => {
+  //   const pos = getSpacePosition(spaceCode);
+  //   if (!pos) {
+  //     console.error('Position not found:', spaceCode);
+  //     return [vt(8.5), vt(8.5)]; // Default to center
+  //   }
+  //   const [x, y] = pos;
+  //   return [vt(x), vt(y)];
+  // };
 
   // Render player pieces
-  const renderPieces = () => {
-    // Map colors to image names
-    const colorToImage: Record<string, string> = {
-      'red': 'pldo',
-      'orange': 'plcam',
-      'yellow': 'plvang',
-      'green': 'plluc',
-      'blue': 'plxanh',
-      'purple': 'pltim',
-    };
+  // const renderPieces = () => {
+  //   // Map colors to image names
+  //   const colorToImage: Record<string, string> = {
+  //     'red': 'pldo',
+  //     'orange': 'plcam',
+  //     'yellow': 'plvang',
+  //     'green': 'plluc',
+  //     'blue': 'plxanh',
+  //     'purple': 'pltim',
+  //   };
+  //
+  //   return playerStates.map((player, index) => {
+  //     const posInfo = getSpacePosition(player.position);
+  //     if (!posInfo) {
+  //       console.error('Position not found for player', index, ':', player.position);
+  //       return null;
+  //     }
+  //
+  //     const [x, y] = getPositionCoords(player.position);
+  //     const pieceSize = unitSize * 0.6; // Slightly larger to match Python
+  //
+  //     // In Python, pieces are placed at same location, no offset
+  //     // All pieces at vt(14), vt(14.6) initially
+  //
+  //     // Check if position is on vertical edge (left or right side)
+  //     // Based on Python: is_vertical_edge flag determines image variant
+  //     const isVerticalEdge = (posInfo[0] <= 2.5 || posInfo[0] >= 14.5) ? 1 : 0;
+  //
+  //     const imageName = colorToImage[player.color] || 'pldo';
+  //     const imageFile = isVerticalEdge ? `${imageName}2.png` : `${imageName}.png`;
+  //
+  //     return (
+  //       <image
+  //         key={`piece-${index}`}
+  //         x={x - pieceSize / 2}
+  //         y={y - pieceSize / 2}
+  //         width={pieceSize}
+  //         height={pieceSize}
+  //         href={`/img/${imageFile}`}
+  //       />
+  //     );
+  //   });
+  // };
 
-    return playerStates.map((player, index) => {
-      const posInfo = getSpacePosition(player.position);
-      if (!posInfo) {
-        console.error('Position not found for player', index, ':', player.position);
-        return null;
-      }
+  const border = gameData.color_pallete.border;
 
-      const [x, y] = getPositionCoords(player.position);
-      const pieceSize = unitSize * 0.6; // Slightly larger to match Python
+  const orient_to_wh = (orient: string) => {
+    switch (orient) {
+      case "S":
+      case "N":
+        return { w: vt(1), h: vt(2) };
+      case "W":
+      case "E":
+        return { w: vt(2), h: vt(1) };
+      default:
+        return { w: vt(2), h: vt(2) };
+    }
+  }
 
-      // In Python, pieces are placed at same location, no offset
-      // All pieces at vt(14), vt(14.6) initially
-
-      // Check if position is on vertical edge (left or right side)
-      // Based on Python: is_vertical_edge flag determines image variant
-      const isVerticalEdge = (posInfo[0] <= 2.5 || posInfo[0] >= 14.5) ? 1 : 0;
-
-      const imageName = colorToImage[player.color] || 'pldo';
-      const imageFile = isVerticalEdge ? `${imageName}2.png` : `${imageName}.png`;
-
-      return (
-        <image
-          key={`piece-${index}`}
-          x={x - pieceSize / 2}
-          y={y - pieceSize / 2}
-          width={pieceSize}
-          height={pieceSize}
-          href={`/img/${imageFile}`}
-        />
-      );
-    });
-  };
+  const drawSpace = (spaceId: string, space: Space) => {
+    const { w, h } = orient_to_wh(space.orient);
+    return (
+      <rect
+        key={spaceId}
+        x={vt(space.x)}
+        y={vt(space.y)}
+        width={w}
+        height={h}
+        fill="white"
+        stroke={border}
+        strokeWidth="1"
+      />
+    )
+  }
 
   return (
     <div>
@@ -231,82 +251,101 @@ const Board: React.FC<BoardProps> = ({
           </pattern>
         </defs>
 
-        {/* LAYER 2: Middle layer (2-15) */}
-        <rect x={vt(0)} y={vt(0)} width={vt(13)} height={vt(13)} fill={CO1} stroke={OUTL} strokeWidth="1" />
-        <rect x={vt(2)} y={vt(2)} width={vt(11)} height={vt(11)} fill="lightgreen" stroke={OUTL} strokeWidth="1" />
+        <rect x={vt(0)} y={vt(0)} width={vt(vt_max)} height={vt(vt_max)} fill="#2E6C3D" stroke={border} strokeWidth="1" />
+        {
+          Object.entries(gameData.space).map(([spaceId, space]) => drawSpace(spaceId, space))
+        }
+        {
+          /* new */
+        }
 
         {/* Four corners */}
-        <rect x={vt(0)} y={vt(0)} width={vt(2)} height={vt(2)} fill={CO1} stroke={OUTL} strokeWidth="1" />
-        <rect x={vt(11)} y={vt(0)} width={vt(2)} height={vt(2)} fill={CO1} stroke={OUTL} strokeWidth="1" />
-        <rect x={vt(0)} y={vt(11)} width={vt(2)} height={vt(2)} fill={CO1} stroke={OUTL} strokeWidth="1" />
-        <rect x={vt(11)} y={vt(11)} width={vt(2)} height={vt(2)} fill={CO1} stroke={OUTL} strokeWidth="1" />
+        {/* {square(0, 0)} */}
+        {/* {square(0, 11)} */}
+        {/* {square(11, 0)} */}
+        {/* {square(11, 11)} */}
 
         {/* Perimeter strips - Layer 2 */}
-        {Array.from({ length: 9 }, (_, i) => i + 2).map(i => (
-          <g key={`middle-strip-${i}`}>
-            <rect x={vt(0)} y={vt(i)} width={vt(2)} height={vt(1)} fill={CO1} stroke={OUTL} strokeWidth="1" />
-            <rect x={vt(11)} y={vt(i)} width={vt(2)} height={vt(1)} fill={CO1} stroke={OUTL} strokeWidth="1" />
-            <rect x={vt(i)} y={vt(0)} width={vt(1)} height={vt(2)} fill={CO1} stroke={OUTL} strokeWidth="1" />
-            <rect x={vt(i)} y={vt(11)} width={vt(1)} height={vt(2)} fill={CO1} stroke={OUTL} strokeWidth="1" />
-          </g>
-        ))}
+        {/* {Array.from({ length: 9 }, (_, i) => i + 2).map(i => ( */}
+        {/*   <g key={`middle-strip-${i}`}> */}
+        {/*     <rect x={vt(0)} y={vt(i)} width={vt(2)} height={vt(1)} fill={CO1} stroke={OUTL} strokeWidth="1" /> */}
+        {/*     <rect x={vt(11)} y={vt(i)} width={vt(2)} height={vt(1)} fill={CO1} stroke={OUTL} strokeWidth="1" /> */}
+        {/*     <rect x={vt(i)} y={vt(0)} width={vt(1)} height={vt(2)} fill={CO1} stroke={OUTL} strokeWidth="1" /> */}
+        {/*     <rect x={vt(i)} y={vt(11)} width={vt(1)} height={vt(2)} fill={CO1} stroke={OUTL} strokeWidth="1" /> */}
+        {/*   </g> */}
+        {/* ))} */}
 
         {/* Property color strips - Layer 2 */}
-        {[8, 10].map(i => (
-          <rect key={`c2a-${i}`} x={vt(i)} y={vt(11)} width={vt(1)} height={vt(0.5)} fill={PROPERTY_COLORS.A} stroke={OUTL} strokeWidth="1" />
-        ))}
-        {[2, 3, 5].map(i => (
-          <rect key={`c2b-${i}`} x={vt(i)} y={vt(11)} width={vt(1)} height={vt(0.5)} fill={PROPERTY_COLORS.B} stroke={OUTL} strokeWidth="1" />
-        ))}
-        {[2, 4, 5].map(i => (
-          <rect key={`c2e-${i}`} x={vt(i)} y={vt(1.5)} width={vt(1)} height={vt(0.5)} fill={PROPERTY_COLORS.E} stroke={OUTL} strokeWidth="1" />
-        ))}
-        {[7, 8, 10].map(i => (
-          <rect key={`c2f-${i}`} x={vt(i)} y={vt(1.5)} width={vt(1)} height={vt(0.5)} fill={PROPERTY_COLORS.F} stroke={OUTL} strokeWidth="1" />
-        ))}
-        {[7, 8, 10].map(i => (
-          <rect key={`c2c-${i}`} x={vt(1.5)} y={vt(i)} width={vt(0.5)} height={vt(1)} fill={PROPERTY_COLORS.C} stroke={OUTL} strokeWidth="1" />
-        ))}
-        {[2, 3, 5].map(i => (
-          <rect key={`c2d-${i}`} x={vt(1.5)} y={vt(i)} width={vt(0.5)} height={vt(1)} fill={PROPERTY_COLORS.D} stroke={OUTL} strokeWidth="1" />
-        ))}
-        {[2, 3, 5].map(i => (
-          <rect key={`c2g-${i}`} x={vt(11)} y={vt(i)} width={vt(0.5)} height={vt(1)} fill={PROPERTY_COLORS.G} stroke={OUTL} strokeWidth="1" />
-        ))}
-        {[8, 10].map(i => (
-          <rect key={`c2h-${i}`} x={vt(11)} y={vt(i)} width={vt(0.5)} height={vt(1)} fill={PROPERTY_COLORS.H} stroke={OUTL} strokeWidth="1" />
-        ))}
+        {/* {[8, 10].map(i => ( */}
+        {/*   <rect key={`c2a-${i}`} x={vt(i)} y={vt(11)} width={vt(1)} height={vt(0.5)} fill={PROPERTY_COLORS.A} stroke={OUTL} strokeWidth="1" /> */}
+        {/* ))} */}
+        {/* {[2, 3, 5].map(i => ( */}
+        {/*   <rect key={`c2b-${i}`} x={vt(i)} y={vt(11)} width={vt(1)} height={vt(0.5)} fill={PROPERTY_COLORS.B} stroke={OUTL} strokeWidth="1" /> */}
+        {/* ))} */}
+        {/* {[2, 4, 5].map(i => ( */}
+        {/*   <rect key={`c2e-${i}`} x={vt(i)} y={vt(1.5)} width={vt(1)} height={vt(0.5)} fill={PROPERTY_COLORS.E} stroke={OUTL} strokeWidth="1" /> */}
+        {/* ))} */}
+        {/* {[7, 8, 10].map(i => ( */}
+        {/*   <rect key={`c2f-${i}`} x={vt(i)} y={vt(1.5)} width={vt(1)} height={vt(0.5)} fill={PROPERTY_COLORS.F} stroke={OUTL} strokeWidth="1" /> */}
+        {/* ))} */}
+        {/* {[7, 8, 10].map(i => ( */}
+        {/*   <rect key={`c2c-${i}`} x={vt(1.5)} y={vt(i)} width={vt(0.5)} height={vt(1)} fill={PROPERTY_COLORS.C} stroke={OUTL} strokeWidth="1" /> */}
+        {/* ))} */}
+        {/* {[2, 3, 5].map(i => ( */}
+        {/*   <rect key={`c2d-${i}`} x={vt(1.5)} y={vt(i)} width={vt(0.5)} height={vt(1)} fill={PROPERTY_COLORS.D} stroke={OUTL} strokeWidth="1" /> */}
+        {/* ))} */}
+        {/* {[2, 3, 5].map(i => ( */}
+        {/*   <rect key={`c2g-${i}`} x={vt(11)} y={vt(i)} width={vt(0.5)} height={vt(1)} fill={PROPERTY_COLORS.G} stroke={OUTL} strokeWidth="1" /> */}
+        {/* ))} */}
+        {/* {[8, 10].map(i => ( */}
+        {/*   <rect key={`c2h-${i}`} x={vt(11)} y={vt(i)} width={vt(0.5)} height={vt(1)} fill={PROPERTY_COLORS.H} stroke={OUTL} strokeWidth="1" /> */}
+        {/* ))} */}
 
         {/* Special spaces - Layer 2 */}
-        {/* TT */} <rect x={vt(0.75)} y={vt(11)} width={vt(1.25)} height={vt(1.25)} fill="orange" stroke={OUTL} strokeWidth="1" />
-        {/* CH1 */} <rect x={vt(4)} y={vt(11)} width={vt(1)} height={vt(2)} fill={CCH} stroke={OUTL} strokeWidth="1" />
-        {/* CH1 */} <rect x={vt(4)} y={vt(11)} width={vt(1)} height={vt(2)} fill="url(#warning)" stroke={OUTL} strokeWidth="1" />
-        {/* KV1 */} <rect x={vt(9)} y={vt(11)} width={vt(1)} height={vt(2)} fill={CKV} stroke={OUTL} strokeWidth="1" />
-        {/* KV1 */} <rect x={vt(9)} y={vt(11)} width={vt(1)} height={vt(2)} fill="url(#warning)" stroke={OUTL} strokeWidth="1" />
-        {/* CH2 */} <rect x={vt(3)} y={vt(0)} width={vt(1)} height={vt(2)} fill={CCH} stroke={OUTL} strokeWidth="1" />
-        {/* CH2 */} <rect x={vt(3)} y={vt(0)} width={vt(1)} height={vt(2)} fill="url(#warning)" stroke={OUTL} strokeWidth="1" />
-        {/* KV2 */} <rect x={vt(0)} y={vt(4)} width={vt(2)} height={vt(1)} fill={CKV} stroke={OUTL} strokeWidth="1" />
-        {/* KV2 */} <rect x={vt(0)} y={vt(4)} width={vt(2)} height={vt(1)} fill="url(#warning)" stroke={OUTL} strokeWidth="1" />
-        {/* CH3 */} <rect x={vt(11)} y={vt(7)} width={vt(2)} height={vt(1)} fill={CCH} stroke={OUTL} strokeWidth="1" />
-        {/* CH3 */} <rect x={vt(11)} y={vt(7)} width={vt(2)} height={vt(1)} fill="url(#warning)" stroke={OUTL} strokeWidth="1" />
-        {/* KV3 */} <rect x={vt(11)} y={vt(4)} width={vt(2)} height={vt(1)} fill={CKV} stroke={OUTL} strokeWidth="1" />
-        {/* KV3 */} <rect x={vt(11)} y={vt(4)} width={vt(2)} height={vt(1)} fill="url(#warning)" stroke={OUTL} strokeWidth="1" />
-        {/* U1 */} <rect x={vt(0.5)} y={vt(9.1)} width={vt(1)} height={vt(0.8)} fill="#DDEBFF" stroke="white" strokeWidth="1" />
-        {/* U2 */} <rect x={vt(9.1)} y={vt(0.5)} width={vt(0.8)} height={vt(1)} fill="#DDEBFF" stroke="white" strokeWidth="1" />
+        {/* TT */}
+        {/* <rect x={vt(0.75)} y={vt(11)} width={vt(1.25)} height={vt(1.25)} fill="orange" stroke={OUTL} strokeWidth="1" /> */}
+        {/* CH1 */}
+        {/* <rect x={vt(4)} y={vt(11)} width={vt(1)} height={vt(2)} fill={CCH} stroke={OUTL} strokeWidth="1" /> */}
+        {/* CH1 */}
+        {/* <rect x={vt(4)} y={vt(11)} width={vt(1)} height={vt(2)} fill="url(#warning)" stroke={OUTL} strokeWidth="1" /> */}
+        {/* KV1 */}
+        {/* <rect x={vt(9)} y={vt(11)} width={vt(1)} height={vt(2)} fill={CKV} stroke={OUTL} strokeWidth="1" /> */}
+        {/* KV1 */}
+        {/* <rect x={vt(9)} y={vt(11)} width={vt(1)} height={vt(2)} fill="url(#warning)" stroke={OUTL} strokeWidth="1" /> */}
+        {/* CH2 */}
+        {/* <rect x={vt(3)} y={vt(0)} width={vt(1)} height={vt(2)} fill={CCH} stroke={OUTL} strokeWidth="1" /> */}
+        {/* CH2 */}
+        {/* <rect x={vt(3)} y={vt(0)} width={vt(1)} height={vt(2)} fill="url(#warning)" stroke={OUTL} strokeWidth="1" /> */}
+        {/* KV2 */}
+        {/* <rect x={vt(0)} y={vt(4)} width={vt(2)} height={vt(1)} fill={CKV} stroke={OUTL} strokeWidth="1" /> */}
+        {/* KV2 */}
+        {/* <rect x={vt(0)} y={vt(4)} width={vt(2)} height={vt(1)} fill="url(#warning)" stroke={OUTL} strokeWidth="1" /> */}
+        {/* CH3 */}
+        {/* <rect x={vt(11)} y={vt(7)} width={vt(2)} height={vt(1)} fill={CCH} stroke={OUTL} strokeWidth="1" /> */}
+        {/* CH3 */}
+        {/* <rect x={vt(11)} y={vt(7)} width={vt(2)} height={vt(1)} fill="url(#warning)" stroke={OUTL} strokeWidth="1" /> */}
+        {/* KV3 */}
+        {/* <rect x={vt(11)} y={vt(4)} width={vt(2)} height={vt(1)} fill={CKV} stroke={OUTL} strokeWidth="1" /> */}
+        {/* KV3 */}
+        {/* <rect x={vt(11)} y={vt(4)} width={vt(2)} height={vt(1)} fill="url(#warning)" stroke={OUTL} strokeWidth="1" /> */}
+        {/* U1 */}
+        {/* <rect x={vt(0.5)} y={vt(9.1)} width={vt(1)} height={vt(0.8)} fill="#DDEBFF" stroke="white" strokeWidth="1" /> */}
+        {/* U2 */}
+        {/* <rect x={vt(9.1)} y={vt(0.5)} width={vt(0.8)} height={vt(1)} fill="#DDEBFF" stroke="white" strokeWidth="1" /> */}
 
-        <rect x={vt(6)} y={vt(0)} width={vt(1)} height={vt(2)} fill="url(#gray25)" stroke={OUTL} strokeWidth="1" />
-        <rect x={vt(6)} y={vt(11)} width={vt(1)} height={vt(2)} fill="url(#gray25)" stroke={OUTL} strokeWidth="1" />
-        <rect x={vt(0)} y={vt(6)} width={vt(2)} height={vt(1)} fill="url(#gray25)" stroke={OUTL} strokeWidth="1" />
-        <rect x={vt(11)} y={vt(6)} width={vt(2)} height={vt(1)} fill="url(#gray25)" stroke={OUTL} strokeWidth="1" />
+        {/* <rect x={vt(6)} y={vt(0)} width={vt(1)} height={vt(2)} fill="url(#gray25)" stroke={OUTL} strokeWidth="1" /> */}
+        {/* <rect x={vt(6)} y={vt(11)} width={vt(1)} height={vt(2)} fill="url(#gray25)" stroke={OUTL} strokeWidth="1" /> */}
+        {/* <rect x={vt(0)} y={vt(6)} width={vt(2)} height={vt(1)} fill="url(#gray25)" stroke={OUTL} strokeWidth="1" /> */}
+        {/* <rect x={vt(11)} y={vt(6)} width={vt(2)} height={vt(1)} fill="url(#gray25)" stroke={OUTL} strokeWidth="1" /> */}
 
         {/* Border line for inner area - Layer 2 */}
-        <line x1={vt(2)} y1={vt(2)} x2={vt(2)} y2={vt(11)} stroke="grey" strokeWidth="5" />
-        <line x1={vt(2)} y1={vt(11)} x2={vt(11)} y2={vt(11)} stroke="grey" strokeWidth="5" />
-        <line x1={vt(11)} y1={vt(11)} x2={vt(11)} y2={vt(2)} stroke="grey" strokeWidth="5" />
-        <line x1={vt(11)} y1={vt(2)} x2={vt(2)} y2={vt(2)} stroke="grey" strokeWidth="5" />
+        {/* <line x1={vt(2)} y1={vt(2)} x2={vt(2)} y2={vt(11)} stroke="grey" strokeWidth="5" /> */}
+        {/* <line x1={vt(2)} y1={vt(11)} x2={vt(11)} y2={vt(11)} stroke="grey" strokeWidth="5" /> */}
+        {/* <line x1={vt(11)} y1={vt(11)} x2={vt(11)} y2={vt(2)} stroke="grey" strokeWidth="5" /> */}
+        {/* <line x1={vt(11)} y1={vt(2)} x2={vt(2)} y2={vt(2)} stroke="grey" strokeWidth="5" /> */}
 
         {/* Labels for all spaces */}
-        {renderLabels()}
+        {/* {renderLabels()} */}
 
         {/* Movement lines */}
         {/* {movementLines?.map((line, index) => { */}

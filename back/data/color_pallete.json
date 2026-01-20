@@ -1,0 +1,20 @@
+{
+  "groups": {
+    "A": "#C98FCF",
+    "B": "#9A7340",
+    "C": "#F2BC6C",
+    "D": "#D6F2EF",
+    "E": "#14BC3C",
+    "F": "#5FB7FE",
+    "G": "#FFB3FF",
+    "H": "#F59469"
+  },
+  "border": "#8B4513",
+  "spaces": {
+    "BDAU": "#FA0000"
+  },
+  "cards": {
+    "KV": "gold",
+    "CH": "lightpink"
+  }
+}

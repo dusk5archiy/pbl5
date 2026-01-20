@@ -1,5 +1,52 @@
 from pydantic import BaseModel
 
+# -----------------------------------------------------------------------------
+
+
+class Space(BaseModel):
+    orient: str
+    x: int
+    y: int
+
+
+class Board(BaseModel):
+    SE: str
+    S: list[str]
+    SW: str
+    W: list[str]
+    NW: str
+    N: list[str]
+    NE: str
+    E: list[str]
+
+    def space(self):
+        vt_max = len(self.S) + 4
+        return (
+            {
+                space: Space(orient="S", x=vt_max - 3 - i, y=vt_max - 2)
+                for i, space in enumerate(self.S)
+            }
+            | {
+                space: Space(orient="W", x=0, y=vt_max - 3 - i)
+                for i, space in enumerate(self.W)
+            }
+            | {
+                space: Space(orient="E", x=vt_max - 2, y=2 + i)
+                for i, space in enumerate(self.E)
+            }
+            | {space: Space(orient="N", x=2 + i, y=0) for i, space in enumerate(self.N)}
+            | {
+                self.SE: Space(orient="SE", x=vt_max - 2, y=vt_max - 2),
+                self.NE: Space(orient="SW", x=0, y=vt_max - 2),
+                self.NW: Space(orient="NW", x=0, y=0),
+                self.SW: Space(orient="NE", x=vt_max - 2, y=0),
+            }
+        )
+
+    def track(self):
+        return [self.SE, *self.S, self.SW, *self.W, self.NW, *self.N, self.NE, *self.E]
+
+
 # Models for Game State -------------------------------------------------------
 
 
@@ -28,7 +75,6 @@ class GameState(BaseModel):
 
 
 class Card(BaseModel):
-    id: str
     title: str
     content: str
 
@@ -37,13 +83,36 @@ class Card(BaseModel):
 
 
 class BDS(BaseModel):
-    id: str
     group: str
     name: str
     price: int
     rent: list[int]
     mortgage: int
     upgrade: int = 0
+
+
+# -----------------------------------------------------------------------------
+
+
+class ColorPallete(BaseModel):
+    groups: dict[str, str]
+    border: str
+    spaces: dict[str, str]
+    cards: dict[str, str]
+
+
+# -----------------------------------------------------------------------------
+
+
+class GameData(BaseModel):
+    vt_max: int
+    kv: dict[str, Card]
+    ch: dict[str, Card]
+    bds: dict[str, BDS]
+    space: dict[str, Space]
+    track: list[str]
+    color_pallete: ColorPallete
+    space_labels: dict[str, str]
 
 
 # -----------------------------------------------------------------------------

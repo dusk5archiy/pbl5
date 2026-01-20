@@ -1,17 +1,14 @@
 import random
-from game_data import KV_DATA, CH_DATA
-from game_model import GameState, GameStatePlayer, Card
+from game_data import GAME_DATA
+from game_model import GameState, GameStatePlayer
 
 
-def get_shuffled_queue(cards: list[Card]):
-    ids = [card.id for card in cards]
-    random.shuffle(ids)
-    return ids
+def init_game_state(player_order: list[str]):
+    kv_queue = list(GAME_DATA.kv.keys())
+    ch_queue = list(GAME_DATA.ch.keys())
 
-
-def init_game_state(player_order: list[str], kv=KV_DATA, ch=CH_DATA):
-    kv_queue = get_shuffled_queue(kv)
-    ch_queue = get_shuffled_queue(ch)
+    random.shuffle(kv_queue)
+    random.shuffle(ch_queue)
 
     players = {}
     for color in player_order:

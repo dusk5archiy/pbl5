@@ -1,82 +1,66 @@
-[
-  {
-    "id": "Ch.01",
+{
+  "Ch.01": {
     "title": "Được bầu làm giám đốc",
     "content": "Trả mỗi người 50k"
   },
-  {
-    "id": "Ch.02",
+  "Ch.02": {
     "title": "Nhà Bank lộn tiền",
     "content": "Lãnh 50k"
   },
-  {
-    "id": "Ch.03",
+  "Ch.03": {
     "title": "Kẻ gian móc túi",
     "content": "Trả 15k"
   },
-  {
-    "id": "Ch.04",
+  "Ch.04": {
     "title": "Đi lùi 3 bước",
     "content": ""
   },
-  {
-    "id": "Ch.05",
+  "Ch.05": {
     "title": "Đến ô NGUYỄN TRI PHƯƠNG (E3)",
     "content": ""
   },
-  {
-    "id": "Ch.06",
+  "Ch.06": {
     "title": "Sửa chữa nhà",
     "content": "Trả 25k / 1 nhà\nTrả 100k / 1 khách sạn"
   },
-  {
-    "id": "Ch.07",
+  "Ch.07": {
     "title": "Vào tù",
     "content": "Đi thẳng vào tù\nKhông đi ngang ô Bắt đầu\nKhông được lãnh lương 200k"
   },
-  {
-    "id": "Ch.08",
+  "Ch.08": {
     "title": "Gặp lại cố nhân",
     "content": "Lãnh 150k"
   },
-  {
-    "id": "Ch.09",
+  "Ch.09": {
     "title": "Tự Do Ra Tù",
     "content": "Giữ lại để sử dụng hoặc bán."
   },
-  {
-    "id": "Ch.10",
+  "Ch.10": {
     "title": "Đến ô CÔNG TY gần nhất",
     "content": "Có thể mua nếu chưa ai sở hữu.\nNếu đã có người sở hữu thì thảy xúc xắc và trả cho người đó số tiền 10 lần số điểm thảy được."
   },
-  {
-    "id": "Ch.11",
+  "Ch.11": {
     "title": "Đến ô BẮT ĐẦU",
     "content": "Lãnh lương 200k."
   },
-  {
-    "id": "Ch.12",
+  "Ch.12": {
     "title": "Đến ô TÂN KỲ TÂN QUÝ (H2)",
     "content": ""
   },
-  {
-    "id": "Ch.13",
+  "Ch.13": {
     "title": "Đến ô NGUYỄN TẤT THÀNH (C1)",
     "content": "Nếu đi ngang ô Bắt Đầu, lãnh 200k."
   },
-  {
-    "id": "Ch.14",
+  "Ch.14": {
     "title": "Đến ô BẾN XE CẦN GIUỘC (R1)",
     "content": "Nếu đi ngang ô Bắt Đầu, lãnh 200k."
   },
-  {
-    "id": "Ch.15",
+  "Ch.15": {
     "title": "Đến ô bến xe gần nhất",
     "content": "Trả tiền thuê gấp đôi cho người sở hữu, hoặc mua nếu còn trống"
   },
-  {
-    "id": "Ch.16",
+  "Ch.16": {
     "title": "Đến ô bến xe gần nhất",
     "content": "Trả tiền thuê gấp đôi cho người sở hữu, hoặc mua nếu còn trống"
   }
-]
+}
