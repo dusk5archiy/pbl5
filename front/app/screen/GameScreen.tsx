@@ -14,7 +14,7 @@ interface DetectionResult {
   scores: number[];
 }
 
-function CameraCapture({ onCapture }: { onCapture: (imageData: string, result: DetectionResult) => void }) {
+function CameraCapture({ selectedCamera, onCapture }: { selectedCamera: string; onCapture: (imageData: string, result: DetectionResult) => void }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
@@ -23,7 +23,9 @@ function CameraCapture({ onCapture }: { onCapture: (imageData: string, result: D
   useEffect(() => {
     const startCamera = async () => {
       try {
-        const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const mediaStream = await navigator.mediaDevices.getUserMedia({
+          video: selectedCamera ? { deviceId: { exact: selectedCamera } } : true
+        });
         setStream(mediaStream);
         if (videoRef.current) {
           videoRef.current.srcObject = mediaStream;
@@ -40,7 +42,7 @@ function CameraCapture({ onCapture }: { onCapture: (imageData: string, result: D
         stream.getTracks().forEach(track => track.stop());
       }
     };
-  }, []);
+  }, [selectedCamera]);
 
   const captureImage = async () => {
     if (videoRef.current && canvasRef.current) {
@@ -149,7 +151,7 @@ function DetectionResult({ imageData, result, onBack }: { imageData: string; res
   );
 }
 
-export default function GameScreen({ gameState, onBack }: GameScreenProps) {
+export default function GameScreen({ selectedCamera, gameState, onBack }: GameScreenProps) {
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [detectionResult, setDetectionResult] = useState<DetectionResult | null>(null);
   const [showCameraPopup, setShowCameraPopup] = useState(false);
@@ -288,7 +290,7 @@ export default function GameScreen({ gameState, onBack }: GameScreenProps) {
                 onBack={handleBackToCamera}
               />
             ) : (
-              <CameraCapture onCapture={handleCapture} />
+              <CameraCapture selectedCamera={selectedCamera} onCapture={handleCapture} />
             )}
           </div>
         </div>
