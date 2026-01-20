@@ -5,6 +5,7 @@ import { useRef, useState, useEffect } from 'react';
 import Board from '../ui/Board';
 import { fetchGameData } from '@/app/game/data';
 import { GameData } from '@/app/game/model';
+import { formatBudget } from '../ui/lib/utils';
 interface GameScreenProps {
   selectedCamera: string;
   gameState: any;
@@ -85,7 +86,7 @@ function CameraCapture({ selectedCamera, onCapture }: { selectedCamera: string; 
   };
 
   return (
-    <div className="flex flex-col items-center ">
+    <div className="flex flex-col items-center">
       <div className="flex flex-1 border-4 border-green-500 rounded bg-gray-800 justify-center">
         <div className="flex">
           <video ref={videoRef} autoPlay playsInline muted className="camera rounded max-h-96" />
@@ -207,38 +208,37 @@ export default function GameScreen({ selectedCamera, gameState, onBack }: GameSc
 
   // Get players from gameState
   const players = gameState?.players ? Object.entries(gameState.players).map(([playerId, playerData]: [string, any]) => {
-    console.log('Player Data:', playerId, playerData);
     return {
       color: playerId,
       budget: playerData.budget,
       at: playerData.at
     };
   }) : [];
-  
+
   console.log(players);
   return (
-    <div className="flex h-screen text-white p-1">
+    <div className="flex h-screen text-white p-1 bg-[#2E6C3D]">
       {/* Left Panel */}
       <div className="left-sidebar flex flex-col  pr-4">
         {/* Player Colors */}
         <div className="money-wrapper border-2 border-white p-2 rounded" style={{ height: '260px' }}>
           <div className="flex flex-col h-full justify-between">
-            {players.map((player, index) => (
-              <div 
-                key={player.color} 
+            {players.map((player, _) => (
+              <div
+                key={player.color}
                 className="flex items-center space-x-2"
                 style={{ height: `${260 / players.length}px` }}
               >
                 <div
                   className={`${"bg" + player.color} border-2 border-white flex items-center justify-center`}
                   style={{
-                    width: `${Math.max(220 / players.length , 32)}px`,
-                    height: `${Math.max(220 / players.length , 32)}px`,
+                    width: `${Math.max(220 / players.length, 32)}px`,
+                    height: `${Math.max(220 / players.length, 32)}px`,
                     backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0,0,0,0.2) 5px, rgba(0,0,0,0.2) 10px)'
                   }}
                 />
                 <span className="font-bold" style={{ fontSize: `${Math.max(260 / players.length / 2.5, 20)}px` }}>
-                  {player.budget}K
+                  {formatBudget(player.budget)}
                 </span>
               </div>
             ))}
@@ -246,7 +246,7 @@ export default function GameScreen({ selectedCamera, gameState, onBack }: GameSc
         </div>
 
         {/* Game Board */}
-        <div 
+        <div
           className="bds-wrapper border-2 border-white p-1 rounded flex-1 cursor-pointer hover:border-green-500 transition-colors"
           onClick={() => setShowBoardPopup(true)}
         >
@@ -257,8 +257,8 @@ export default function GameScreen({ selectedCamera, gameState, onBack }: GameSc
                 {/* Cells for this column */}
                 {Array.from({ length: cols1[colIndex] }, (_, rowIndex) => (
                   <div
-                    key={`${col}${rowIndex+1}`}
-                    style={{backgroundColor:'#FF8B8B',color:"black", fontSize:'20px', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:'400',textAlign:'center'}}
+                    key={`${col}${rowIndex + 1}`}
+                    style={{ backgroundColor: '#FF8B8B', color: "black", fontSize: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '400', textAlign: 'center' }}
                     className="bds-node border aspect-square"
                   >3</div>
                 ))}
@@ -281,33 +281,33 @@ export default function GameScreen({ selectedCamera, gameState, onBack }: GameSc
           </button>
         </div>
       </div>
-            {gameDataLoading ? (
-              <div className="flex items-center justify-center" style={{ width: '585px', height: '585px' }}>
-                <div className="text-white text-xl">Đang tải dữ liệu game...</div>
-              </div>
-            ) : gameDataError ? (
-              <div className="flex flex-col items-center justify-center gap-4" style={{ width: '585px', height: '585px' }}>
-                <div className="text-red-400 text-xl text-center">
-                  Lỗi tải dữ liệu game:<br />
-                  {gameDataError}
-                </div>
-                <button
-                  onClick={onBack}
-                  className="px-6 py-3 bg-red-600 text-white text-lg font-bold rounded hover:bg-red-700"
-                >
-                  Quay lại
-                </button>
-              </div>
-            ) : gameData ? (
-              <Board gameData={gameData} />
-            ) : null}
+      {gameDataLoading ? (
+        <div className="flex items-center justify-center" style={{ width: '585px', height: '585px' }}>
+          <div className="text-white text-xl">Đang tải dữ liệu game...</div>
+        </div>
+      ) : gameDataError ? (
+        <div className="flex flex-col items-center justify-center gap-4" style={{ width: '585px', height: '585px' }}>
+          <div className="text-red-400 text-xl text-center">
+            Lỗi tải dữ liệu game:<br />
+            {gameDataError}
+          </div>
+          <button
+            onClick={onBack}
+            className="px-6 py-3 bg-red-600 text-white text-lg font-bold rounded hover:bg-red-700"
+          >
+            Quay lại
+          </button>
+        </div>
+      ) : gameData ? (
+        <Board gameData={gameData} />
+      ) : null}
       {/* Right Panel - Empty with button to open camera */}
       <div className="txx-button w-1/2 flex flex-col items-center justify-center">
         <button
           onClick={() => setShowCameraPopup(true)}
-          className="px-2 py-2 bg-green-600 text-white text-xl font-bold rounded hover:bg-green-700"
+          className="px-4 py-4 bg-green-600 text-white text-xl font-bold rounded border-2 border-white"
         >
-          Chụp xúc xắc
+          Thảy
         </button>
       </div>
 
@@ -357,8 +357,8 @@ export default function GameScreen({ selectedCamera, gameState, onBack }: GameSc
                     {/* Cells for this column */}
                     {Array.from({ length: cols1[colIndex] }, (_, rowIndex) => (
                       <div
-                        key={`${col}${rowIndex+1}`}
-                        style={{color:'orange', fontSize:'24px', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:'900'}}
+                        key={`${col}${rowIndex + 1}`}
+                        style={{ color: 'orange', fontSize: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900' }}
                         className="border-2 bg-white aspect-square rounded"
                       >1</div>
                     ))}

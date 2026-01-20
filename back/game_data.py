@@ -22,4 +22,5 @@ GAME_DATA = GameData(
     track=BOARD_DATA.track(),
     color_pallete=ColorPallete(**load_json("data/color_pallete.json")),
     space_labels=load_json("data/space_labels.json"),
+    special_spaces=BOARD_DATA.special_spaces(),
 )

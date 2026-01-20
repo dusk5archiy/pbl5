@@ -34,6 +34,7 @@ export interface GameData {
   track: string[];
   color_pallete: ColorPalette;
   space_labels: Record<string, string>;
+  special_spaces: Record<string, string>;
 }
 
 export interface GameDataResponse {

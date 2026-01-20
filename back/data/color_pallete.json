@@ -7,11 +7,13 @@
     "E": "#14BC3C",
     "F": "#5FB7FE",
     "G": "#FFB3FF",
-    "H": "#F59469"
+    "H": "#F59469",
+    "U": "#DDEBFF"
   },
   "border": "#8B4513",
   "spaces": {
-    "BDAU": "#FA0000"
+    "BDAU": "#FA0000",
+    "OT": "orange"
   },
   "cards": {
     "KV": "gold",

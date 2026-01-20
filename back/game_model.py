@@ -5,8 +5,8 @@ from pydantic import BaseModel
 
 class Space(BaseModel):
     orient: str
-    x: int
-    y: int
+    x: float
+    y: float
 
 
 class Board(BaseModel):
@@ -18,6 +18,7 @@ class Board(BaseModel):
     N: list[str]
     NE: str
     E: list[str]
+    special_groups: dict[str, list[str]]
 
     def space(self):
         vt_max = len(self.S) + 4
@@ -37,14 +38,22 @@ class Board(BaseModel):
             | {space: Space(orient="N", x=2 + i, y=0) for i, space in enumerate(self.N)}
             | {
                 self.SE: Space(orient="SE", x=vt_max - 2, y=vt_max - 2),
-                self.NE: Space(orient="SW", x=0, y=vt_max - 2),
+                self.SW: Space(orient="SW", x=0, y=vt_max - 2),
                 self.NW: Space(orient="NW", x=0, y=0),
-                self.SW: Space(orient="NE", x=vt_max - 2, y=0),
+                self.NE: Space(orient="NE", x=vt_max - 2, y=0),
             }
+            | {"OT": Space(orient="SW", x=0.75, y=vt_max - 2)}
         )
 
     def track(self):
         return [self.SE, *self.S, self.SW, *self.W, self.NW, *self.N, self.NE, *self.E]
+
+    def special_spaces(self):
+        return {
+            space: group
+            for group, spaces in self.special_groups.items()
+            for space in spaces
+        }
 
 
 # Models for Game State -------------------------------------------------------
@@ -113,6 +122,7 @@ class GameData(BaseModel):
     track: list[str]
     color_pallete: ColorPallete
     space_labels: dict[str, str]
+    special_spaces: dict[str, str]
 
 
 # -----------------------------------------------------------------------------

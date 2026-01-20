@@ -4,6 +4,7 @@ import { PlayerState } from './lib/gameLogic';
 import { Color } from './lib/colors';
 import { GameData } from '@/app/game/model';
 import { Space } from '@/app/game/model'
+import { formatBudget } from './lib/utils';
 
 export const DEFAULT_UNIT_SIZE = 45;
 
@@ -48,7 +49,7 @@ const Board: React.FC<BoardProps> = ({
   const BOARD_SIZE = vt_max * unitSize;
 
   const vt = (x: number): number => x * unitSize;
-  // const fontSize = Math.floor(unitSize * 0.4);
+  const fontSize = Math.floor(unitSize * 0.35);
 
   // Generate number sets (from Python banco_numberset1, 2, 3, 4)
 
@@ -209,12 +210,41 @@ const Board: React.FC<BoardProps> = ({
       case "W":
       case "E":
         return { w: vt(2), h: vt(1) };
+      case "NE":
+      case "SE":
+      case "SW":
+      case "NW":
       default:
         return { w: vt(2), h: vt(2) };
     }
   }
 
-  const drawSpace = (spaceId: string, space: Space) => {
+  const orient_to_wh_banner = (orient: string) => {
+    switch (orient) {
+      case "S":
+      case "N":
+        return { w: vt(1), h: vt(0.5) };
+      case "W":
+      case "E":
+      default:
+        return { w: vt(0.5), h: vt(1) };
+    }
+  }
+
+  const orient_to_offset_label = (orient: string) => {
+    switch (orient) {
+      case "S":
+      case "N":
+        return { w: 0.5, h: 1 };
+      case "W":
+      case "E":
+      default:
+        return { w: 1, h: 0.5 };
+    }
+  }
+
+  const drawSpace = (spaceId: string) => {
+    const space = gameData.space[spaceId];
     const { w, h } = orient_to_wh(space.orient);
     return (
       <rect
@@ -230,12 +260,154 @@ const Board: React.FC<BoardProps> = ({
     )
   }
 
+  const drawNormalBDSBanner = (spaceId: string) => {
+    const group = gameData.bds[spaceId].group;
+    const space = gameData.space[spaceId];
+    const { w, h } = orient_to_wh_banner(space.orient);
+    switch (space.orient) {
+      case "S":
+      case "E":
+        return (
+          <rect key={spaceId} x={vt(space.x)} y={vt(space.y)} width={w} height={h} fill={gameData.color_pallete.groups[group]} stroke={border} strokeWidth="1" />
+        );
+      case "N":
+        return (
+          <rect key={spaceId} x={vt(space.x)} y={vt(space.y + 1.5)} width={w} height={h} fill={gameData.color_pallete.groups[group]} stroke={border} strokeWidth="1" />
+        );
+      case "W":
+      default:
+        return (
+          <rect key={spaceId} x={vt(space.x + 1.5)} y={vt(space.y)} width={w} height={h} fill={gameData.color_pallete.groups[group]} stroke={border} strokeWidth="1" />
+        );
+    }
+  }
+  const drawRBanner = (spaceId: string) => {
+    const space = gameData.space[spaceId];
+    const { w, h } = orient_to_wh(space.orient);
+    return (
+      <>
+        <rect key={`banner-${spaceId}-1`} x={vt(space.x)} y={vt(space.y)} width={w} height={h} fill="url(#gray25)" stroke={border} strokeWidth="1" />
+        <rect key={`banner-${spaceId}-2`} x={vt(space.x)} y={vt(space.y)} width={w} height={h} fill="url(#gray25)" stroke={border} strokeWidth="1" />
+      </>
+    );
+  };
+
+  const drawUBanner = (spaceId: string) => {
+    const space = gameData.space[spaceId];
+    const key = `banner-${spaceId}`;
+    switch (space.orient) {
+      case "W":
+        return (
+          <rect key={key} x={vt(space.x + 0.5)} y={vt(space.y + 0.1)} width={vt(1)} height={vt(0.8)} fill={gameData.color_pallete.groups.U} stroke="white" strokeWidth="1" />
+        );
+
+      case "N":
+        return (
+          <rect key={key} x={vt(space.x + 0.1)} y={vt(space.y + 0.5)} width={vt(0.8)} height={vt(1)} fill={gameData.color_pallete.groups.U} stroke="white" strokeWidth="1" />
+        );
+
+      case "S":
+        return (
+          <rect key={key} x={vt(space.x + 0.1)} y={vt(space.y + 0.5)} width={vt(0.8)} height={vt(1)} fill={gameData.color_pallete.groups.U} stroke="white" strokeWidth="1" />
+        );
+      case "E":
+        return (
+          <rect key={key} x={vt(space.x + 0.5)} y={vt(space.y + 0.1)} width={vt(1)} height={vt(0.8)} fill={gameData.color_pallete.groups.U} stroke="white" strokeWidth="1" />
+        );
+    }
+  };
+
+  const drawActionCardSpace = (spaceId: string) => {
+    const space = gameData.space[spaceId];
+    const group = gameData.special_spaces[spaceId]
+    const { w, h } = orient_to_wh(space.orient);
+    return (
+      <>
+        <rect key={`action-card-${spaceId}-1`} x={vt(space.x)} y={vt(space.y)} width={w} height={h} fill={gameData.color_pallete.cards[group]} stroke={border} strokeWidth="1" />
+        <rect key={`action-card-${spaceId}-2`} x={vt(space.x)} y={vt(space.y)} width={w} height={h} fill="url(#warning)" stroke={border} strokeWidth="1" />
+      </>
+    );
+  }
+
+  const OT_SPACE = gameData.space.OT;
+
+  const drawTextLabel = (key: string, text: string, x: number, y: number, color: string, rotate: boolean = false) => {
+    const lines = text.split('\n');
+    const lineCount = lines.length;
+    const verticalOffset = (lineCount - 1) * fontSize / 2 - 4;
+    return (
+      <text
+        key={key}
+        x={x}
+        y={y - verticalOffset}
+        textAnchor="middle"
+        fontSize={fontSize}
+        fill={color}
+        fontFamily="Bahnschrift, Arial, sans-serif"
+        fontWeight="normal"
+        transform={rotate ? `rotate(90, ${x}, ${y})` : undefined}
+      >
+        {lines.map((line, i) => (
+          <tspan key={i} x={x} dy={i === 0 ? 0 : fontSize}>
+            {line}
+          </tspan>
+        ))}
+      </text>
+    );
+  };
+
+  const drawBDSLabel = (spaceId: string) => {
+    const space = gameData.space[spaceId];
+    const price = gameData.bds[spaceId].price;
+    const text = `${spaceId}\n${formatBudget(price)}`;
+    const { w, h } = orient_to_offset_label(space.orient);
+    return drawTextLabel(`text-${spaceId}`, text, vt(space.x + w), vt(space.y + h), "black");
+
+  };
+
+  const drawBDAU = () => {
+    const spaceId = "BDAU";
+    const space = gameData.space[spaceId];
+    const text = gameData.space_labels[spaceId];
+    const color = gameData.color_pallete.spaces["BDAU"];
+    return drawTextLabel(`text-${spaceId}`, text, vt(space.x + 1), vt(space.y + 1), color);
+  }
+
+  const drawCornerLabel = (spaceId: string) => {
+    const space = gameData.space[spaceId];
+    const text = gameData.space_labels[spaceId];
+    return drawTextLabel(`text-${spaceId}`, text, vt(space.x + 1), vt(space.y + 1), "black");
+  }
+
+  const drawEdgeLabel = (spaceId: string) => {
+    const space = gameData.space[spaceId];
+    const text = gameData.space_labels[spaceId];
+    const { w, h } = orient_to_offset_label(space.orient);
+    return drawTextLabel(`text-${spaceId}`, text, vt(space.x + w), vt(space.y + h), "black");
+  }
+
+  const drawOT = () => {
+    const spaceId = "OT";
+    const space = gameData.space[spaceId];
+    const text = gameData.space_labels[spaceId];
+    return drawTextLabel(`text-${spaceId}`, text, vt(space.x + 0.625), vt(space.y + 0.7), "black");
+  }
+
+  const drawTT = () => {
+    const space = gameData.space["TT"];
+    return (
+      <>
+        {drawTextLabel(`text-TT1`, gameData.space_labels["TT1"], vt(space.x + 0.35), vt(space.y + 0.8), "black", true)}
+        {drawTextLabel(`text-TT2`, gameData.space_labels["TT2"], vt(space.x + 1.25), vt(space.y + 1.625), "black")}
+      </>
+    );
+  }
+
   return (
     <div>
       <svg
         width={BOARD_SIZE}
         height={BOARD_SIZE}
-      // style={{ backgroundColor: '#2E6C3D' }}
       >
         {/* Pattern definitions (equivalent to Tkinter stipple) */}
         <defs>
@@ -251,98 +423,53 @@ const Board: React.FC<BoardProps> = ({
           </pattern>
         </defs>
 
-        <rect x={vt(0)} y={vt(0)} width={vt(vt_max)} height={vt(vt_max)} fill="#2E6C3D" stroke={border} strokeWidth="1" />
+        <rect x={vt(0)} y={vt(0)} width={vt(vt_max)} height={vt(vt_max)} fill="#479777" stroke={border} strokeWidth="1" />
         {
-          Object.entries(gameData.space).map(([spaceId, space]) => drawSpace(spaceId, space))
+          Object.keys(gameData.space)
+            .filter(spaceId => spaceId !== "OT")
+            .map(spaceId => drawSpace(spaceId)
+            )
         }
         {
-          /* new */
+          Object.keys(gameData.space)
+            .filter(spaceId => spaceId in gameData.bds)
+            .map(spaceId => {
+              const group = gameData.bds[spaceId].group;
+              switch (group) {
+                case "R":
+                  return drawRBanner(spaceId);
+                case "U":
+                  return drawUBanner(spaceId);
+                default:
+                  return drawNormalBDSBanner(spaceId);
+              }
+            })
         }
+        {
+          Object.keys(gameData.space).map(spaceId => {
+            if (!(spaceId in gameData.special_spaces)) return (<></>);
+            return drawActionCardSpace(spaceId);
+          })
+        }
+        <rect x={vt(OT_SPACE.x)} y={vt(OT_SPACE.y)} width={vt(1.25)} height={vt(1.25)} fill={gameData.color_pallete.spaces.OT} stroke={border} strokeWidth="1" />
 
-        {/* Four corners */}
-        {/* {square(0, 0)} */}
-        {/* {square(0, 11)} */}
-        {/* {square(11, 0)} */}
-        {/* {square(11, 11)} */}
+        <line x1={vt(2)} y1={vt(2)} x2={vt(2)} y2={vt(vt_max - 2)} stroke="grey" strokeWidth="5" />
+        <line x1={vt(2)} y1={vt(vt_max - 2)} x2={vt(11)} y2={vt(vt_max - 2)} stroke="grey" strokeWidth="5" />
+        <line x1={vt(vt_max - 2)} y1={vt(vt_max - 2)} x2={vt(vt_max - 2)} y2={vt(2)} stroke="grey" strokeWidth="5" />
+        <line x1={vt(vt_max - 2)} y1={vt(2)} x2={vt(2)} y2={vt(2)} stroke="grey" strokeWidth="5" />
 
-        {/* Perimeter strips - Layer 2 */}
-        {/* {Array.from({ length: 9 }, (_, i) => i + 2).map(i => ( */}
-        {/*   <g key={`middle-strip-${i}`}> */}
-        {/*     <rect x={vt(0)} y={vt(i)} width={vt(2)} height={vt(1)} fill={CO1} stroke={OUTL} strokeWidth="1" /> */}
-        {/*     <rect x={vt(11)} y={vt(i)} width={vt(2)} height={vt(1)} fill={CO1} stroke={OUTL} strokeWidth="1" /> */}
-        {/*     <rect x={vt(i)} y={vt(0)} width={vt(1)} height={vt(2)} fill={CO1} stroke={OUTL} strokeWidth="1" /> */}
-        {/*     <rect x={vt(i)} y={vt(11)} width={vt(1)} height={vt(2)} fill={CO1} stroke={OUTL} strokeWidth="1" /> */}
-        {/*   </g> */}
-        {/* ))} */}
-
-        {/* Property color strips - Layer 2 */}
-        {/* {[8, 10].map(i => ( */}
-        {/*   <rect key={`c2a-${i}`} x={vt(i)} y={vt(11)} width={vt(1)} height={vt(0.5)} fill={PROPERTY_COLORS.A} stroke={OUTL} strokeWidth="1" /> */}
-        {/* ))} */}
-        {/* {[2, 3, 5].map(i => ( */}
-        {/*   <rect key={`c2b-${i}`} x={vt(i)} y={vt(11)} width={vt(1)} height={vt(0.5)} fill={PROPERTY_COLORS.B} stroke={OUTL} strokeWidth="1" /> */}
-        {/* ))} */}
-        {/* {[2, 4, 5].map(i => ( */}
-        {/*   <rect key={`c2e-${i}`} x={vt(i)} y={vt(1.5)} width={vt(1)} height={vt(0.5)} fill={PROPERTY_COLORS.E} stroke={OUTL} strokeWidth="1" /> */}
-        {/* ))} */}
-        {/* {[7, 8, 10].map(i => ( */}
-        {/*   <rect key={`c2f-${i}`} x={vt(i)} y={vt(1.5)} width={vt(1)} height={vt(0.5)} fill={PROPERTY_COLORS.F} stroke={OUTL} strokeWidth="1" /> */}
-        {/* ))} */}
-        {/* {[7, 8, 10].map(i => ( */}
-        {/*   <rect key={`c2c-${i}`} x={vt(1.5)} y={vt(i)} width={vt(0.5)} height={vt(1)} fill={PROPERTY_COLORS.C} stroke={OUTL} strokeWidth="1" /> */}
-        {/* ))} */}
-        {/* {[2, 3, 5].map(i => ( */}
-        {/*   <rect key={`c2d-${i}`} x={vt(1.5)} y={vt(i)} width={vt(0.5)} height={vt(1)} fill={PROPERTY_COLORS.D} stroke={OUTL} strokeWidth="1" /> */}
-        {/* ))} */}
-        {/* {[2, 3, 5].map(i => ( */}
-        {/*   <rect key={`c2g-${i}`} x={vt(11)} y={vt(i)} width={vt(0.5)} height={vt(1)} fill={PROPERTY_COLORS.G} stroke={OUTL} strokeWidth="1" /> */}
-        {/* ))} */}
-        {/* {[8, 10].map(i => ( */}
-        {/*   <rect key={`c2h-${i}`} x={vt(11)} y={vt(i)} width={vt(0.5)} height={vt(1)} fill={PROPERTY_COLORS.H} stroke={OUTL} strokeWidth="1" /> */}
-        {/* ))} */}
-
-        {/* Special spaces - Layer 2 */}
-        {/* TT */}
-        {/* <rect x={vt(0.75)} y={vt(11)} width={vt(1.25)} height={vt(1.25)} fill="orange" stroke={OUTL} strokeWidth="1" /> */}
-        {/* CH1 */}
-        {/* <rect x={vt(4)} y={vt(11)} width={vt(1)} height={vt(2)} fill={CCH} stroke={OUTL} strokeWidth="1" /> */}
-        {/* CH1 */}
-        {/* <rect x={vt(4)} y={vt(11)} width={vt(1)} height={vt(2)} fill="url(#warning)" stroke={OUTL} strokeWidth="1" /> */}
-        {/* KV1 */}
-        {/* <rect x={vt(9)} y={vt(11)} width={vt(1)} height={vt(2)} fill={CKV} stroke={OUTL} strokeWidth="1" /> */}
-        {/* KV1 */}
-        {/* <rect x={vt(9)} y={vt(11)} width={vt(1)} height={vt(2)} fill="url(#warning)" stroke={OUTL} strokeWidth="1" /> */}
-        {/* CH2 */}
-        {/* <rect x={vt(3)} y={vt(0)} width={vt(1)} height={vt(2)} fill={CCH} stroke={OUTL} strokeWidth="1" /> */}
-        {/* CH2 */}
-        {/* <rect x={vt(3)} y={vt(0)} width={vt(1)} height={vt(2)} fill="url(#warning)" stroke={OUTL} strokeWidth="1" /> */}
-        {/* KV2 */}
-        {/* <rect x={vt(0)} y={vt(4)} width={vt(2)} height={vt(1)} fill={CKV} stroke={OUTL} strokeWidth="1" /> */}
-        {/* KV2 */}
-        {/* <rect x={vt(0)} y={vt(4)} width={vt(2)} height={vt(1)} fill="url(#warning)" stroke={OUTL} strokeWidth="1" /> */}
-        {/* CH3 */}
-        {/* <rect x={vt(11)} y={vt(7)} width={vt(2)} height={vt(1)} fill={CCH} stroke={OUTL} strokeWidth="1" /> */}
-        {/* CH3 */}
-        {/* <rect x={vt(11)} y={vt(7)} width={vt(2)} height={vt(1)} fill="url(#warning)" stroke={OUTL} strokeWidth="1" /> */}
-        {/* KV3 */}
-        {/* <rect x={vt(11)} y={vt(4)} width={vt(2)} height={vt(1)} fill={CKV} stroke={OUTL} strokeWidth="1" /> */}
-        {/* KV3 */}
-        {/* <rect x={vt(11)} y={vt(4)} width={vt(2)} height={vt(1)} fill="url(#warning)" stroke={OUTL} strokeWidth="1" /> */}
-        {/* U1 */}
-        {/* <rect x={vt(0.5)} y={vt(9.1)} width={vt(1)} height={vt(0.8)} fill="#DDEBFF" stroke="white" strokeWidth="1" /> */}
-        {/* U2 */}
-        {/* <rect x={vt(9.1)} y={vt(0.5)} width={vt(0.8)} height={vt(1)} fill="#DDEBFF" stroke="white" strokeWidth="1" /> */}
-
-        {/* <rect x={vt(6)} y={vt(0)} width={vt(1)} height={vt(2)} fill="url(#gray25)" stroke={OUTL} strokeWidth="1" /> */}
-        {/* <rect x={vt(6)} y={vt(11)} width={vt(1)} height={vt(2)} fill="url(#gray25)" stroke={OUTL} strokeWidth="1" /> */}
-        {/* <rect x={vt(0)} y={vt(6)} width={vt(2)} height={vt(1)} fill="url(#gray25)" stroke={OUTL} strokeWidth="1" /> */}
-        {/* <rect x={vt(11)} y={vt(6)} width={vt(2)} height={vt(1)} fill="url(#gray25)" stroke={OUTL} strokeWidth="1" /> */}
-
-        {/* Border line for inner area - Layer 2 */}
-        {/* <line x1={vt(2)} y1={vt(2)} x2={vt(2)} y2={vt(11)} stroke="grey" strokeWidth="5" /> */}
-        {/* <line x1={vt(2)} y1={vt(11)} x2={vt(11)} y2={vt(11)} stroke="grey" strokeWidth="5" /> */}
-        {/* <line x1={vt(11)} y1={vt(11)} x2={vt(11)} y2={vt(2)} stroke="grey" strokeWidth="5" /> */}
-        {/* <line x1={vt(11)} y1={vt(2)} x2={vt(2)} y2={vt(2)} stroke="grey" strokeWidth="5" /> */}
+        {
+          Object.keys(gameData.space)
+            .filter(spaceId => spaceId in gameData.bds)
+            .map(spaceId => drawBDSLabel(spaceId))
+        }
+        {drawBDAU()}
+        {drawCornerLabel("VT")}
+        {drawCornerLabel("BDX")}
+        {drawEdgeLabel("TDB")}
+        {drawEdgeLabel("TTN")}
+        {drawOT()}
+        {drawTT()}
 
         {/* Labels for all spaces */}
         {/* {renderLabels()} */}

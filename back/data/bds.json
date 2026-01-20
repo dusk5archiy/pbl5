@@ -285,7 +285,6 @@
     "upgrade": 200
   },
   "G3": {
-    "id": "G3",
     "group": "G",
     "price": 320,
     "name": "QUANG TRUNG",
@@ -389,7 +388,6 @@
     "mortgage": 75
   },
   "U2": {
-    "id": "U2",
     "group": "U",
     "price": 150,
     "name": "CÔNG TY CÂP NƯỚC",
