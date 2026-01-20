@@ -285,10 +285,10 @@ const Board: React.FC<BoardProps> = ({
     const space = gameData.space[spaceId];
     const { w, h } = orient_to_wh(space.orient);
     return (
-      <>
-        <rect key={`banner-${spaceId}-1`} x={vt(space.x)} y={vt(space.y)} width={w} height={h} fill="url(#gray25)" stroke={border} strokeWidth="1" />
-        <rect key={`banner-${spaceId}-2`} x={vt(space.x)} y={vt(space.y)} width={w} height={h} fill="url(#gray25)" stroke={border} strokeWidth="1" />
-      </>
+      <g key={`banner-${spaceId}`}>
+        <rect x={vt(space.x)} y={vt(space.y)} width={w} height={h} fill="url(#gray25)" stroke={border} strokeWidth="1" />
+        <rect x={vt(space.x)} y={vt(space.y)} width={w} height={h} fill="url(#gray25)" stroke={border} strokeWidth="1" />
+      </g>
     );
   };
 
@@ -322,10 +322,10 @@ const Board: React.FC<BoardProps> = ({
     const group = gameData.special_spaces[spaceId]
     const { w, h } = orient_to_wh(space.orient);
     return (
-      <>
-        <rect key={`action-card-${spaceId}-1`} x={vt(space.x)} y={vt(space.y)} width={w} height={h} fill={gameData.color_pallete.cards[group]} stroke={border} strokeWidth="1" />
-        <rect key={`action-card-${spaceId}-2`} x={vt(space.x)} y={vt(space.y)} width={w} height={h} fill="url(#warning)" stroke={border} strokeWidth="1" />
-      </>
+      <g key={`action-card-${spaceId}`}>
+        <rect x={vt(space.x)} y={vt(space.y)} width={w} height={h} fill={gameData.color_pallete.cards[group]} stroke={border} strokeWidth="1" />
+        <rect x={vt(space.x)} y={vt(space.y)} width={w} height={h} fill="url(#warning)" stroke={border} strokeWidth="1" />
+      </g>
     );
   }
 
@@ -396,10 +396,10 @@ const Board: React.FC<BoardProps> = ({
   const drawTT = () => {
     const space = gameData.space["TT"];
     return (
-      <>
+      <g key="tt-labels">
         {drawTextLabel(`text-TT1`, gameData.space_labels["TT1"], vt(space.x + 0.35), vt(space.y + 0.8), "black", true)}
         {drawTextLabel(`text-TT2`, gameData.space_labels["TT2"], vt(space.x + 1.25), vt(space.y + 1.625), "black")}
-      </>
+      </g>
     );
   }
 
@@ -446,10 +446,9 @@ const Board: React.FC<BoardProps> = ({
             })
         }
         {
-          Object.keys(gameData.space).map(spaceId => {
-            if (!(spaceId in gameData.special_spaces)) return (<></>);
-            return drawActionCardSpace(spaceId);
-          })
+          Object.keys(gameData.space)
+            .filter(spaceId => spaceId in gameData.special_spaces)
+            .map(spaceId => drawActionCardSpace(spaceId))
         }
         <rect x={vt(OT_SPACE.x)} y={vt(OT_SPACE.y)} width={vt(1.25)} height={vt(1.25)} fill={gameData.color_pallete.spaces.OT} stroke={border} strokeWidth="1" />
 

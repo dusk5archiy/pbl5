@@ -4,37 +4,24 @@ import { useState } from 'react';
 import WelcomeScreen from '@/app/screen/WelcomeScreen';
 import ChooseColorScreen from '@/app/screen/ChooseColorScreen';
 import CheckCameraScreen from '@/app/screen/CheckCameraScreen';
+import GameDataLoadingScreen from '@/app/screen/GameDataLoadingScreen';
 import GameScreen from '@/app/screen/GameScreen';
 import { ColorType } from '@/app/utils/ColorType';
+import { GameData } from '@/app/game/model';
 
-type Screen = 'welcome' | 'chooseColors' | 'checkCamera' | 'game';
+type Screen = 'welcome' | 'chooseColors' | 'checkCamera' | 'gameDataLoading' | 'game';
 
 export default function Home() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
   const [selectedColors, setSelectedColors] = useState<ColorType[]>([]);
   const [selectedCamera, setSelectedCamera] = useState<string>('');
   const [gameState, setGameState] = useState<any>(null);
+  const [gameData, setGameData] = useState<GameData | null>(null);
 
-  const initGame = async (colors: ColorType[]) => {
-    try {
-      const playerOrder = {
-        players: colors.map(color => color.id)
-      };
-      
-      const response = await fetch('http://localhost:8001/init_game', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(playerOrder),
-      });
-      
-      const data = await response.json();
-      console.log('Game initialized:', data.game_state);
-      setGameState(data.game_state);
-    } catch (error) {
-      console.error('Error initializing game:', error);
-    }
+  const handleGameDataLoaded = (loadedGameData: GameData, loadedGameState: any) => {
+    setGameData(loadedGameData);
+    setGameState(loadedGameState);
+    setCurrentScreen('game');
   };
 
   switch (currentScreen) {
@@ -57,25 +44,27 @@ export default function Home() {
         <CheckCameraScreen
           selectedCamera={selectedCamera}
           setSelectedCamera={setSelectedCamera}
-          onContinue={async () => {
-            await initGame(selectedColors);
-            setCurrentScreen('game');
-          }}
+          onContinue={() => setCurrentScreen('gameDataLoading')}
           onBack={() => setCurrentScreen('chooseColors')}
         />
       );
-    case 'game':
+    case 'gameDataLoading':
       return (
-        <div className='game-board'>
-         <GameScreen
-          selectedCamera={selectedCamera}
-          gameState={gameState}
+        <GameDataLoadingScreen
+          selectedColors={selectedColors}
+          onSuccess={handleGameDataLoaded}
           onBack={() => setCurrentScreen('checkCamera')}
         />
-
-
-        </div>
       );
+    case 'game':
+      return gameData && (
+           <GameScreen
+             selectedCamera={selectedCamera}
+             gameState={gameState}
+             gameData={gameData}
+             onBack={() => setCurrentScreen('checkCamera')}
+           />
+         );
     default:
       return <WelcomeScreen onStart={() => setCurrentScreen('chooseColors')} />;
   }
