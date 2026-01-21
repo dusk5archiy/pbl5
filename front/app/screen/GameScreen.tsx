@@ -160,13 +160,6 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
   const [showCameraPopup, setShowCameraPopup] = useState(false);
   const [showBoardPopup, setShowBoardPopup] = useState(false);
 
-
-  useEffect(() => {
-    if (gameState) {
-      console.log('Game state received:', gameState);
-    }
-  }, [gameState]);
-
   const handleCapture = (imageData: string, result: DetectionResult) => {
     setCapturedImage(imageData);
     setDetectionResult(result);
@@ -195,13 +188,13 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
     };
   }) : [];
 
-  console.log(players);
+  const current_player_color = gameData.color_pallete.players[gameState.current_player];
   return (
-    <div className="flex h-screen text-white p-1 bg-[#2E6C3D]">
+    <div className="flex h-screen p-1 bg-[#2E6C3D]">
       {/* Left Panel */}
-      <div className="left-sidebar flex flex-col  pr-4">
+      <div className="left-sidebar flex flex-col pr-4">
         {/* Player Colors */}
-        <div className="money-wrapper border-2 border-white p-2 rounded" style={{ height: '260px' }}>
+        <div className="text-white money-wrapper border-2 border-white p-2 rounded" style={{ height: '260px' }}>
           <div className="flex flex-col h-full justify-between">
             {players.map((player, _) => (
               <div
@@ -225,9 +218,9 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
           </div>
         </div>
 
-        {/* Game Board */}
+        {/*Game Board */}
         <div
-          className="bds-wrapper border-2 border-white p-1 rounded flex-1 cursor-pointer hover:border-green-500 transition-colors"
+          className="bds-wrapper border-2 border-white p-1 rounded flex-1 cursor-pointer transition-colors"
           onClick={() => setShowBoardPopup(true)}
         >
           <div className="flex gap-1 h-full">
@@ -243,7 +236,7 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
                   >3</div>
                 ))}
                 {/* Column header at bottom */}
-                <div className="b-col text-center text-sm font-bold items-center justify-center">
+                <div className="b-col text-center text-sm font-bold items-center justify-center text-white">
                   {col}
                 </div>
               </div>
@@ -252,21 +245,19 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
         </div>
 
         {/* Pause Button */}
-        <div className="func-btn border-2 border-white p-2 rounded">
-          <button
-            onClick={onBack}
-            className="w-full text-xl font-bold py-2 rounded"
-          >
-            chức năng
-          </button>
-        </div>
+        <button
+          onClick={onBack}
+          className="border-2 border-white w-full text-lg font-bold py-1 rounded text-gray-700"
+          style={{ backgroundColor: current_player_color }}
+        >Chức năng</button>
       </div>
       <Board gameData={gameData} />
       {/* Right Panel - Empty with button to open camera */}
       <div className="txx-button w-1/2 flex flex-col items-center justify-center">
         <button
           onClick={() => setShowCameraPopup(true)}
-          className="px-4 py-4 bg-green-600 text-white text-xl font-bold rounded border-2 border-white"
+          className="px-4 py-6 text-lg text-gray-600 font-bold rounded border-3 border-gray-500"
+          style={{ backgroundColor: current_player_color }}
         >
           Thảy
         </button>
@@ -324,7 +315,7 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
                       >1</div>
                     ))}
                     {/* Column header at bottom */}
-                    <div className="text-center text-2xl font-bold items-center justify-center">
+                    <div className="text-center text-2xl font-bold items-center justify-center text-white">
                       {col}
                     </div>
                   </div>

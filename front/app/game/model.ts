@@ -17,6 +17,7 @@ export interface ColorPalette {
   border: string;
   spaces: Record<string, string>;
   cards: Record<string, string>;
+  players: Record<string, string>;
 }
 
 export interface Space {

@@ -18,5 +18,13 @@
   "cards": {
     "KV": "gold",
     "CH": "lightpink"
+  },
+  "players": {
+    "red": "#FF8B8B",
+    "orange": "#FFC000",
+    "yellow": "#FFE8A0",
+    "green": "#B1FFAB",
+    "blue": "#B7F3FF",
+    "purple": "#EEBBFF"
   }
 }

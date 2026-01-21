@@ -292,29 +292,39 @@ const Board: React.FC<BoardProps> = ({
     );
   };
 
+  const orient_to_u_offset = (orient: string) => {
+    switch (orient) {
+      case "S":
+      case "N":
+        return { off_w: 0.1, off_h: 0.5 };
+      case "W":
+      case "E":
+      default:
+        return { off_w: 0.5, off_h: 0.1 };
+    }
+  }
+
+  const orient_to_u_wh = (orient: string) => {
+    switch (orient) {
+      case "S":
+      case "N":
+        return { w: vt(0.8), h: vt(1) };
+      case "W":
+      case "E":
+      default:
+        return { w: vt(1), h: vt(0.8) };
+    }
+  }
+
+
   const drawUBanner = (spaceId: string) => {
     const space = gameData.space[spaceId];
     const key = `banner-${spaceId}`;
-    switch (space.orient) {
-      case "W":
-        return (
-          <rect key={key} x={vt(space.x + 0.5)} y={vt(space.y + 0.1)} width={vt(1)} height={vt(0.8)} fill={gameData.color_pallete.groups.U} stroke="white" strokeWidth="1" />
-        );
-
-      case "N":
-        return (
-          <rect key={key} x={vt(space.x + 0.1)} y={vt(space.y + 0.5)} width={vt(0.8)} height={vt(1)} fill={gameData.color_pallete.groups.U} stroke="white" strokeWidth="1" />
-        );
-
-      case "S":
-        return (
-          <rect key={key} x={vt(space.x + 0.1)} y={vt(space.y + 0.5)} width={vt(0.8)} height={vt(1)} fill={gameData.color_pallete.groups.U} stroke="white" strokeWidth="1" />
-        );
-      case "E":
-        return (
-          <rect key={key} x={vt(space.x + 0.5)} y={vt(space.y + 0.1)} width={vt(1)} height={vt(0.8)} fill={gameData.color_pallete.groups.U} stroke="white" strokeWidth="1" />
-        );
-    }
+    const { off_w, off_h } = orient_to_u_offset(space.orient);
+    const { w, h } = orient_to_u_wh(space.orient);
+    return (
+      <rect key={key} x={vt(space.x + off_w)} y={vt(space.y + off_h)} width={w} height={h} fill={gameData.color_pallete.groups.U} stroke="white" strokeWidth="1" />
+    );
   };
 
   const drawActionCardSpace = (spaceId: string) => {
@@ -413,7 +423,7 @@ const Board: React.FC<BoardProps> = ({
         <defs>
           {/* Warning pattern - diagonal lines */}
           <pattern id="warning" patternUnits="userSpaceOnUse" width="4" height="4">
-            <path d="M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2" stroke="rgba(0,0,0,0.3)" strokeWidth="0.5" />
+            <path d="M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
           </pattern>
 
           {/* Gray25 pattern - 25% dotted */}
