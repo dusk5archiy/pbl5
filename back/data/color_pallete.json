@@ -22,9 +22,17 @@
   "players": {
     "red": "#FF8B8B",
     "orange": "#FFC000",
-    "yellow": "#FFE8A0",
+    "yellow": "#FFF360",
     "green": "#B1FFAB",
     "blue": "#B7F3FF",
     "purple": "#EEBBFF"
+  },
+  "circle": {
+    "red": "red",
+    "orange": "darkorange",
+    "yellow": "goldenrod",
+    "green": "green",
+    "blue": "blue",
+    "purple": "magenta"
   }
 }

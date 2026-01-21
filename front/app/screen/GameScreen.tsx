@@ -3,11 +3,11 @@
 import { ColorType } from '@/app/utils/ColorType';
 import { useRef, useState, useEffect } from 'react';
 import Board from '../ui/Board';
-import { GameData } from '@/app/game/model';
+import { GameData, GameState } from '@/app/game/model';
 import { formatBudget } from '../ui/lib/utils';
 interface GameScreenProps {
   selectedCamera: string;
-  gameState: any;
+  gameState: GameState;
   gameData: GameData;
   onBack: () => void;
 }
@@ -203,16 +203,16 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
                 style={{ height: `${260 / players.length}px` }}
               >
                 <div
-                  className={`${"bg" + player.color} border-2 border-white flex items-center justify-center`}
+                  className={`border-2 border-white flex items-center justify-center`}
                   style={{
-                    width: `${Math.max(220 / players.length, 32)}px`,
+                    width: `10%`,
                     height: `${Math.max(220 / players.length, 32)}px`,
-                    backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0,0,0,0.2) 5px, rgba(0,0,0,0.2) 10px)'
+                    backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0,0,0,0.2) 5px, rgba(0,0,0,0.2) 10px)',
+                    backgroundColor: gameData.color_pallete.players[player.color]
+
                   }}
                 />
-                <span className="font-bold" style={{ fontSize: `${Math.max(260 / players.length / 2.5, 20)}px` }}>
-                  {formatBudget(player.budget)}
-                </span>
+                <span className="font-bold" style={{ fontSize: `${Math.max(260 / players.length / 2.5, 20)}px` }}>{formatBudget(player.budget)}</span>
               </div>
             ))}
           </div>
@@ -251,7 +251,7 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
           style={{ backgroundColor: current_player_color }}
         >Chức năng</button>
       </div>
-      <Board gameData={gameData} />
+      <Board gameData={gameData} gameState={gameState}/>
       {/* Right Panel - Empty with button to open camera */}
       <div className="txx-button w-1/2 flex flex-col items-center justify-center">
         <button

@@ -2,8 +2,7 @@ import React from 'react';
 import { PlayerState } from './lib/gameLogic';
 // import { getSpacePosition } from './lib/positions';
 import { Color } from './lib/colors';
-import { GameData } from '@/app/game/model';
-import { Space } from '@/app/game/model'
+import { GameData, GameState } from '@/app/game/model';
 import { formatBudget } from './lib/utils';
 
 export const DEFAULT_UNIT_SIZE = 45;
@@ -15,6 +14,7 @@ interface BoardProps {
   highlightCircle?: { playerIndex: number, position: string } | null;
   currentPlayerColor?: Color;
   gameData: GameData;
+  gameState: GameState
 }
 
 // Board layout constants
@@ -42,7 +42,8 @@ const Board: React.FC<BoardProps> = ({
   // movementLines = [],
   // highlightCircle = null,
   // currentPlayerColor
-  gameData
+  gameData,
+  gameState
 }) => {
   // Board layout constants
   const vt_max = gameData.vt_max;
@@ -413,6 +414,52 @@ const Board: React.FC<BoardProps> = ({
     );
   }
 
+  const orient_to_player_offset = (orient: string) => {
+    switch (orient) {
+      case "S":
+        return { off_w: 0.5, off_h: 1.5 };
+      case "SE":
+        return { off_w: 1, off_h: 1.5 };
+      default:
+        return { off_w: 0, off_h: 0 };
+    }
+  }
+
+  const drawPlayers = () => {
+    const pieceSize = unitSize * 0.7;
+    return Object.entries(gameState.players).map(([playerId, playerState]) => {
+      const space = gameData.space[gameState.players[playerId].at];
+      const { off_w, off_h } = orient_to_player_offset(space.orient);
+      return (
+        <image
+          key={`player-${playerId}`}
+          x={vt(space.x + off_w) - pieceSize / 2}
+          y={vt(space.y + off_h) - pieceSize / 2}
+          width={pieceSize}
+          height={pieceSize}
+          href={`/assets/players/${playerId}.png`}
+        />
+      );
+    });
+  };
+
+  const drawCircle = () => {
+    const playerId = gameState.current_player;
+    const space = gameData.space[gameState.players[playerId].at];
+    const { off_w, off_h } = orient_to_player_offset(space.orient);
+    console.log(gameData.color_pallete.circle);
+    return (
+      <circle
+        cx={vt(space.x + off_w)}
+        cy={vt(space.y + off_h)}
+        r={vt(1)}
+        fill="none"
+        stroke={gameData.color_pallete.circle[playerId]}
+        strokeWidth="5"
+      />
+    );
+  };
+
   return (
     <div>
       <svg
@@ -479,9 +526,8 @@ const Board: React.FC<BoardProps> = ({
         {drawEdgeLabel("TTN")}
         {drawOT()}
         {drawTT()}
-
-        {/* Labels for all spaces */}
-        {/* {renderLabels()} */}
+        {drawPlayers()}
+        {drawCircle()}
 
         {/* Movement lines */}
         {/* {movementLines?.map((line, index) => { */}

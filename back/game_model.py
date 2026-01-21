@@ -109,6 +109,7 @@ class ColorPallete(BaseModel):
     spaces: dict[str, str]
     cards: dict[str, str]
     players: dict[str, str]
+    circle: dict[str, str]
 
 
 # -----------------------------------------------------------------------------

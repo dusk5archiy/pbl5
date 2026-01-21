@@ -18,6 +18,7 @@ export interface ColorPalette {
   spaces: Record<string, string>;
   cards: Record<string, string>;
   players: Record<string, string>;
+  circle: Record<string, string>;
 }
 
 export interface Space {
@@ -40,4 +41,25 @@ export interface GameData {
 
 export interface GameDataResponse {
   game_data: GameData;
+}
+
+export interface GameStatePlayer {
+  budget: number;
+  at: string;
+}
+
+export interface GameStateBDS {
+  owner: string;
+  level: number;
+}
+
+export interface GameState {
+  kv_queue: string[];
+  ch_queue: string[];
+  bds: Record<string, GameStateBDS>;
+  cards: Record<string, string>;
+  player_queue: string[];
+  players: Record<string, GameStatePlayer>;
+  current_player: string;
+  double_roll_stack: number;
 }

@@ -3,11 +3,11 @@
 import { useState, useEffect } from 'react';
 import { ColorType } from '@/app/utils/ColorType';
 import { fetchGameData } from '@/app/game/data';
-import { GameData } from '@/app/game/model';
+import { GameData, GameState } from '@/app/game/model';
 
 interface GameDataLoadingScreenProps {
   selectedColors: ColorType[];
-  onSuccess: (gameData: GameData, gameState: any) => void;
+  onSuccess: (gameData: GameData, gameState: GameState) => void;
   onBack: () => void;
 }
 
