@@ -37,8 +37,7 @@ async def init_game(player_order: PlayerOrder):
 
 
 class RollDiceResponse(BaseModel):
-    new_game_state: GameState
-    path: list[str]
+    intermediate_states: list[GameState]
 
 
 class DiceRoll(BaseModel):
@@ -68,13 +67,16 @@ async def move_with_dice(request: DiceRollRequest):
     # Get path
     path = move_with_dice_path(current_position, step)
 
-    # Update position:
-    new_position = path[-1]
-    game_state.players[current_player].at = new_position
+    # Create intermediate game states for each step
+    intermediate_states = []
+    temp_state = game_state.model_copy(deep=True)  # Deep copy of initial state
+    
+    for position in path:
+        temp_state.players[current_player].at = position
+        intermediate_states.append(temp_state.model_copy(deep=True))
 
     return RollDiceResponse(
-        new_game_state=game_state,
-        path=path,
+        intermediate_states=intermediate_states,
     )
 
 

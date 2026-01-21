@@ -63,6 +63,7 @@ export default function Home() {
              gameState={gameState}
              gameData={gameData}
              onBack={() => setCurrentScreen('checkCamera')}
+             onGameStateUpdate={setGameState}
            />
          );
     default:

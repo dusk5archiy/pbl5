@@ -14,7 +14,7 @@ interface BoardProps {
   highlightCircle?: { playerIndex: number, position: string } | null;
   currentPlayerColor?: Color;
   gameData: GameData;
-  gameState: GameState
+  gameState: GameState;
 }
 
 // Board layout constants
@@ -415,29 +415,59 @@ const Board: React.FC<BoardProps> = ({
   }
 
   const orient_to_player_offset = (orient: string) => {
+    const low = 0.4;
+    const high = 1.6;
     switch (orient) {
       case "S":
-        return { off_w: 0.5, off_h: 1.5 };
+        return { off_w: low, off_h: high };
+      case "W":
+        return { off_w: low, off_h: low };
+      case "NW":
+      case "NE":
+        return { off_w: 1, off_h: low };
+      case "N":
+        return { off_w: low, off_h: low };
+      case "E":
+        return { off_w: high, off_h: low };
+      case "SW":
       case "SE":
-        return { off_w: 1, off_h: 1.5 };
+        return { off_w: 1, off_h: high };
       default:
         return { off_w: 0, off_h: 0 };
+    }
+  }
+
+  const is_player_rotated = (orient: string) => {
+    switch (orient) {
+      case "S":
+      case "SW":
+      case "SE":
+      case "N":
+      case "NW":
+      case "NE":
+        return false;
+      default: return true;
     }
   }
 
   const drawPlayers = () => {
     const pieceSize = unitSize * 0.7;
     return Object.entries(gameState.players).map(([playerId, playerState]) => {
-      const space = gameData.space[gameState.players[playerId].at];
+      const space = gameData.space[playerState.at];
       const { off_w, off_h } = orient_to_player_offset(space.orient);
+      const centerX = vt(space.x + off_w);
+      const centerY = vt(space.y + off_h);
+      const rotated = is_player_rotated(space.orient);
+
       return (
         <image
           key={`player-${playerId}`}
-          x={vt(space.x + off_w) - pieceSize / 2}
-          y={vt(space.y + off_h) - pieceSize / 2}
+          x={centerX - pieceSize / 2}
+          y={centerY - pieceSize / 2}
           width={pieceSize}
           height={pieceSize}
           href={`/assets/players/${playerId}.png`}
+          transform={rotated ? `rotate(90, ${centerX}, ${centerY})` : undefined}
         />
       );
     });

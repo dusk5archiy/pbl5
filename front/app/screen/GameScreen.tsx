@@ -5,11 +5,13 @@ import { useRef, useState, useEffect } from 'react';
 import Board from '../ui/Board';
 import { GameData, GameState } from '@/app/game/model';
 import { formatBudget } from '../ui/lib/utils';
+import { moveWithDice, nextPlayer } from '@/app/game/data';
 interface GameScreenProps {
   selectedCamera: string;
   gameState: GameState;
   gameData: GameData;
   onBack: () => void;
+  onGameStateUpdate: (newGameState: GameState) => void;
 }
 
 interface DetectionResult {
@@ -104,7 +106,7 @@ function CameraCapture({ selectedCamera, onCapture }: { selectedCamera: string; 
   );
 }
 
-function DetectionResult({ imageData, result, onBack }: { imageData: string; result: DetectionResult; onBack: () => void }) {
+function DetectionResult({ imageData, result, onBack, onConfirm }: { imageData: string; result: DetectionResult; onBack: () => void; onConfirm: (dice1: number, dice2: number) => void }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -142,10 +144,15 @@ function DetectionResult({ imageData, result, onBack }: { imageData: string; res
         </div>
       </div>
       <div className="flex gap-2">
-        <div className="px-4 py-2 border-2 border-green-500 rounded text-center text-lg font-bold">{result.scores.join(' ')}</div>
+        <button
+          onClick={() => onConfirm(result.scores[0], result.scores[1])}
+          className="px-4 py-2 border-2 bg-green-600 rounded text-center text-sm font-bold text-white hover:bg-green-700"
+        >
+          Xác nhận: {result.scores.join(' ')}
+        </button>
         <button
           onClick={onBack}
-          className="px-6 py-3 bg-yellow-600 text-white rounded hover:bg-yellow-700 font-bold"
+          className="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 font-bold"
         >
           Chụp lại
         </button>
@@ -154,11 +161,16 @@ function DetectionResult({ imageData, result, onBack }: { imageData: string; res
   );
 }
 
-export default function GameScreen({ selectedCamera, gameState, gameData, onBack }: GameScreenProps) {
+export default function GameScreen({ selectedCamera, gameState, gameData, onBack, onGameStateUpdate }: GameScreenProps) {
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [detectionResult, setDetectionResult] = useState<DetectionResult | null>(null);
   const [showCameraPopup, setShowCameraPopup] = useState(false);
   const [showBoardPopup, setShowBoardPopup] = useState(false);
+  const [isMoving, setIsMoving] = useState(false);
+  const [intermediateStates, setIntermediateStates] = useState<GameState[]>([]);
+  const [currentStateIndex, setCurrentStateIndex] = useState(0);
+  const [showEndTurnButton, setShowEndTurnButton] = useState(false);
+  const [isFunctionDisabled, setIsFunctionDisabled] = useState(false);
 
   const handleCapture = (imageData: string, result: DetectionResult) => {
     setCapturedImage(imageData);
@@ -173,6 +185,76 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
   const handleCloseCameraPopup = () => {
     setShowCameraPopup(false);
     handleBackToCamera();
+  };
+
+  const handleConfirmDice = async (dice1: number, dice2: number) => {
+    try {
+      // Call the move_with_dice API
+      const response = await moveWithDice({
+        game_state: gameState,
+        dice1,
+        dice2
+      });
+
+      // Store intermediate states
+      setIntermediateStates(response.intermediate_states);
+      setCurrentStateIndex(0);
+      setIsMoving(true);
+
+      // Close the popup
+      setShowCameraPopup(false);
+      handleBackToCamera();
+
+      // Disable "chức năng" button and hide "Thảy" button
+      setIsFunctionDisabled(true);
+
+      // Start the animation
+      startMovementAnimation(response.intermediate_states);
+
+    } catch (error) {
+      console.error('Error confirming dice:', error);
+    }
+  };
+
+  const startMovementAnimation = (states: GameState[]) => {
+    let index = 0;
+    const moveToNextState = () => {
+      if (index < states.length) {
+        // Update the game state to the current intermediate state
+        onGameStateUpdate(states[index]);
+        setCurrentStateIndex(index);
+        index++;
+        setTimeout(moveToNextState, 100);
+      } else {
+        // Animation finished, show "Kết thúc lượt" button
+        setIsMoving(false);
+        setShowEndTurnButton(true);
+        setIsFunctionDisabled(false); // Re-enable "Chức năng" button after movement
+        // Update to final state
+        onGameStateUpdate(states[states.length - 1]);
+      }
+    };
+    moveToNextState();
+  };
+
+  const handleEndTurn = async () => {
+    try {
+      // Call next_player API
+      const response = await nextPlayer({
+        game_state: gameState
+      });
+
+      // Update game state with new current player
+      onGameStateUpdate(response.new_game_state);
+
+      // Reset UI state
+      setShowEndTurnButton(false);
+      setIntermediateStates([]);
+      setCurrentStateIndex(0);
+
+    } catch (error) {
+      console.error('Error ending turn:', error);
+    }
   };
 
   // Game board grid
@@ -247,20 +329,34 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
         {/* Pause Button */}
         <button
           onClick={onBack}
-          className="border-2 border-white w-full text-lg font-bold py-1 rounded text-gray-700"
+          disabled={isFunctionDisabled}
+          className="border-2 border-white w-full text-lg font-bold py-1 rounded text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
           style={{ backgroundColor: current_player_color }}
         >Chức năng</button>
       </div>
-      <Board gameData={gameData} gameState={gameState}/>
+      <Board
+        gameData={gameData}
+        gameState={gameState}
+      />
       {/* Right Panel - Empty with button to open camera */}
       <div className="txx-button w-1/2 flex flex-col items-center justify-center">
-        <button
-          onClick={() => setShowCameraPopup(true)}
-          className="px-4 py-6 text-lg text-gray-600 font-bold rounded border-3 border-gray-500"
-          style={{ backgroundColor: current_player_color }}
-        >
-          Thảy
-        </button>
+        {showEndTurnButton ? (
+          <button
+            onClick={handleEndTurn}
+            className="px-4 py-6 text-lg text-gray-600 font-bold rounded border-3 border-gray-500"
+            style={{ backgroundColor: current_player_color }}
+          >
+            Kết thúc lượt
+          </button>
+        ) : !isMoving && (
+          <button
+            onClick={() => setShowCameraPopup(true)}
+            className="px-4 py-6 text-lg text-gray-600 font-bold rounded border-3 border-gray-500"
+            style={{ backgroundColor: current_player_color }}
+          >
+            Thảy
+          </button>
+        )}
       </div>
 
       {/* Camera Popup */}
@@ -281,6 +377,7 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
                 imageData={capturedImage}
                 result={detectionResult}
                 onBack={handleBackToCamera}
+                onConfirm={handleConfirmDice}
               />
             ) : (
               <CameraCapture selectedCamera={selectedCamera} onCapture={handleCapture} />
