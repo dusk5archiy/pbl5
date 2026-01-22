@@ -47,6 +47,18 @@
     "TDB",
     "H2"
   ],
+  "bds_groups_order": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "R",
+    "U"
+  ],
   "special_groups": {
     "KV": [
       "KV1",

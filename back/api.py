@@ -30,6 +30,7 @@ BDAU_SALARY = 200
 def bdau_effect(state: GameState, player_id: str) -> None:
     """Add salary when passing through or landing on BDAU"""
     state.players[player_id].budget += BDAU_SALARY
+    state.players[player_id].total += BDAU_SALARY
 
 
 EFFECTS_ON_TOUCH: dict[str, SpaceEffect] = {

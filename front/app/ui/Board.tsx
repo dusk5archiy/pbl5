@@ -18,7 +18,6 @@ interface BoardProps {
 }
 
 const Board: React.FC<BoardProps> = ({
-  unitSize = DEFAULT_UNIT_SIZE,
   movementLines = [],
   gameData,
   gameState,
@@ -31,19 +30,11 @@ const Board: React.FC<BoardProps> = ({
 
   // vt() returns percentage string for responsive scaling
   const vt = (x: number) => `${x / vt_max * 100}%`;
-  
+
   // vtNum() returns numeric percentage for attributes that need numbers
   const vtNum = (x: number) => (x / vt_max * 100);
-  
-  // vtCalc() allows combining percentage with pixel offset
-  // Usage: vtCalc(5, 10) returns "calc(50% + 10px)" if vt_max=10
-  const vtCalc = (x: number, pxOffset: number) => 
-    `calc(${x / vt_max * 100}% + ${pxOffset}px)`;
-  
-  // Font size - use viewport height units for responsive scaling
-  // Since board is aspect-square in container, vh scales proportionally
-  const fontSize = `${0.35 / vt_max * 100}vh`;
 
+  const fontSize = `${0.35 / vt_max * 100}vh`;
   const border = gameData.color_pallete.border;
 
   const orient_to_wh = (orient: string) => {
@@ -188,13 +179,13 @@ const Board: React.FC<BoardProps> = ({
   const drawTextLabel = (key: string, text: string, x: string, y: string, color: string, rotate: boolean = false) => {
     const lines = text.split('\n');
     const lineCount = lines.length;
-    
-    const verticalShift = -lineCount / 2 + 1;
+
+    const verticalShift = -lineCount / 2 + 0.75;
     const translateY = `calc(${fontSize} * ${verticalShift})`;
-    const transform = rotate 
-      ? `translate(0, ${translateY}) rotate(90deg)` 
+    const transform = rotate
+      ? `translate(0, ${translateY}) rotate(90deg)`
       : `translate(0, ${translateY})`;
-    
+
     return (
       <text
         key={key}
@@ -311,7 +302,7 @@ const Board: React.FC<BoardProps> = ({
       const centerY = vt(space.y + off_h);
       const rotated = is_player_rotated(space.orient);
 
-     const halfPiece = vtNum(0.35);
+      const halfPiece = vtNum(0.35);
       const imageX = `calc(${centerX} - ${halfPiece}%)`;
       const imageY = `calc(${centerY} - ${halfPiece}%)`;
 

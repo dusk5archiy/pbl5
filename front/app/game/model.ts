@@ -1,6 +1,7 @@
 export interface Card {
   title: string;
   content: string;
+  keep: boolean;
 }
 
 export interface BDS {
@@ -37,6 +38,8 @@ export interface GameData {
   color_pallete: ColorPalette;
   space_labels: Record<string, string>;
   special_spaces: Record<string, string>;
+  bds_groups_order: string[];
+  group_bds: Record<string, string[]>;
 }
 
 export interface GameDataResponse {
@@ -46,6 +49,7 @@ export interface GameDataResponse {
 export interface GameStatePlayer {
   budget: number;
   at: string;
+  total: number;
 }
 
 export interface GameStateBDS {

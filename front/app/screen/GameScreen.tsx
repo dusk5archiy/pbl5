@@ -2,6 +2,7 @@
 
 import { useRef, useState, useEffect } from 'react';
 import Board from '../ui/Board';
+import PropertyBoard from '../ui/PropertyBoard';
 import { GameData, GameState } from '@/app/game/model';
 import { formatBudget } from '../ui/lib/utils';
 import { moveWithDice, nextTurn } from '@/app/game/data';
@@ -19,11 +20,9 @@ interface DetectionResult {
   scores: number[];
 }
 
-function CameraCapture({ selectedCamera, onCapture }: { selectedCamera: string; onCapture: (imageData: string, result: DetectionResult) => void }) {
+function CameraInBoard({ selectedCamera }: { selectedCamera: string }) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const startCamera = async () => {
@@ -49,60 +48,14 @@ function CameraCapture({ selectedCamera, onCapture }: { selectedCamera: string; 
     };
   }, [selectedCamera]);
 
-  const captureImage = async () => {
-    if (videoRef.current && canvasRef.current) {
-      const canvas = canvasRef.current;
-      const video = videoRef.current;
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.drawImage(video, 0, 0);
-        canvas.toBlob(async (blob) => {
-          if (blob) {
-            await sendImage(blob);
-          }
-        });
-      }
-    }
-  };
-
-  const sendImage = async (blob: Blob) => {
-    setLoading(true);
-    const formData = new FormData();
-    formData.append('file', blob, 'capture.jpg');
-
-    try {
-      const response = await fetch('http://localhost:8000/detect', {
-        method: 'POST',
-        body: formData,
-      });
-      const data: DetectionResult = await response.json();
-      const imageData = canvasRef.current!.toDataURL();
-      onCapture(imageData, data);
-    } catch (error) {
-      console.error('Error sending image:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <div className="flex flex-col items-center">
-      <div className="flex flex-1 border-4 border-green-500 rounded bg-gray-800 justify-center">
-        <div className="flex">
-          <video ref={videoRef} autoPlay playsInline muted className="camera rounded max-h-96" />
-        </div>
-      </div>
-      <button
-        onClick={captureImage}
-        className="px-2 py-1 bg-green-600 text-white text-lg font-bold rounded hover:bg-green-700"
-        disabled={loading}
-      >
-        {loading ? 'Đang xử lí...' : 'Chụp xúc xắc'}
-      </button>
-      <canvas ref={canvasRef} className="hidden" />
-    </div>
+    <video
+      ref={videoRef}
+      autoPlay
+      playsInline
+      muted
+      className="amber-box-camera w-full h-full object-contain"
+    />
   );
 }
 
@@ -137,10 +90,10 @@ function DetectionResult({ imageData, result, onBack, onConfirm }: { imageData: 
   }, [imageData, result]);
 
   return (
-    <div className="flex flex-col items-center space-y-2">
-      <div className="flex flex-1 border-4 border-green-500 rounded p-4 bg-gray-800 justify-center">
-        <div className="flex">
-          <canvas ref={canvasRef} className="camera rounded max-h-96" />
+    <div className="w-full h-full flex flex-col items-center gap-4 justify-center">
+      <div className="flex border-4 border-green-500 rounded p-1 bg-gray-800 justify-center h-[70%] w-[90%] overflow-hidden,">
+        <div className="w-full h-full flex items-center justify-center overflow-hidden">
+          <canvas ref={canvasRef} className="max-w-full max-h-full object-contain camera rounded" />
         </div>
       </div>
       <div className="flex gap-2">
@@ -164,13 +117,13 @@ function DetectionResult({ imageData, result, onBack, onConfirm }: { imageData: 
 export default function GameScreen({ selectedCamera, gameState, gameData, onBack, onGameStateUpdate }: GameScreenProps) {
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [detectionResult, setDetectionResult] = useState<DetectionResult | null>(null);
-  const [showCameraPopup, setShowCameraPopup] = useState(false);
   const [showBoardPopup, setShowBoardPopup] = useState(false);
   const [isMoving, setIsMoving] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [showConfirmationPopup, setShowConfirmationPopup] = useState(false);
   // const [intermediateStates, setIntermediateStates] = useState<GameState[]>([]);
   // const [currentStateIndex, setCurrentStateIndex] = useState(0);
   const [showEndTurnButton, setShowEndTurnButton] = useState(false);
-  const [showRollAgainButton, setShowRollAgainButton] = useState(false);
   const [isFunctionDisabled, setIsFunctionDisabled] = useState(false);
   const [movementLines, setMovementLines] = useState<{ from: string, to: string, isLast: boolean }[]>([]);
   const [showFunctionalityScreen, setShowFunctionalityScreen] = useState(false);
@@ -181,19 +134,50 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
   const [devDice1, setDevDice1] = useState(1);
   const [devDice2, setDevDice2] = useState(1);
 
-  const handleCapture = (imageData: string, result: DetectionResult) => {
-    setCapturedImage(imageData);
-    setDetectionResult(result);
-  };
 
   const handleBackToCamera = () => {
     setCapturedImage(null);
     setDetectionResult(null);
+    setShowConfirmationPopup(false);
   };
 
-  const handleCloseCameraPopup = () => {
-    setShowCameraPopup(false);
-    handleBackToCamera();
+  const handleCaptureFromAmberBox = async () => {
+    const videoElement = document.querySelector('.amber-box-camera') as HTMLVideoElement;
+    const canvas = document.createElement('canvas');
+
+    if (videoElement) {
+      canvas.width = videoElement.videoWidth;
+      canvas.height = videoElement.videoHeight;
+      const ctx = canvas.getContext('2d');
+
+      if (ctx) {
+        setIsAnalyzing(true);
+        ctx.drawImage(videoElement, 0, 0);
+
+        canvas.toBlob(async (blob) => {
+          if (blob) {
+            const formData = new FormData();
+            formData.append('file', blob, 'capture.jpg');
+
+            try {
+              const response = await fetch('http://localhost:8000/detect', {
+                method: 'POST',
+                body: formData,
+              });
+              const data: DetectionResult = await response.json();
+              const imageData = canvas.toDataURL();
+              setCapturedImage(imageData);
+              setDetectionResult(data);
+              setShowConfirmationPopup(true);
+            } catch (error) {
+              console.error('Error analyzing image:', error);
+            } finally {
+              setIsAnalyzing(false);
+            }
+          }
+        });
+      }
+    }
   };
 
   const handleConfirmDice = async (dice1: number, dice2: number) => {
@@ -210,8 +194,8 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
       // setCurrentStateIndex(0);
       setIsMoving(true);
 
-      // Close the popup
-      setShowCameraPopup(false);
+      // Close the popups
+      setShowConfirmationPopup(false);
       handleBackToCamera();
 
       // Disable "chức năng" button and hide "Thảy" button
@@ -277,7 +261,6 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
         if (endTurnAction) {
           // Always show "Kết thúc lượt" button regardless of doubles
           setShowEndTurnButton(true);
-          setShowRollAgainButton(false);
         }
       }
     };
@@ -296,7 +279,6 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
 
       // Reset UI state
       setShowEndTurnButton(false);
-      setShowRollAgainButton(false);
       setMovementLines([]); // Clear movement lines
       setBoardMessage(''); // Clear board message
 
@@ -304,19 +286,6 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
       console.error('Error ending turn:', error);
     }
   };
-
-  // Game board grid
-  const cols1 = [2, 3, 3, 3, 3, 3, 3, 2, 4, 2];
-  const cols = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'R', 'U'];
-
-  // Get players from gameState
-  const players = gameState?.players ? Object.entries(gameState.players).map(([playerId, playerData]: [string, any]) => {
-    return {
-      color: playerId,
-      budget: playerData.budget,
-      at: playerData.at
-    };
-  }) : [];
 
   const current_player_color = gameData.color_pallete.players[gameState.current_player];
 
@@ -355,56 +324,31 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
           className="flex gap-1 border-2 border-white p-1 rounded h-[25%] bg-[#446655] items-center"
           onClick={() => setShowBoardPopup(true)}
         >
-          <div className='flex w-full gap-[1vw] justify-evenly'>
-            <div className="flex gap-[1vw]">
-              {/* Columns */}
-              {cols.map((col, colIndex) => (
-                <div key={col} className="flex flex-col gap-1 justify-end">
-                  {/* Cells for this column */}
-                  {Array.from({ length: cols1[colIndex] }, (_, rowIndex) => (
-                    <div
-                      key={`${col}${rowIndex + 1}`}
-                      style={{ backgroundColor: 'gray', color: "white", fontSize: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '400', textAlign: 'center' }}
-                      className="h-[3vh] border aspect-square overflow-hidden"
-                    >
-                      <span className='text-[3vh]'>{col}</span>
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </div>
-            <div className="flex flex-col gap-1 justify-end">
-              <div
-                style={{ backgroundColor: 'gray', color: "white", fontSize: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '400', textAlign: 'center' }}
-                className="w-[6vw] h-[3vh] border overflow-hidden">
-                <span className='text-[3vh]'>Kv.13</span>
-              </div>
-              <div
-                style={{ backgroundColor: 'gray', color: "white", fontSize: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '400', textAlign: 'center' }}
-                className="text-[3vh] w-[6vw] h-[3vh] border overflow-hidden">
-                <span className='text-[3vh]'>Ch.09</span>
-              </div>
-            </div>
-          </div>
+          <PropertyBoard
+            key={`property-board-${movementLines.length}`}
+            gameData={gameData}
+            gameState={gameState}
+            showBorders={movementLines.length > 0}
+          />
         </div>
         <div className="flex flex-1 gap-1">
           <div className='flex flex-col gap-1 w-[70%] h-full'>
             <div className="flex flex-col border-2 border-white p-[2vh] rounded bg-gray-700 h-[70%]">
               <div className="flex flex-col gap-[1vh] overflow-hidden">
-                {players.map((player, _) => (
+                {gameState?.players && Object.entries(gameState.players).map(([playerId, playerData]: [string, any]) => (
                   <div
-                    key={player.color}
+                    key={playerId}
                     className="flex items-center gap-1 max-h-[5vh]"
                   >
                     <div
                       className="border-2 border-white flex items-center justify-center h-full w-[10%] min-w-2"
                       style={{
                         backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0,0,0,0.2) 5px, rgba(0,0,0,0.2) 10px)',
-                        backgroundColor: gameData.color_pallete.players[player.color]
+                        backgroundColor: gameData.color_pallete.players[playerId]
                       }}
                     />
-                    <span className="font-bold text-gray-100 text-[5vh]">{formatBudget(player.budget)}</span>
-                    <span className="font-bold text-gray-300 text-[5vh] whitespace-nowrap">• {formatBudget(player.budget)}</span>
+                    <span className="font-bold text-gray-100 text-[5vh]">{formatBudget(playerData.budget)}</span>
+                    <span className="font-bold text-gray-300 text-[5vh] whitespace-nowrap">• {formatBudget(playerData.total)}</span>
                   </div>
                 ))}
                 <div
@@ -437,10 +381,10 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
                 onClick={() => {
                   setBoardMessage('');
                   setMovementLines([]);
-                  setShowCameraPopup(true);
+                  handleCaptureFromAmberBox();
                 }}
                 className="w-full h-[50%] text-[5vh] text-gray-600 font-bold rounded border-3 border-gray-500 disabled:text-white"
-                disabled={!isRollDiceButtonActive}
+                disabled={!isRollDiceButtonActive || isAnalyzing}
                 style={{ backgroundColor: current_player_color }}
               >
                 Thảy
@@ -456,7 +400,6 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
               onClick={() => {
                 setBoardMessage('');
                 setMovementLines([]);
-                setShowCameraPopup(true);
               }}
               className="w-full flex-1 text-[5vh] text-gray-600 font-bold rounded border-3 border-gray-500 disabled:text-white"
               disabled
@@ -469,79 +412,76 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
 
         {/* Function Button */}
       </div>
-      <Board
-        gameData={gameData}
-        gameState={gameState}
-        movementLines={movementLines}
-        message={boardMessage}
-      />
-      {/* Right Panel - Empty with button to open camera */}
-      <div className="txx-button w-1/2 flex flex-col items-center justify-center">
+      <div className='relative'>
+        <Board
+          gameData={gameData}
+          gameState={gameState}
+          movementLines={movementLines}
+          message={boardMessage}
+        />
+        {/* Amber Box with Camera */}
+        <div className="w-1/2 flex flex-col items-center justify-center overflow-hidden"
+          style={
+            {
+              position: "absolute",
+              top: `${4 / 13 * 100}%`,
+              left: `${2 / 13 * 100}%`,
+              width: `${(13 - 4) / 13 * 100}%`,
+              height: `${(13 - 7) / 13 * 100}%`,
+            }
+          }
+        >
+          <CameraInBoard selectedCamera={selectedCamera} />
+        </div>
       </div>
 
-      {/* Camera Popup */}
-      {showCameraPopup && (
+      {/* Confirmation Popup */}
+      {showConfirmationPopup && capturedImage && detectionResult && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="xx-popup bg-gray-900 border-4 border-green-500 rounded-lg p-4 max-w-3xl mx-3">
-            <div className="flex justify-between items-center mb-2">
-              <h2 className="text-2xl font-bold text-green-400">Thảy xúc xắc</h2>
-              <button
-                onClick={handleCloseCameraPopup}
-                className="text-3xl text-white hover:text-red-500"
-              >
-                ×
-              </button>
-            </div>
-            {capturedImage && detectionResult ? (
-              <DetectionResult
-                imageData={capturedImage}
-                result={detectionResult}
-                onBack={handleBackToCamera}
-                onConfirm={handleConfirmDice}
-              />
-            ) : (
-              <CameraCapture selectedCamera={selectedCamera} onCapture={handleCapture} />
-            )}
+          <div className="flex bg-gray-900 border-4 border-green-500 rounded-lg p-4 h-[90vh] w-[70vw] justify-center items-center">
+            <DetectionResult
+              imageData={capturedImage}
+              result={detectionResult}
+              onBack={handleBackToCamera}
+              onConfirm={handleConfirmDice}
+            />
           </div>
         </div>
       )}
 
       {/* Board Popup */}
-      {showBoardPopup && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-          <div className="bg-gray-900 rounded-lg p-6 max-w-4xl w-full mx-4" style={{ maxHeight: '90vh' }}>
-            <div className="flex justify-between items-center mb-4">
-              <button
-                onClick={() => setShowBoardPopup(false)}
-                className="close-popup text-4xl text-white hover:text-red-500"
-              >
-                ×
-              </button>
-            </div>
-            <div className="bg-gray-800 p-4 rounded" style={{ height: '70vh' }}>
-              <div className="flex gap-2 h-full">
-                {/* Columns */}
-                {cols.map((col, colIndex) => (
-                  <div key={col} className="flex-1 flex flex-col gap-2 justify-end">
-                    {/* Cells for this column */}
-                    {Array.from({ length: cols1[colIndex] }, (_, rowIndex) => (
-                      <div
-                        key={`${col}${rowIndex + 1}`}
-                        style={{ color: 'orange', fontSize: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900' }}
-                        className="border-2 bg-white aspect-square rounded"
-                      >1</div>
-                    ))}
-                    {/* Column header at bottom */}
-                    <div className="text-center text-2xl font-bold items-center justify-center text-white">
-                      {col}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* {showBoardPopup && ( */}
+      {/*   <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50"> */}
+      {/*     <div className="bg-gray-900 rounded-lg p-6 max-w-4xl w-full mx-4" style={{ maxHeight: '90vh' }}> */}
+      {/*       <div className="flex justify-between items-center mb-4"> */}
+      {/*         <button */}
+      {/*           onClick={() => setShowBoardPopup(false)} */}
+      {/*           className="close-popup text-4xl text-white hover:text-red-500" */}
+      {/*         > */}
+      {/*           × */}
+      {/*         </button> */}
+      {/*       </div> */}
+      {/*       <div className="bg-gray-800 p-4 rounded" style={{ height: '70vh' }}> */}
+      {/*         <div className="flex gap-2 h-full"> */}
+      {/*           {cols.map((col, colIndex) => ( */}
+      {/*             <div key={col} className="flex-1 flex flex-col gap-2 justify-end"> */}
+      {/*               {Array.from({ length: cols1[colIndex] }, (_, rowIndex) => ( */}
+      {/*                 <div */}
+      {/*                   key={`${col}${rowIndex + 1}`} */}
+      {/*                   style={{ color: 'orange', fontSize: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900' }} */}
+      {/*                   className="border-2 bg-white aspect-square rounded" */}
+      {/*                 >1</div> */}
+      {/*               ))} */}
+      {/*               <div className="text-center text-2xl font-bold items-center justify-center text-white"> */}
+      {/*                 {col} */}
+      {/*               </div> */}
+      {/*             </div> */}
+      {/*           ))} */}
+      {/*         </div> */}
+      {/*       </div> */}
+      {/*     </div> */}
+      {/*   </div> */}
+      {/* )} */}
     </div>
   );
 }

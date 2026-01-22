@@ -12,7 +12,7 @@ def init_game_state(player_order: list[str]):
 
     players = {}
     for color in player_order:
-        players[color] = GameStatePlayer(budget=1500, at="BDAU")
+        players[color] = GameStatePlayer(budget=1500, at="BDAU", total=1500)
 
     game_state = GameState(
         kv_queue=kv_queue,

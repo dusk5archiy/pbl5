@@ -18,6 +18,7 @@ class Board(BaseModel):
     N: list[str]
     NE: str
     E: list[str]
+    bds_groups_order: list[str]
     special_groups: dict[str, list[str]]
 
     def space(self):
@@ -62,6 +63,7 @@ class Board(BaseModel):
 class GameStatePlayer(BaseModel):
     budget: int
     at: str
+    total: int
 
 
 class GameStateBDS(BaseModel):
@@ -92,6 +94,7 @@ class GameState(BaseModel):
 class Card(BaseModel):
     title: str
     content: str
+    keep: bool = False
 
 
 # Models for Properties -------------------------------------------------------
@@ -131,6 +134,8 @@ class GameData(BaseModel):
     color_pallete: ColorPallete
     space_labels: dict[str, str]
     special_spaces: dict[str, str]
+    bds_groups_order: list[str]
+    group_bds: dict[str, list[str]]
 
 
 # -----------------------------------------------------------------------------
