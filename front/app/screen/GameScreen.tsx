@@ -175,7 +175,7 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
   const [movementLines, setMovementLines] = useState<{ from: string, to: string, isLast: boolean }[]>([]);
   const [showFunctionalityScreen, setShowFunctionalityScreen] = useState(false);
   const [boardMessage, setBoardMessage] = useState<string>('');
-  
+
   // Functionality screen persistent state
   const [functionalityTab, setFunctionalityTab] = useState<'main' | 'dev'>('main');
   const [devDice1, setDevDice1] = useState(1);
@@ -233,10 +233,10 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
     const moveToNextState = () => {
       if (index < states.length) {
         const currentState = states[index];
-        
+
         // Update the game state to the current intermediate state
         onGameStateUpdate(currentState);
-        
+
         // Process pending actions for this state during animation
         if (currentState.pending_actions && currentState.pending_actions.length > 0) {
           // Extract all show_message actions
@@ -246,7 +246,7 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
               accumulatedMessages.push(action.data.message);
             }
           });
-          
+
           // Update board message with all accumulated messages
           if (accumulatedMessages.length > 0) {
             setBoardMessage(accumulatedMessages.join('\n'));
@@ -270,10 +270,10 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
         // Animation finished, check pending actions for turn control
         setIsMoving(false);
         setIsFunctionDisabled(false); // Re-enable "Chức năng" button after movement
-        
+
         const finalState = states[states.length - 1];
         const endTurnAction = finalState.pending_actions?.find(a => a.type === 'end_turn');
-        
+
         if (endTurnAction) {
           // Always show "Kết thúc lượt" button regardless of doubles
           setShowEndTurnButton(true);
@@ -319,10 +319,10 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
   }) : [];
 
   const current_player_color = gameData.color_pallete.players[gameState.current_player];
-  
+
   // Check if roll button should be shown (same logic as in the game screen)
   const canRoll = !showEndTurnButton && !isMoving;
-  
+
   // Show functionality screen if requested
   if (showFunctionalityScreen) {
     return (
@@ -343,79 +343,131 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
       />
     );
   }
-  
-  return (
-    <div className="flex h-screen p-1 bg-[#2E6C3D]">
-      {/* Left Panel */}
-      <div className="left-sidebar flex flex-col pr-4">
 
+  const isRollDiceButtonActive = gameState.pending_actions?.some(a => a.type === 'roll_dice');
+
+  return (
+    <div className="flex h-screen p-1 bg-[#2E6C3D] gap-1">
+      {/* Left Panel */}
+      <div className="flex flex-col w-[40vw] gap-1 overflow-hidden">
         {/*Game Board */}
         <div
-          className="bds-wrapper border-2 border-white p-1 rounded flex-1 cursor-pointer transition-colors"
+          className="flex gap-1 border-2 border-white p-1 rounded h-[25%] bg-[#446655] items-center"
           onClick={() => setShowBoardPopup(true)}
         >
-          <div className="flex gap-1 h-full">
-            {/* Columns */}
-            {cols.map((col, colIndex) => (
-              <div key={col} className="flex-1 flex flex-col gap-1 justify-end">
-                {/* Cells for this column */}
-                {Array.from({ length: cols1[colIndex] }, (_, rowIndex) => (
-                  <div
-                    key={`${col}${rowIndex + 1}`}
-                    style={{ backgroundColor: '#FF8B8B', color: "black", fontSize: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '400', textAlign: 'center' }}
-                    className="bds-node border aspect-square"
-                  >3</div>
-                ))}
-                {/* Column header at bottom */}
-                <div className="b-col text-center text-sm font-bold items-center justify-center text-white">
-                  {col}
+          <div className='flex w-full gap-[1vw] justify-evenly'>
+            <div className="flex gap-[1vw]">
+              {/* Columns */}
+              {cols.map((col, colIndex) => (
+                <div key={col} className="flex flex-col gap-1 justify-end">
+                  {/* Cells for this column */}
+                  {Array.from({ length: cols1[colIndex] }, (_, rowIndex) => (
+                    <div
+                      key={`${col}${rowIndex + 1}`}
+                      style={{ backgroundColor: 'gray', color: "white", fontSize: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '400', textAlign: 'center' }}
+                      className="h-[3vh] border aspect-square overflow-hidden"
+                    >
+                      <span className='text-[3vh]'>{col}</span>
+                    </div>
+                  ))}
                 </div>
+              ))}
+            </div>
+            <div className="flex flex-col gap-1 justify-end">
+              <div
+                style={{ backgroundColor: 'gray', color: "white", fontSize: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '400', textAlign: 'center' }}
+                className="w-[6vw] h-[3vh] border overflow-hidden">
+                <span className='text-[3vh]'>Kv.13</span>
               </div>
-            ))}
+              <div
+                style={{ backgroundColor: 'gray', color: "white", fontSize: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '400', textAlign: 'center' }}
+                className="text-[3vh] w-[6vw] h-[3vh] border overflow-hidden">
+                <span className='text-[3vh]'>Ch.09</span>
+              </div>
+            </div>
           </div>
         </div>
-        {/* Player Colors */}
-        <div className="text-white border-2 border-white p-2 rounded bg-gray-700 min-h-[48vh]">
-          <div className="flex flex-col h-full gap-1">
-            {players.map((player, _) => (
-              <div
-                key={player.color}
-                className="flex items-center gap-1 max-h-[5vh]"
-              >
+        <div className="flex flex-1 gap-1">
+          <div className='flex flex-col gap-1 w-[70%] h-full'>
+            <div className="flex flex-col border-2 border-white p-[2vh] rounded bg-gray-700 h-[70%]">
+              <div className="flex flex-col gap-[1vh] overflow-hidden">
+                {players.map((player, _) => (
+                  <div
+                    key={player.color}
+                    className="flex items-center gap-1 max-h-[5vh]"
+                  >
+                    <div
+                      className="border-2 border-white flex items-center justify-center h-full w-[10%] min-w-2"
+                      style={{
+                        backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0,0,0,0.2) 5px, rgba(0,0,0,0.2) 10px)',
+                        backgroundColor: gameData.color_pallete.players[player.color]
+                      }}
+                    />
+                    <span className="font-bold text-gray-100 text-[5vh]">{formatBudget(player.budget)}</span>
+                    <span className="font-bold text-gray-300 text-[5vh] whitespace-nowrap">• {formatBudget(player.budget)}</span>
+                  </div>
+                ))}
                 <div
-                  className={`border-2 border-white flex items-center justify-center h-full w-[10%]`}
-                  style={{
-                    backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0,0,0,0.2) 5px, rgba(0,0,0,0.2) 10px)',
-                    backgroundColor: gameData.color_pallete.players[player.color]
-                  }}
-                />
-                <span className="font-bold text-gray-100 text-sm">{formatBudget(player.budget)}</span>
-                <span className="font-bold text-gray-300 text-sm">• {formatBudget(player.budget)}</span>
+                  key="house"
+                  className="flex items-center gap-1 max-h-[6vh]"
+                >
+                  <div
+                    className={`border-2 border-white flex items-center justify-center h-full w-[10%] min-w-2`}
+                    style={{
+                      backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0,0,0,0.2) 5px, rgba(0,0,0,0.2) 10px)',
+                      backgroundColor: "gray"
+                    }}
+                  />
+                  <span className="font-bold text-[5vh] text-gray-100 whitespace-nowrap">{`32 • 12`}</span>
+                </div>
               </div>
-            ))}
-              <div
-                key="house"
-                className="flex items-center gap-1 max-h-[6vh]"
+            </div>
+            <button
+              onClick={handleEndTurn}
+              className="flex-1 text-[5vh] font-bold rounded border-2 border-gray-500 disabled:text-white"
+              style={{ backgroundColor: current_player_color }}
+              disabled={!showEndTurnButton}
+            >
+              Kết thúc lượt
+            </button>
+          </div>
+          <div className='flex flex-col flex-1 gap-1'>
+            <div className='flex flex-col h-[70%] gap-1'>
+              <button
+                onClick={() => {
+                  setBoardMessage('');
+                  setMovementLines([]);
+                  setShowCameraPopup(true);
+                }}
+                className="w-full h-[50%] text-[5vh] text-gray-600 font-bold rounded border-3 border-gray-500 disabled:text-white"
+                disabled={!isRollDiceButtonActive}
+                style={{ backgroundColor: current_player_color }}
               >
-                <div
-                  className={`border-2 border-white flex items-center justify-center h-full w-[10%]`}
-                  style={{
-                    backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0,0,0,0.2) 5px, rgba(0,0,0,0.2) 10px)',
-                    backgroundColor: "gray"
-                  }}
-                />
-                <span className="font-bold text-sm text-gray-100">{`32 • 12`}</span>
-              </div>
+                Thảy
+              </button>
+              <button
+                onClick={() => setShowFunctionalityScreen(true)}
+                disabled={isFunctionDisabled}
+                className="w-full h-[50%] border-2 text-[3vh] border-gray-600 font-bold py-1 rounded text-gray-700 disabled:text-white bg-white"
+              >Chức năng
+              </button>
+            </div>
+            <button
+              onClick={() => {
+                setBoardMessage('');
+                setMovementLines([]);
+                setShowCameraPopup(true);
+              }}
+              className="w-full flex-1 text-[5vh] text-gray-600 font-bold rounded border-3 border-gray-500 disabled:text-white"
+              disabled
+              style={{ backgroundColor: current_player_color }}
+            >
+              Tiếp
+            </button>
           </div>
         </div>
 
         {/* Function Button */}
-        <button
-          onClick={() => setShowFunctionalityScreen(true)}
-          disabled={isFunctionDisabled}
-          className="border-2 border-white w-full text-lg font-bold py-1 rounded text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-          style={{ backgroundColor: current_player_color }}
-        >Chức năng</button>
       </div>
       <Board
         gameData={gameData}
@@ -425,27 +477,6 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
       />
       {/* Right Panel - Empty with button to open camera */}
       <div className="txx-button w-1/2 flex flex-col items-center justify-center">
-        {showEndTurnButton ? (
-          <button
-            onClick={handleEndTurn}
-            className="px-4 py-6 text-lg text-gray-600 font-bold rounded border-3 border-gray-500"
-            style={{ backgroundColor: current_player_color }}
-          >
-            Kết thúc lượt
-          </button>
-        ) : gameState.pending_actions?.some(a => a.type === 'roll_dice') && !isMoving && (
-          <button
-            onClick={() => {
-              setBoardMessage('');
-              setMovementLines([]);
-              setShowCameraPopup(true);
-            }}
-            className="px-4 py-6 text-lg text-gray-600 font-bold rounded border-3 border-gray-500"
-            style={{ backgroundColor: current_player_color }}
-          >
-            Thảy
-          </button>
-        )}
       </div>
 
       {/* Camera Popup */}

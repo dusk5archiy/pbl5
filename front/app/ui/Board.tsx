@@ -25,14 +25,24 @@ const Board: React.FC<BoardProps> = ({
   message
 }) => {
   console.log('Board component received message:', message);
-  
+
   // Board layout constants
   const vt_max = gameData.vt_max;
-  const BOARD_SIZE = vt_max * unitSize;
 
-  const vt = (x: number): number => x * unitSize;
-  const fontSize = Math.floor(unitSize * 0.35);
-
+  // vt() returns percentage string for responsive scaling
+  const vt = (x: number) => `${x / vt_max * 100}%`;
+  
+  // vtNum() returns numeric percentage for attributes that need numbers
+  const vtNum = (x: number) => (x / vt_max * 100);
+  
+  // vtCalc() allows combining percentage with pixel offset
+  // Usage: vtCalc(5, 10) returns "calc(50% + 10px)" if vt_max=10
+  const vtCalc = (x: number, pxOffset: number) => 
+    `calc(${x / vt_max * 100}% + ${pxOffset}px)`;
+  
+  // Font size - use viewport height units for responsive scaling
+  // Since board is aspect-square in container, vh scales proportionally
+  const fontSize = `${0.35 / vt_max * 100}vh`;
 
   const border = gameData.color_pallete.border;
 
@@ -175,24 +185,33 @@ const Board: React.FC<BoardProps> = ({
 
   const OT_SPACE = gameData.space.OT;
 
-  const drawTextLabel = (key: string, text: string, x: number, y: number, color: string, rotate: boolean = false) => {
+  const drawTextLabel = (key: string, text: string, x: string, y: string, color: string, rotate: boolean = false) => {
     const lines = text.split('\n');
     const lineCount = lines.length;
-    const verticalOffset = (lineCount - 1) * fontSize / 2 - 4;
+    
+    const verticalShift = -lineCount / 2 + 1;
+    const translateY = `calc(${fontSize} * ${verticalShift})`;
+    const transform = rotate 
+      ? `translate(0, ${translateY}) rotate(90deg)` 
+      : `translate(0, ${translateY})`;
+    
     return (
       <text
         key={key}
         x={x}
-        y={y - verticalOffset}
+        y={y}
         textAnchor="middle"
         fontSize={fontSize}
         fill={color}
         fontFamily="Bahnschrift, Arial, sans-serif"
         fontWeight="normal"
-        transform={rotate ? `rotate(90, ${x}, ${y})` : undefined}
+        style={{
+          transform,
+          transformOrigin: rotate ? `${x} ${y}` : undefined
+        }}
       >
         {lines.map((line, i) => (
-          <tspan key={i} x={x} dy={i === 0 ? 0 : fontSize}>
+          <tspan key={i} x={x} dy={i === 0 ? '0' : fontSize}>
             {line}
           </tspan>
         ))}
@@ -284,7 +303,7 @@ const Board: React.FC<BoardProps> = ({
   }
 
   const drawPlayers = () => {
-    const pieceSize = unitSize * 0.7;
+    const pieceSize = vt(0.7);
     return Object.entries(gameState.players).map(([playerId, playerState]) => {
       const space = gameData.space[playerState.at];
       const { off_w, off_h } = orient_to_player_offset(space.orient);
@@ -292,11 +311,15 @@ const Board: React.FC<BoardProps> = ({
       const centerY = vt(space.y + off_h);
       const rotated = is_player_rotated(space.orient);
 
+     const halfPiece = vtNum(0.35);
+      const imageX = `calc(${centerX} - ${halfPiece}%)`;
+      const imageY = `calc(${centerY} - ${halfPiece}%)`;
+
       return (
         <image
           key={`player-${playerId}`}
-          x={centerX - pieceSize / 2}
-          y={centerY - pieceSize / 2}
+          x={imageX}
+          y={imageY}
           width={pieceSize}
           height={pieceSize}
           href={`/assets/players/${playerId}.png`}
@@ -325,22 +348,24 @@ const Board: React.FC<BoardProps> = ({
 
   const drawMessages = () => {
     if (!message) return null;
-    
+
     const centerX = vt(vt_max / 2);
     const centerY = vt(3);
     const lines = message.split('\n');
+    const messageFontSize = `calc(${fontSize} * 1.2)`;
+    const lineSpacing = `${vtNum(0.35) * 1.3}%`;
 
     return (
       <text
         x={centerX}
         y={centerY}
         textAnchor="middle"
-        fontSize={fontSize * 1.2}
+        fontSize={messageFontSize}
         fill="white"
         fontFamily="Bahnschrift, Arial, sans-serif"
       >
         {lines.map((line, i) => (
-          <tspan key={i} x={centerX} dy={i === 0 ? 0 : fontSize * 1.3}>
+          <tspan key={i} x={centerX} dy={i === 0 ? 0 : lineSpacing}>
             {line}
           </tspan>
         ))}
@@ -388,10 +413,10 @@ const Board: React.FC<BoardProps> = ({
   }
 
   return (
-    <div>
+    <div className='h-full aspect-square'>
       <svg
-        width={BOARD_SIZE}
-        height={BOARD_SIZE}
+        width="100%"
+        height="100%"
       >
         <defs>
           {/* Warning pattern - diagonal lines */}
@@ -419,7 +444,7 @@ const Board: React.FC<BoardProps> = ({
           </marker>
         </defs>
 
-        <rect x={vt(0)} y={vt(0)} width={vt(vt_max)} height={vt(vt_max)} fill="#479777" stroke={border} strokeWidth="1" />
+        <rect x="0" y="0" width="100%" height="100%" fill="#479777" stroke={border} strokeWidth="1" />
         {
           Object.keys(gameData.space)
             .filter(spaceId => spaceId !== "OT")

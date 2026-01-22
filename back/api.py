@@ -102,6 +102,9 @@ async def move_with_dice(request: DiceRollRequest):
     intermediate_states = []
     temp_state = game_state.model_copy(deep=True)  # Deep copy of initial state
     
+    # Clear roll_dice action since player is now rolling
+    temp_state.pending_actions = []
+    
     # Update double_roll_stack based on whether doubles were rolled
     if is_doubles:
         temp_state.double_roll_stack += 1
