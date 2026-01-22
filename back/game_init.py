@@ -23,6 +23,7 @@ def init_game_state(player_order: list[str]):
         players=players,
         current_player=player_order[0] if player_order else "",
         double_roll_stack=0,
+        pending_actions=[],
     )
 
     return game_state

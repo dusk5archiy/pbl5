@@ -1,11 +1,11 @@
 'use client';
 
-import { ColorType } from '@/app/utils/ColorType';
 import { useRef, useState, useEffect } from 'react';
 import Board from '../ui/Board';
 import { GameData, GameState } from '@/app/game/model';
 import { formatBudget } from '../ui/lib/utils';
-import { moveWithDice, nextPlayer } from '@/app/game/data';
+import { moveWithDice, nextTurn } from '@/app/game/data';
+import FunctionalityScreen from './FunctionalityScreen';
 interface GameScreenProps {
   selectedCamera: string;
   gameState: GameState;
@@ -167,10 +167,19 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
   const [showCameraPopup, setShowCameraPopup] = useState(false);
   const [showBoardPopup, setShowBoardPopup] = useState(false);
   const [isMoving, setIsMoving] = useState(false);
-  const [intermediateStates, setIntermediateStates] = useState<GameState[]>([]);
-  const [currentStateIndex, setCurrentStateIndex] = useState(0);
+  // const [intermediateStates, setIntermediateStates] = useState<GameState[]>([]);
+  // const [currentStateIndex, setCurrentStateIndex] = useState(0);
   const [showEndTurnButton, setShowEndTurnButton] = useState(false);
+  const [showRollAgainButton, setShowRollAgainButton] = useState(false);
   const [isFunctionDisabled, setIsFunctionDisabled] = useState(false);
+  const [movementLines, setMovementLines] = useState<{ from: string, to: string, isLast: boolean }[]>([]);
+  const [showFunctionalityScreen, setShowFunctionalityScreen] = useState(false);
+  const [boardMessage, setBoardMessage] = useState<string>('');
+  
+  // Functionality screen persistent state
+  const [functionalityTab, setFunctionalityTab] = useState<'main' | 'dev'>('main');
+  const [devDice1, setDevDice1] = useState(1);
+  const [devDice2, setDevDice2] = useState(1);
 
   const handleCapture = (imageData: string, result: DetectionResult) => {
     setCapturedImage(imageData);
@@ -197,8 +206,8 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
       });
 
       // Store intermediate states
-      setIntermediateStates(response.intermediate_states);
-      setCurrentStateIndex(0);
+      // setIntermediateStates(response.intermediate_states);
+      // setCurrentStateIndex(0);
       setIsMoving(true);
 
       // Close the popup
@@ -218,20 +227,58 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
 
   const startMovementAnimation = (states: GameState[]) => {
     let index = 0;
+    const lines: { from: string, to: string, isLast: boolean }[] = [];
+    let accumulatedMessages: string[] = [];
+
     const moveToNextState = () => {
       if (index < states.length) {
+        const currentState = states[index];
+        
         // Update the game state to the current intermediate state
-        onGameStateUpdate(states[index]);
-        setCurrentStateIndex(index);
+        onGameStateUpdate(currentState);
+        
+        // Process pending actions for this state during animation
+        if (currentState.pending_actions && currentState.pending_actions.length > 0) {
+          // Extract all show_message actions
+          const messageActions = currentState.pending_actions.filter(action => action.type === 'show_message');
+          messageActions.forEach(action => {
+            if (action.data.message && !accumulatedMessages.includes(action.data.message)) {
+              accumulatedMessages.push(action.data.message);
+            }
+          });
+          
+          // Update board message with all accumulated messages
+          if (accumulatedMessages.length > 0) {
+            setBoardMessage(accumulatedMessages.join('\n'));
+          }
+        }
+
+        // Build movement lines from consecutive states
+        if (index > 0) {
+          const currentPlayer = states[0].current_player;
+          const fromPos = states[index - 1].players[currentPlayer].at;
+          const toPos = states[index].players[currentPlayer].at;
+          const isLast = index === states.length - 1;
+
+          lines.push({ from: fromPos, to: toPos, isLast });
+          setMovementLines([...lines]);
+        }
+
         index++;
         setTimeout(moveToNextState, 100);
       } else {
-        // Animation finished, show "Kết thúc lượt" button
+        // Animation finished, check pending actions for turn control
         setIsMoving(false);
-        setShowEndTurnButton(true);
         setIsFunctionDisabled(false); // Re-enable "Chức năng" button after movement
-        // Update to final state
-        onGameStateUpdate(states[states.length - 1]);
+        
+        const finalState = states[states.length - 1];
+        const endTurnAction = finalState.pending_actions?.find(a => a.type === 'end_turn');
+        
+        if (endTurnAction) {
+          // Always show "Kết thúc lượt" button regardless of doubles
+          setShowEndTurnButton(true);
+          setShowRollAgainButton(false);
+        }
       }
     };
     moveToNextState();
@@ -239,8 +286,8 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
 
   const handleEndTurn = async () => {
     try {
-      // Call next_player API
-      const response = await nextPlayer({
+      // Call next_turn API
+      const response = await nextTurn({
         game_state: gameState
       });
 
@@ -249,8 +296,9 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
 
       // Reset UI state
       setShowEndTurnButton(false);
-      setIntermediateStates([]);
-      setCurrentStateIndex(0);
+      setShowRollAgainButton(false);
+      setMovementLines([]); // Clear movement lines
+      setBoardMessage(''); // Clear board message
 
     } catch (error) {
       console.error('Error ending turn:', error);
@@ -271,34 +319,35 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
   }) : [];
 
   const current_player_color = gameData.color_pallete.players[gameState.current_player];
+  
+  // Check if roll button should be shown (same logic as in the game screen)
+  const canRoll = !showEndTurnButton && !isMoving;
+  
+  // Show functionality screen if requested
+  if (showFunctionalityScreen) {
+    return (
+      <FunctionalityScreen
+        onBack={() => setShowFunctionalityScreen(false)}
+        onExit={onBack}
+        onDevRoll={async (dice1, dice2) => {
+          setShowFunctionalityScreen(false);
+          await handleConfirmDice(dice1, dice2);
+        }}
+        activeTab={functionalityTab}
+        setActiveTab={setFunctionalityTab}
+        devDice1={devDice1}
+        setDevDice1={setDevDice1}
+        devDice2={devDice2}
+        setDevDice2={setDevDice2}
+        canRoll={canRoll}
+      />
+    );
+  }
+  
   return (
     <div className="flex h-screen p-1 bg-[#2E6C3D]">
       {/* Left Panel */}
       <div className="left-sidebar flex flex-col pr-4">
-        {/* Player Colors */}
-        <div className="text-white money-wrapper border-2 border-white p-2 rounded" style={{ height: '260px' }}>
-          <div className="flex flex-col h-full justify-between">
-            {players.map((player, _) => (
-              <div
-                key={player.color}
-                className="flex items-center space-x-2"
-                style={{ height: `${260 / players.length}px` }}
-              >
-                <div
-                  className={`border-2 border-white flex items-center justify-center`}
-                  style={{
-                    width: `10%`,
-                    height: `${Math.max(220 / players.length, 32)}px`,
-                    backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0,0,0,0.2) 5px, rgba(0,0,0,0.2) 10px)',
-                    backgroundColor: gameData.color_pallete.players[player.color]
-
-                  }}
-                />
-                <span className="font-bold" style={{ fontSize: `${Math.max(260 / players.length / 2.5, 20)}px` }}>{formatBudget(player.budget)}</span>
-              </div>
-            ))}
-          </div>
-        </div>
 
         {/*Game Board */}
         <div
@@ -325,10 +374,44 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
             ))}
           </div>
         </div>
+        {/* Player Colors */}
+        <div className="text-white border-2 border-white p-2 rounded bg-gray-700 min-h-[48vh]">
+          <div className="flex flex-col h-full gap-1">
+            {players.map((player, _) => (
+              <div
+                key={player.color}
+                className="flex items-center gap-1 max-h-[5vh]"
+              >
+                <div
+                  className={`border-2 border-white flex items-center justify-center h-full w-[10%]`}
+                  style={{
+                    backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0,0,0,0.2) 5px, rgba(0,0,0,0.2) 10px)',
+                    backgroundColor: gameData.color_pallete.players[player.color]
+                  }}
+                />
+                <span className="font-bold text-gray-100 text-sm">{formatBudget(player.budget)}</span>
+                <span className="font-bold text-gray-300 text-sm">• {formatBudget(player.budget)}</span>
+              </div>
+            ))}
+              <div
+                key="house"
+                className="flex items-center gap-1 max-h-[6vh]"
+              >
+                <div
+                  className={`border-2 border-white flex items-center justify-center h-full w-[10%]`}
+                  style={{
+                    backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0,0,0,0.2) 5px, rgba(0,0,0,0.2) 10px)',
+                    backgroundColor: "gray"
+                  }}
+                />
+                <span className="font-bold text-sm text-gray-100">{`32 • 12`}</span>
+              </div>
+          </div>
+        </div>
 
-        {/* Pause Button */}
+        {/* Function Button */}
         <button
-          onClick={onBack}
+          onClick={() => setShowFunctionalityScreen(true)}
           disabled={isFunctionDisabled}
           className="border-2 border-white w-full text-lg font-bold py-1 rounded text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
           style={{ backgroundColor: current_player_color }}
@@ -337,6 +420,8 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
       <Board
         gameData={gameData}
         gameState={gameState}
+        movementLines={movementLines}
+        message={boardMessage}
       />
       {/* Right Panel - Empty with button to open camera */}
       <div className="txx-button w-1/2 flex flex-col items-center justify-center">
@@ -348,9 +433,13 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
           >
             Kết thúc lượt
           </button>
-        ) : !isMoving && (
+        ) : gameState.pending_actions?.some(a => a.type === 'roll_dice') && !isMoving && (
           <button
-            onClick={() => setShowCameraPopup(true)}
+            onClick={() => {
+              setBoardMessage('');
+              setMovementLines([]);
+              setShowCameraPopup(true);
+            }}
             className="px-4 py-6 text-lg text-gray-600 font-bold rounded border-3 border-gray-500"
             style={{ backgroundColor: current_player_color }}
           >

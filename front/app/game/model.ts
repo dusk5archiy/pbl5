@@ -53,6 +53,11 @@ export interface GameStateBDS {
   level: number;
 }
 
+export interface PendingAction {
+  type: string;
+  data: Record<string, any>;
+}
+
 export interface GameState {
   kv_queue: string[];
   ch_queue: string[];
@@ -62,4 +67,5 @@ export interface GameState {
   players: Record<string, GameStatePlayer>;
   current_player: string;
   double_roll_stack: number;
+  pending_actions: PendingAction[];
 }

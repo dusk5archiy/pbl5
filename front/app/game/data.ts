@@ -51,17 +51,17 @@ export async function moveWithDice(request: MoveWithDiceRequest): Promise<MoveWi
   }
 }
 
-export interface NextPlayerRequest {
+export interface NextTurnRequest {
   game_state: GameState;
 }
 
-export interface NextPlayerResponse {
+export interface NextTurnResponse {
   new_game_state: GameState;
 }
 
-export async function nextPlayer(request: NextPlayerRequest): Promise<NextPlayerResponse> {
+export async function nextTurn(request: NextTurnRequest): Promise<NextTurnResponse> {
   try {
-    const response = await fetch(`${API_BASE_URL}/next_player`, {
+    const response = await fetch(`${API_BASE_URL}/next_turn`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -69,11 +69,11 @@ export async function nextPlayer(request: NextPlayerRequest): Promise<NextPlayer
       body: JSON.stringify(request),
     });
     if (!response.ok) {
-      throw new Error(`Failed to switch to next player: ${response.statusText}`);
+      throw new Error(`Failed to move to next turn: ${response.statusText}`);
     }
     return await response.json();
   } catch (error) {
-    console.error('Error switching to next player:', error);
+    console.error('Error moving to next turn:', error);
     throw error;
   }
 }

@@ -69,6 +69,11 @@ class GameStateBDS(BaseModel):
     level: int
 
 
+class PendingAction(BaseModel):
+    type: str
+    data: dict
+
+
 class GameState(BaseModel):
     kv_queue: list[str]
     ch_queue: list[str]
@@ -78,6 +83,7 @@ class GameState(BaseModel):
     players: dict[str, GameStatePlayer]
     current_player: str
     double_roll_stack: int
+    pending_actions: list[PendingAction] = []
 
 
 # Models for Cards ------------------------------------------------------------
