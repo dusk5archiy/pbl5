@@ -109,10 +109,15 @@ export async function payRent(request: PayRentRequest): Promise<PayRentResponse>
 
 export interface PayJailFineRequest {
   game_state: GameState;
+  dice1?: number;
+  dice2?: number;
 }
 
 export interface PayJailFineResponse {
   new_game_state: GameState;
+  should_move?: boolean;
+  dice1?: number;
+  dice2?: number;
 }
 
 export async function payJailFine(request: PayJailFineRequest): Promise<PayJailFineResponse> {

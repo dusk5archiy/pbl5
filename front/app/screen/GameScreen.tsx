@@ -133,6 +133,7 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
   const [payRentData, setPayRentData] = useState<{ property_id: string; owner: string; rent: number } | null>(null);
   const [isInDebtMode, setIsInDebtMode] = useState(false);
   const [showPayJailPopup, setShowPayJailPopup] = useState(false);
+  const [forcedJailDice, setForcedJailDice] = useState<{ dice1: number; dice2: number } | null>(null);
   const [functionalityTab, setFunctionalityTab] = useState<'main' | 'dev'>('main');
   const [devDice1, setDevDice1] = useState(1);
   const [devDice2, setDevDice2] = useState(1);
@@ -314,6 +315,17 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
             setIsFunctionDisabled(true);
           }
 
+          // Check for forced jail payment action
+          const forcedJailPaymentAction = finalState.pending_actions?.find(a => a.type === 'pay_jail_fine_forced');
+          if (forcedJailPaymentAction) {
+            setForcedJailDice({
+              dice1: forcedJailPaymentAction.data.dice1,
+              dice2: forcedJailPaymentAction.data.dice2
+            });
+            setShowPayJailPopup(true);
+            setIsFunctionDisabled(true);
+          }
+
           const endTurnAction = finalState.pending_actions?.find(a => a.type === 'end_turn');
 
           if (endTurnAction) {
@@ -414,18 +426,41 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
   const handlePayJailFine = async (confirm: boolean) => {
     setShowPayJailPopup(false);
 
-    if (!confirm) return;
+    if (!confirm) {
+      setForcedJailDice(null);
+      return;
+    }
 
     try {
       const response = await payJailFine({
-        game_state: gameState
+        game_state: gameState,
+        dice1: forcedJailDice?.dice1,
+        dice2: forcedJailDice?.dice2
       });
-
-      // Update game state
-      onGameStateUpdate(response.new_game_state);
+      
+      // If should_move is true, continue with movement
+      if (response.should_move && response.dice1 !== undefined && response.dice2 !== undefined) {
+        setForcedJailDice(null);
+        // Call move_with_dice to continue movement with the updated state
+        const moveResponse = await moveWithDice({
+          game_state: response.new_game_state,
+          dice1: response.dice1,
+          dice2: response.dice2
+        });
+        
+        setIsMoving(true);
+        setIsFunctionDisabled(true);
+        startMovementAnimation(moveResponse.intermediate_states);
+      } else {
+        // Update game state only if not moving
+        onGameStateUpdate(response.new_game_state);
+        setForcedJailDice(null);
+        setIsFunctionDisabled(false);
+      }
 
     } catch (error) {
       console.error('Error paying jail fine:', error);
+      setForcedJailDice(null);
     }
   };
 
@@ -612,7 +647,7 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
         <div className="fixed inset-0 flex items-center justify-center z-50">
           <div className="w-[50%] h-auto flex flex-col gap-4 bg-gray-800 border-4 border-yellow-500 rounded-lg p-6 max-w-md mx-4">
             <div className="text-[4vh] font-bold text-white text-center">
-              Trả 50k để ra tù?
+              {gameState.players[gameState.current_player].jail_turns >= 3 ? "Bắt buộc trả 50k để ra tù!" : "Trả 50k để ra tù?"}
             </div>
             <div className="text-[3vh] text-gray-300 text-center">
               Bạn đang ở tù (Lượt {gameState.players[gameState.current_player].jail_turns}/3)
@@ -624,12 +659,14 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
               >
                 Trả
               </button>
-              <button
-                onClick={() => handlePayJailFine(false)}
-                className="px-5 py-3 bg-red-600 text-white rounded-lg font-bold text-[5vh] hover:bg-red-700"
-              >
-                Hủy
-              </button>
+              {gameState.players[gameState.current_player].jail_turns < 3 && (
+                <button
+                  onClick={() => handlePayJailFine(false)}
+                  className="px-5 py-3 bg-red-600 text-white rounded-lg font-bold text-[5vh] hover:bg-red-700"
+                >
+                  Hủy
+                </button>
+              )}
             </div>
           </div>
         </div>

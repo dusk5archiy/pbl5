@@ -148,20 +148,19 @@ async def move_with_dice(request: DiceRollRequest):
             temp_state.players[current_player].jail_turns += 1
             
             if temp_state.players[current_player].jail_turns >= 3:
-                # Third turn - forced to pay
-                temp_state.players[current_player].budget -= 50
-                temp_state.players[current_player].in_jail = False
-                temp_state.players[current_player].jail_turns = 0
-                temp_state.players[current_player].total = calculate_player_total(temp_state, current_player)
+                # Third turn - must pay to exit (show popup for confirmation)
                 temp_state.double_roll_stack = 0
-                # Move to TT before continuing movement
-                temp_state.players[current_player].at = "TT"
-                current_position = "TT"
                 
                 temp_state.pending_actions.append(PendingAction(
-                    type="show_message",
-                    data={"message": "Trả 50k để ra tù (bắt buộc)"}
+                    type="pay_jail_fine_forced",
+                    data={"forced": True, "dice1": dice1, "dice2": dice2}
                 ))
+                temp_state.pending_actions.append(PendingAction(
+                    type="end_turn",
+                    data={"next_player": True}
+                ))
+                intermediate_states.append(temp_state.model_copy(deep=True))
+                return RollDiceResponse(intermediate_states=intermediate_states)
             else:
                 # Still in jail
                 temp_state.double_roll_stack = 0
@@ -278,8 +277,29 @@ async def move_with_dice(request: DiceRollRequest):
                 elif property_state.owner != current_player and property_state.level >= 0:
                     # Property is owned by another player and not mortgaged, pay rent
                     property_info = GAME_DATA.bds[position]
-                    rent_level = min(property_state.level, len(property_info.rent) - 1)
-                    rent_amount = property_info.rent[rent_level]
+                    
+                    # Calculate rent based on property type
+                    if property_info.group == "R":
+                        # Railroad: rent based on number of railroads owned
+                        # 1 railroad -> rent[0]=25k, 2 -> rent[1]=50k, 3 -> rent[2]=100k, 4 -> rent[3]=200k
+                        railroads_owned = sum(1 for prop_id in GAME_DATA.group_bds["R"] 
+                                            if temp_state.bds.get(prop_id, GameStateBDS(owner="", level=-1)).owner == property_state.owner
+                                            and temp_state.bds.get(prop_id, GameStateBDS(owner="", level=-1)).level >= 0)
+                        rent_level = max(0, min(railroads_owned - 1, len(property_info.rent) - 1))
+                        rent_amount = property_info.rent[rent_level]
+                    elif property_info.group == "U":
+                        # Utility: base rent (4k or 10k) multiplied by dice score
+                        # 1 utility -> 4k * dice, 2 utilities -> 10k * dice
+                        utilities_owned = sum(1 for prop_id in GAME_DATA.group_bds["U"] 
+                                            if temp_state.bds.get(prop_id, GameStateBDS(owner="", level=-1)).owner == property_state.owner
+                                            and temp_state.bds.get(prop_id, GameStateBDS(owner="", level=-1)).level >= 0)
+                        base_rent_index = max(0, min(utilities_owned - 1, len(property_info.rent) - 1))
+                        base_rent = property_info.rent[base_rent_index]  # 4 or 10
+                        rent_amount = base_rent * step  # base * dice_sum
+                    else:
+                        # Regular property: use level for rent
+                        rent_level = min(property_state.level, len(property_info.rent) - 1)
+                        rent_amount = property_info.rent[rent_level]
                     
                     temp_state.pending_actions.append(PendingAction(
                         type="pay_rent",
@@ -742,10 +762,15 @@ async def pay_rent(request: PayRentRequest):
 
 class PayJailFineRequest(BaseModel):
     game_state: GameState
+    dice1: int | None = None
+    dice2: int | None = None
 
 
 class PayJailFineResponse(BaseModel):
     new_game_state: GameState
+    should_move: bool = False
+    dice1: int | None = None
+    dice2: int | None = None
 
 
 @app.post("/pay_jail_fine", response_model=PayJailFineResponse)
@@ -763,11 +788,28 @@ async def pay_jail_fine(request: PayJailFineRequest):
         # Move player to TT (just visiting)
         game_state.players[current_player].at = "TT"
         
-        # Add message
-        game_state.pending_actions.append(PendingAction(
-            type="show_message",
-            data={"message": "Đã trả 50k để ra tù"}
-        ))
+        # If dice values provided (forced payment), player should move
+        if request.dice1 is not None and request.dice2 is not None:
+            # Clear all pending actions - movement will create new ones
+            game_state.pending_actions = []
+            
+            return PayJailFineResponse(
+                new_game_state=game_state,
+                should_move=True,
+                dice1=request.dice1,
+                dice2=request.dice2
+            )
+        else:
+            # Voluntary payment - just remove forced action and add message
+            game_state.pending_actions = [
+                action for action in game_state.pending_actions
+                if action.type != "pay_jail_fine_forced"
+            ]
+            
+            game_state.pending_actions.append(PendingAction(
+                type="show_message",
+                data={"message": "Đã trả 50k để ra tù"}
+            ))
     
     return PayJailFineResponse(new_game_state=game_state)
 
