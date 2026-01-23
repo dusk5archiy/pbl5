@@ -147,6 +147,33 @@ export interface NextTurnResponse {
   new_game_state: GameState;
 }
 
+export interface PayTaxRequest {
+  game_state: GameState;
+}
+
+export interface PayTaxResponse {
+  new_game_state: GameState;
+}
+
+export async function payTax(request: PayTaxRequest): Promise<PayTaxResponse> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/pay_tax`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    });
+    if (!response.ok) {
+      throw new Error(`Failed to pay tax: ${response.statusText}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error paying tax:', error);
+    throw error;
+  }
+}
+
 export async function nextTurn(request: NextTurnRequest): Promise<NextTurnResponse> {
   try {
     const response = await fetch(`${API_BASE_URL}/next_turn`, {

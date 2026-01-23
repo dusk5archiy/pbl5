@@ -55,13 +55,31 @@ def go_to_jail_effect(state: GameState, player_id: str) -> None:
     # Reset double roll stack when going to jail
     state.double_roll_stack = 0
 
+def income_tax_effect(state: GameState, player_id: str) -> None:
+    """Income tax - 10% of total value, max 200k"""
+    player_total = calculate_player_total(state, player_id)
+    tax = min(int(player_total * 0.1), 200)
+    state.pending_actions.append(PendingAction(
+        type="pay_tax",
+        data={"tax_type": "income", "amount": tax}
+    ))
+
+def luxury_tax_effect(state: GameState, player_id: str) -> None:
+    """Luxury tax - flat 75k"""
+    state.pending_actions.append(PendingAction(
+        type="pay_tax",
+        data={"tax_type": "luxury", "amount": 75}
+    ))
+
 EFFECTS_ON_TOUCH: dict[str, SpaceEffect] = {
     "BDAU": bdau_effect
 }
 
 # Effects that trigger only when landing on a space
 EFFECTS_ON_LAND: dict[str, SpaceEffect] = {
-    "VT": go_to_jail_effect  # VT is Go to Jail space
+    "VT": go_to_jail_effect,  # VT is Go to Jail space
+    "TTN": income_tax_effect,  # TTN is Income Tax
+    "TDB": luxury_tax_effect   # TDB is Luxury Tax
 }
 
 
@@ -758,6 +776,46 @@ async def pay_rent(request: PayRentRequest):
         ))
     
     return PayRentResponse(new_game_state=game_state)
+
+
+class PayTaxRequest(BaseModel):
+    game_state: GameState
+
+
+class PayTaxResponse(BaseModel):
+    new_game_state: GameState
+
+
+@app.post("/pay_tax", response_model=PayTaxResponse)
+async def pay_tax(request: PayTaxRequest):
+    game_state = request.game_state.model_copy(deep=True)
+    current_player = game_state.current_player
+    
+    # Find and process pay_tax action
+    tax_action = next((action for action in game_state.pending_actions if action.type == "pay_tax"), None)
+    
+    if tax_action:
+        tax_type = tax_action.data.get("tax_type")
+        tax_amount = tax_action.data.get("amount")
+        
+        # Deduct tax
+        game_state.players[current_player].budget -= tax_amount
+        game_state.players[current_player].total = calculate_player_total(game_state, current_player)
+        
+        # Remove pay_tax action
+        game_state.pending_actions = [
+            action for action in game_state.pending_actions 
+            if action.type != "pay_tax"
+        ]
+        
+        # Add message
+        tax_name = "Thuế thu nhập" if tax_type == "income" else "Thuế xa xỉ"
+        game_state.pending_actions.append(PendingAction(
+            type="show_message",
+            data={"message": f"{tax_name}: -{tax_amount}k"}
+        ))
+    
+    return PayTaxResponse(new_game_state=game_state)
 
 
 class PayJailFineRequest(BaseModel):

@@ -7,7 +7,7 @@ import LeftPanel from '../ui/LeftPanel';
 import TitleDeed from '../ui/TitleDeed';
 import { GameData, GameState } from '@/app/game/model';
 import { formatBudget } from '../ui/lib/utils';
-import { moveWithDice, nextTurn, buyProperty, payRent, payJailFine } from '@/app/game/data';
+import { moveWithDice, nextTurn, buyProperty, payRent, payJailFine, payTax } from '@/app/game/data';
 import FunctionalityScreen from './FunctionalityScreen';
 interface GameScreenProps {
   selectedCamera: string;
@@ -134,6 +134,8 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
   const [isInDebtMode, setIsInDebtMode] = useState(false);
   const [showPayJailPopup, setShowPayJailPopup] = useState(false);
   const [forcedJailDice, setForcedJailDice] = useState<{ dice1: number; dice2: number } | null>(null);
+  const [showPayTaxPopup, setShowPayTaxPopup] = useState(false);
+  const [payTaxData, setPayTaxData] = useState<{ tax_type: string; amount: number } | null>(null);
   const [functionalityTab, setFunctionalityTab] = useState<'main' | 'dev'>('main');
   const [devDice1, setDevDice1] = useState(1);
   const [devDice2, setDevDice2] = useState(1);
@@ -326,6 +328,17 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
             setIsFunctionDisabled(true);
           }
 
+          // Check for pay_tax action
+          const payTaxAction = finalState.pending_actions?.find(a => a.type === 'pay_tax');
+          if (payTaxAction) {
+            setPayTaxData({
+              tax_type: payTaxAction.data.tax_type,
+              amount: payTaxAction.data.amount
+            });
+            setShowPayTaxPopup(true);
+            setIsFunctionDisabled(true);
+          }
+
           const endTurnAction = finalState.pending_actions?.find(a => a.type === 'end_turn');
 
           if (endTurnAction) {
@@ -421,6 +434,39 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
     // Return to payment popup - player can try to pay again
     setShowBDSTab(false);
     setShowPayRentPopup(true);
+  };
+
+  const handlePayTax = async () => {
+    if (!payTaxData) return;
+
+    const currentPlayerBudget = gameState.players[gameState.current_player].budget;
+    const taxAmount = payTaxData.amount;
+
+    // Check if player has enough money
+    if (currentPlayerBudget < taxAmount) {
+      // Enter debt mode - let player mortgage/sell properties
+      setIsInDebtMode(true);
+      setShowPayTaxPopup(false);
+      setShowBDSTab(true);
+      return;
+    }
+
+    try {
+      const response = await payTax({
+        game_state: gameState
+      });
+
+      // Update game state
+      onGameStateUpdate(response.new_game_state);
+
+      // Close popup
+      setShowPayTaxPopup(false);
+      setPayTaxData(null);
+      setIsFunctionDisabled(false);
+
+    } catch (error) {
+      console.error('Error paying tax:', error);
+    }
   };
 
   const handlePayJailFine = async (confirm: boolean) => {
@@ -667,6 +713,33 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
                   Hủy
                 </button>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Pay Tax Popup */}
+      {showPayTaxPopup && payTaxData && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="w-[50%] h-auto flex flex-col gap-4 bg-gray-800 border-4 border-yellow-500 rounded-lg p-6 max-w-md mx-4">
+            <div className="text-[4vh] font-bold text-white text-center">
+              {payTaxData.tax_type === 'income' ? 'Thuế Thu Nhập' : 'Thuế Xa Xỉ'}
+            </div>
+            <div className="text-[3vh] text-gray-300 text-center">
+              Số tiền phải trả: {payTaxData.amount}k
+            </div>
+            {gameState.players[gameState.current_player].budget < payTaxData.amount && (
+              <div className="text-[2.5vh] text-red-400 text-center">
+                ⚠️ Không đủ tiền! Hãy thế chấp/bán BĐS
+              </div>
+            )}
+            <div className="flex gap-4 justify-center">
+              <button
+                onClick={handlePayTax}
+                className="px-5 py-3 bg-green-600 text-white rounded-lg font-bold text-[5vh] hover:bg-green-700"
+              >
+                Trả
+              </button>
             </div>
           </div>
         </div>
