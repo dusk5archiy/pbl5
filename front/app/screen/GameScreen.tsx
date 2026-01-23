@@ -7,7 +7,7 @@ import LeftPanel from '../ui/LeftPanel';
 import TitleDeed from '../ui/TitleDeed';
 import { GameData, GameState } from '@/app/game/model';
 import { formatBudget } from '../ui/lib/utils';
-import { moveWithDice, nextTurn, buyProperty } from '@/app/game/data';
+import { moveWithDice, nextTurn, buyProperty, payRent } from '@/app/game/data';
 import FunctionalityScreen from './FunctionalityScreen';
 interface GameScreenProps {
   selectedCamera: string;
@@ -129,6 +129,9 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
   const [boardMessage, setBoardMessage] = useState<string>('');
   const [showBuyPropertyPopup, setShowBuyPropertyPopup] = useState(false);
   const [buyPropertyData, setBuyPropertyData] = useState<{ property_id: string; price: number; buyable: boolean } | null>(null);
+  const [showPayRentPopup, setShowPayRentPopup] = useState(false);
+  const [payRentData, setPayRentData] = useState<{ property_id: string; owner: string; rent: number } | null>(null);
+  const [isInDebtMode, setIsInDebtMode] = useState(false);
   const [functionalityTab, setFunctionalityTab] = useState<'main' | 'dev'>('main');
   const [devDice1, setDevDice1] = useState(1);
   const [devDice2, setDevDice2] = useState(1);
@@ -281,6 +284,18 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
             setIsFunctionDisabled(true);
           }
 
+          // Check for pay_rent action
+          const payRentAction = finalState.pending_actions?.find(a => a.type === 'pay_rent');
+          if (payRentAction) {
+            setPayRentData({
+              property_id: payRentAction.data.property_id,
+              owner: payRentAction.data.owner,
+              rent: payRentAction.data.rent
+            });
+            setShowPayRentPopup(true);
+            setIsFunctionDisabled(true);
+          }
+
           const endTurnAction = finalState.pending_actions?.find(a => a.type === 'end_turn');
 
           if (endTurnAction) {
@@ -337,6 +352,47 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
     }
   };
 
+  const handlePayRent = async () => {
+    if (!payRentData) return;
+
+    const currentPlayerBudget = gameState.players[gameState.current_player].budget;
+    const rentAmount = payRentData.rent;
+
+    // Check if player has enough money
+    if (currentPlayerBudget < rentAmount) {
+      // Enter debt mode - let player mortgage/sell properties
+      setIsInDebtMode(true);
+      setShowPayRentPopup(false);
+      setShowBDSTab(true);
+      return;
+    }
+
+    try {
+      const response = await payRent({
+        game_state: gameState,
+        property_id: payRentData.property_id
+      });
+
+      // Update game state
+      onGameStateUpdate(response.new_game_state);
+
+      // Close popup and exit debt mode
+      setShowPayRentPopup(false);
+      setPayRentData(null);
+      setIsInDebtMode(false);
+      setIsFunctionDisabled(false);
+
+    } catch (error) {
+      console.error('Error paying rent:', error);
+    }
+  };
+
+  const handleReturnToPayRent = () => {
+    // Return to payment popup - player can try to pay again
+    setShowBDSTab(false);
+    setShowPayRentPopup(true);
+  };
+
   // Check if roll button should be shown (same logic as in the game screen)
   const canRoll = !showEndTurnButton && !isMoving;
 
@@ -375,6 +431,7 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
         isRollDiceButtonActive={isRollDiceButtonActive}
         isAnalyzing={isAnalyzing}
         showBDSTab={showBDSTab}
+        isInDebtMode={isInDebtMode}
         onEndTurn={handleEndTurn}
         onRollDice={() => {
           setBoardMessage('');
@@ -388,6 +445,7 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
           setBoardMessage('');
           setMovementLines([]);
         }}
+        onReturnToPayRent={handleReturnToPayRent}
       />
       <div className='relative'>
         {showBDSTab ? (
@@ -470,6 +528,42 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
                 className="px-5 py-3 bg-red-600 text-white rounded-lg font-bold text-[5vh] hover:bg-red-700"
               >
                 Hủy
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Pay Rent Popup */}
+      {showPayRentPopup && payRentData && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="w-[50%] h-[90%] flex flex-col justify-between gap-1 bg-gray-800 border-4 border-red-500 rounded-lg p-4">
+            <div className='flex flex-col'>
+              <div className="text-[4vh] font-bold text-white text-center"
+                style={
+                  { color: gameData.color_pallete.players[payRentData.owner] }
+                }
+              >Trả tiền thuê BĐS {payRentData.property_id}</div>
+              <div className="text-[5vh] font-bold text-red-400 text-center">{formatBudget(payRentData.rent)}</div>
+              {gameState.players[gameState.current_player].budget < payRentData.rent && (
+                <div className="text-[3vh] font-bold text-yellow-400 text-center">
+                  Không đủ tiền! Cần thêm {formatBudget(payRentData.rent - gameState.players[gameState.current_player].budget)}
+                </div>
+              )}
+            </div>
+            <div className="h-[60%]">
+              <TitleDeed
+                gameData={gameData}
+                gameState={gameState}
+                propertyId={payRentData.property_id}
+              />
+            </div>
+            <div className="flex gap-1 justify-center">
+              <button
+                onClick={handlePayRent}
+                className="px-5 py-2 bg-blue-600 text-white rounded-lg font-bold text-[5vh] hover:bg-blue-700"
+              >
+                Tiếp tục
               </button>
             </div>
           </div>

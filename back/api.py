@@ -180,6 +180,20 @@ async def move_with_dice(request: DiceRollRequest):
                             "buyable": buyable
                         }
                     ))
+                elif property_state.owner != current_player and property_state.level >= 0:
+                    # Property is owned by another player and not mortgaged, pay rent
+                    property_info = GAME_DATA.bds[position]
+                    rent_level = min(property_state.level, len(property_info.rent) - 1)
+                    rent_amount = property_info.rent[rent_level]
+                    
+                    temp_state.pending_actions.append(PendingAction(
+                        type="pay_rent",
+                        data={
+                            "property_id": position,
+                            "owner": property_state.owner,
+                            "rent": rent_amount
+                        }
+                    ))
             
             
             # Add end turn action with flag for next player
@@ -581,6 +595,54 @@ async def buy_property(request: BuyPropertyRequest):
                 ))
     
     return BuyPropertyResponse(new_game_state=game_state)
+
+
+class PayRentRequest(BaseModel):
+    game_state: GameState
+    property_id: str
+
+
+class PayRentResponse(BaseModel):
+    new_game_state: GameState
+
+
+@app.post("/pay_rent", response_model=PayRentResponse)
+async def pay_rent(request: PayRentRequest):
+    game_state = request.game_state.model_copy(deep=True)
+    property_id = request.property_id
+    current_player = game_state.current_player
+    
+    # Remove the pay_rent pending action
+    game_state.pending_actions = [
+        action for action in game_state.pending_actions 
+        if not (action.type == "pay_rent" and action.data.get("property_id") == property_id)
+    ]
+    
+    # Get property state and calculate rent
+    property_state = game_state.bds.get(property_id)
+    property_info = GAME_DATA.bds.get(property_id)
+    
+    if property_state and property_info and property_state.owner != current_player and property_state.level >= 0:
+        rent_level = min(property_state.level, len(property_info.rent) - 1)
+        rent_amount = property_info.rent[rent_level]
+        
+        # Transfer rent from current player to owner
+        game_state.players[current_player].budget -= rent_amount
+        game_state.players[property_state.owner].budget += rent_amount
+        
+        # Update totals
+        game_state.players[current_player].total = calculate_player_total(game_state, current_player)
+        game_state.players[property_state.owner].total = calculate_player_total(game_state, property_state.owner)
+        
+        # Add message
+        game_state.pending_actions.append(PendingAction(
+            type="show_message",
+            data={
+                "message": f"Đã trả thuê {rent_amount}k cho {property_state.owner}"
+            }
+        ))
+    
+    return PayRentResponse(new_game_state=game_state)
 
 
 # -----------------------------------------------------------------------------

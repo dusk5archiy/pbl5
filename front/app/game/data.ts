@@ -78,6 +78,35 @@ export async function buyProperty(request: BuyPropertyRequest): Promise<BuyPrope
     throw error;
   }
 }
+
+export interface PayRentRequest {
+  game_state: GameState;
+  property_id: string;
+}
+
+export interface PayRentResponse {
+  new_game_state: GameState;
+}
+
+export async function payRent(request: PayRentRequest): Promise<PayRentResponse> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/pay_rent`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    });
+    if (!response.ok) {
+      throw new Error(`Failed to pay rent: ${response.statusText}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error paying rent:', error);
+    throw error;
+  }
+}
+
 export interface NextTurnRequest {
   game_state: GameState;
 }

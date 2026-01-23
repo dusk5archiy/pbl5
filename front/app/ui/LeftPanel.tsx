@@ -11,11 +11,13 @@ interface LeftPanelProps {
   isRollDiceButtonActive: boolean;
   isAnalyzing: boolean;
   showBDSTab: boolean;
+  isInDebtMode?: boolean;
   onEndTurn: () => void;
   onRollDice: () => void;
   onToggleBDSTab: () => void;
   onShowFunctionality: () => void;
   onClearBoard: () => void;
+  onReturnToPayRent?: () => void;
 }
 
 export default function LeftPanel({
@@ -27,11 +29,13 @@ export default function LeftPanel({
   isRollDiceButtonActive,
   isAnalyzing,
   showBDSTab,
+  isInDebtMode = false,
   onEndTurn,
   onRollDice,
   onToggleBDSTab,
   onShowFunctionality,
-  onClearBoard
+  onClearBoard,
+  onReturnToPayRent
 }: LeftPanelProps) {
   const current_player_color = gameData.color_pallete.players[gameState.current_player];
 
@@ -105,15 +109,15 @@ export default function LeftPanel({
             </button>
             <button
               onClick={onToggleBDSTab}
-              disabled={isFunctionDisabled}
+              disabled={!isInDebtMode && isFunctionDisabled}
               className="w-full h-[50%] border-2 text-[5vh] border-gray-600 font-bold py-1 rounded text-gray-700 disabled:text-white bg-white active:opacity-50"
             >BĐS
             </button>
           </div>
           <button
-            onClick={onClearBoard}
+            onClick={isInDebtMode ? onReturnToPayRent : onClearBoard}
             className="w-full flex-1 text-[5vh] text-gray-600 font-bold rounded border-3 border-gray-500 disabled:text-white active:opacity-50"
-            disabled={true}
+            disabled={!isInDebtMode}
             style={{ backgroundColor: current_player_color }}
           >
             Tiếp
