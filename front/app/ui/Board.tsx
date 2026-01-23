@@ -278,6 +278,8 @@ const Board: React.FC<BoardProps> = ({
     const low = 0.4;
     const high = 1.6;
     switch (orient) {
+      case "OT":
+        return { off_w: 0.62, off_h: 0.9 };
       case "S":
         return { off_w: low, off_h: high };
       case "W":
@@ -299,14 +301,10 @@ const Board: React.FC<BoardProps> = ({
 
   const is_player_rotated = (orient: string) => {
     switch (orient) {
-      case "S":
-      case "SW":
-      case "SE":
-      case "N":
-      case "NW":
-      case "NE":
-        return false;
-      default: return true;
+      case "W":
+      case "E":
+        return true;
+      default: return false;
     }
   }
 
@@ -314,9 +312,10 @@ const Board: React.FC<BoardProps> = ({
     const pieceSize = vt(0.7);
     return Object.entries(gameState.players).map(([playerId, playerState]) => {
       const space = gameData.space[playerState.at];
-      const { off_w, off_h } = orient_to_player_offset(space.orient);
+      let { off_w, off_h } = orient_to_player_offset(space.orient);
       const centerX = vt(space.x + off_w);
       const centerY = vt(space.y + off_h);
+
       const rotated = is_player_rotated(space.orient);
 
       const halfPiece = vtNum(0.35);

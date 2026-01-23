@@ -2,6 +2,7 @@ import PropertyBoard from './PropertyBoard';
 import { GameData, GameState } from '@/app/game/model';
 import { formatBudget } from './lib/utils';
 
+// LeftPanel component props
 interface LeftPanelProps {
   gameData: GameData;
   gameState: GameState;
@@ -18,6 +19,7 @@ interface LeftPanelProps {
   onShowFunctionality: () => void;
   onClearBoard: () => void;
   onReturnToPayRent?: () => void;
+  onPayJailFine?: () => void;
 }
 
 export default function LeftPanel({
@@ -35,7 +37,8 @@ export default function LeftPanel({
   onToggleBDSTab,
   onShowFunctionality,
   onClearBoard,
-  onReturnToPayRent
+  onReturnToPayRent,
+  onPayJailFine
 }: LeftPanelProps) {
   const current_player_color = gameData.color_pallete.players[gameState.current_player];
 
@@ -115,9 +118,9 @@ export default function LeftPanel({
             </button>
           </div>
           <button
-            onClick={isInDebtMode ? onReturnToPayRent : onClearBoard}
+            onClick={isInDebtMode ? onReturnToPayRent : (gameState.players[gameState.current_player].in_jail && isRollDiceButtonActive ? onPayJailFine : onClearBoard)}
             className="w-full flex-1 text-[5vh] text-gray-600 font-bold rounded border-3 border-gray-500 disabled:text-white active:opacity-50"
-            disabled={!isInDebtMode}
+            disabled={!isInDebtMode && !(gameState.players[gameState.current_player].in_jail && isRollDiceButtonActive)}
             style={{ backgroundColor: current_player_color }}
           >
             Tiếp

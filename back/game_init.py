@@ -30,11 +30,6 @@ def init_game_state(player_order: list[str]):
     for color in player_order:
         players[color] = GameStatePlayer(budget=1500, at="BDAU", total=1500)
 
-    # Temporary initialization for testing
-    if len(player_order) >= 2:
-        players[player_order[0]].budget = 1500
-        players[player_order[1]].budget = 0
-
     game_state = GameState(
         kv_queue=kv_queue,
         ch_queue=ch_queue,
@@ -46,14 +41,5 @@ def init_game_state(player_order: list[str]):
         double_roll_stack=0,
         pending_actions=[],
     )
-
-    # Temporary: Assign properties for testing
-    if len(player_order) >= 2:
-        game_state.bds["A2"] = GameStateBDS(owner=player_order[0], level=0)
-        game_state.bds["H2"] = GameStateBDS(owner=player_order[1], level=0)
-        
-        # Recalculate totals after assigning properties
-        for player_id in player_order:
-            game_state.players[player_id].total = calculate_player_total(game_state, player_id)
 
     return game_state

@@ -107,6 +107,33 @@ export async function payRent(request: PayRentRequest): Promise<PayRentResponse>
   }
 }
 
+export interface PayJailFineRequest {
+  game_state: GameState;
+}
+
+export interface PayJailFineResponse {
+  new_game_state: GameState;
+}
+
+export async function payJailFine(request: PayJailFineRequest): Promise<PayJailFineResponse> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/pay_jail_fine`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    });
+    if (!response.ok) {
+      throw new Error(`Failed to pay jail fine: ${response.statusText}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error paying jail fine:', error);
+    throw error;
+  }
+}
+
 export interface NextTurnRequest {
   game_state: GameState;
 }

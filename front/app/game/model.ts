@@ -52,6 +52,8 @@ export interface GameStatePlayer {
   budget: number;
   at: string;
   total: number;
+  in_jail: boolean;
+  jail_turns: number;
 }
 
 export interface GameStateBDS {

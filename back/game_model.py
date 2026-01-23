@@ -43,7 +43,7 @@ class Board(BaseModel):
                 self.NW: Space(orient="NW", x=0, y=0),
                 self.NE: Space(orient="NE", x=vt_max - 2, y=0),
             }
-            | {"OT": Space(orient="SW", x=0.75, y=vt_max - 2)}
+            | {"OT": Space(orient="OT", x=0.75, y=vt_max - 2)}
         )
 
     def track(self):
@@ -64,6 +64,8 @@ class GameStatePlayer(BaseModel):
     budget: int
     at: str
     total: int
+    in_jail: bool = False
+    jail_turns: int = 0  # Number of turns spent in jail (0-2)
 
 
 class GameStateBDS(BaseModel):

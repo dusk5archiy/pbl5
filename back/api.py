@@ -48,6 +48,12 @@ def bdau_effect(state: GameState, player_id: str) -> None:
     state.players[player_id].budget += BDAU_SALARY
     state.players[player_id].total = calculate_player_total(state, player_id)
 
+def go_to_jail_effect(state: GameState, player_id: str) -> None:
+    """Send player to jail - mark as in jail (position updated separately)"""
+    state.players[player_id].in_jail = True
+    state.players[player_id].jail_turns = 0
+    # Reset double roll stack when going to jail
+    state.double_roll_stack = 0
 
 EFFECTS_ON_TOUCH: dict[str, SpaceEffect] = {
     "BDAU": bdau_effect
@@ -55,7 +61,7 @@ EFFECTS_ON_TOUCH: dict[str, SpaceEffect] = {
 
 # Effects that trigger only when landing on a space
 EFFECTS_ON_LAND: dict[str, SpaceEffect] = {
-    # Add landing effects here
+    "VT": go_to_jail_effect  # VT is Go to Jail space
 }
 
 
@@ -114,25 +120,94 @@ async def move_with_dice(request: DiceRollRequest):
     # Get current position
     current_player = game_state.current_player
     current_position = game_state.players[current_player].at
-
-    # Get path
-    path = move_with_dice_path(current_position, step)
-
-    # Create intermediate game states for each step
+    
+    # Create intermediate game states
     intermediate_states = []
-    temp_state = game_state.model_copy(deep=True)  # Deep copy of initial state
+    temp_state = game_state.model_copy(deep=True)
     
     # Clear roll_dice action since player is now rolling
     temp_state.pending_actions = []
     
-    # Update double_roll_stack based on whether doubles were rolled
-    if is_doubles:
-        temp_state.double_roll_stack += 1
+    # Handle jail logic
+    if temp_state.players[current_player].in_jail:
+        if is_doubles:
+            # Rolled doubles - exit jail and move
+            temp_state.players[current_player].in_jail = False
+            temp_state.players[current_player].jail_turns = 0
+            temp_state.double_roll_stack = 0  # No double bonus when exiting jail
+            # Move player to TT (just visiting) before moving with dice
+            temp_state.players[current_player].at = "TT"
+            current_position = "TT"  # Update current position for path calculation
+            
+            temp_state.pending_actions.append(PendingAction(
+                type="show_message",
+                data={"message": "Ra tù với hòa!"}
+            ))
+        else:
+            # Did not roll doubles
+            temp_state.players[current_player].jail_turns += 1
+            
+            if temp_state.players[current_player].jail_turns >= 3:
+                # Third turn - forced to pay
+                temp_state.players[current_player].budget -= 50
+                temp_state.players[current_player].in_jail = False
+                temp_state.players[current_player].jail_turns = 0
+                temp_state.players[current_player].total = calculate_player_total(temp_state, current_player)
+                temp_state.double_roll_stack = 0
+                # Move to TT before continuing movement
+                temp_state.players[current_player].at = "TT"
+                current_position = "TT"
+                
+                temp_state.pending_actions.append(PendingAction(
+                    type="show_message",
+                    data={"message": "Trả 50k để ra tù (bắt buộc)"}
+                ))
+            else:
+                # Still in jail
+                temp_state.double_roll_stack = 0
+                temp_state.pending_actions.append(PendingAction(
+                    type="show_message",
+                    data={"message": f"Vẫn ở tù (lượt {temp_state.players[current_player].jail_turns}/3)"}
+                ))
+                
+                # Add end_turn action and return early - player doesn't move
+                temp_state.pending_actions.append(PendingAction(
+                    type="end_turn",
+                    data={"next_player": True}
+                ))
+                intermediate_states.append(temp_state)
+                return RollDiceResponse(intermediate_states=intermediate_states)
     else:
-        temp_state.double_roll_stack = 0
-    
-    # TODO: Handle 3 doubles jail logic later
-    # For now, just let the player move normally
+        # Not in jail - normal roll logic
+        if is_doubles:
+            temp_state.double_roll_stack += 1
+            if temp_state.double_roll_stack >= 3:
+                # Three doubles in a row - go to jail
+                temp_state.players[current_player].in_jail = True
+                temp_state.players[current_player].jail_turns = 0
+                temp_state.double_roll_stack = 0
+                
+                temp_state.pending_actions.append(PendingAction(
+                    type="show_message",
+                    data={"message": "Ba lần hòa liên tiếp - vào tù!"}
+                ))
+                # Add state with player at current position
+                intermediate_states.append(temp_state.model_copy(deep=True))
+                
+                # Now jump to OT (no path drawn)
+                temp_state.players[current_player].at = "OT"
+                temp_state.pending_actions = []
+                temp_state.pending_actions.append(PendingAction(
+                    type="end_turn",
+                    data={"next_player": True}
+                ))
+                intermediate_states.append(temp_state.model_copy(deep=True))
+                return RollDiceResponse(intermediate_states=intermediate_states)
+        else:
+            temp_state.double_roll_stack = 0
+
+    # Get path and move player
+    path = move_with_dice_path(current_position, step)
     
     for i, position in enumerate(path):
         temp_state.players[current_player].at = position
@@ -152,6 +227,26 @@ async def move_with_dice(request: DiceRollRequest):
         
         # Apply on-land effects (only on final position)
         if i == len(path) - 1:
+            # Check for go to jail first
+            if position == "VT":
+                go_to_jail_effect(temp_state, current_player)
+                temp_state.pending_actions.append(PendingAction(
+                    type="show_message",
+                    data={"message": "Đi xuống tù!"}
+                ))
+                # Add state with player at VT
+                intermediate_states.append(temp_state.model_copy(deep=True))
+                
+                # Now jump to OT (no path drawn)
+                temp_state.players[current_player].at = "OT"
+                temp_state.pending_actions = []
+                temp_state.pending_actions.append(PendingAction(
+                    type="end_turn",
+                    data={"next_player": True}
+                ))
+                intermediate_states.append(temp_state.model_copy(deep=True))
+                return RollDiceResponse(intermediate_states=intermediate_states)
+            
             # Add arrival message as pending action
             temp_state.pending_actions.append(PendingAction(
                 type="show_message",
@@ -195,16 +290,16 @@ async def move_with_dice(request: DiceRollRequest):
                         }
                     ))
             
-            
             # Add end turn action with flag for next player
+            # If exited jail with doubles, don't give another turn
             if temp_state.double_roll_stack > 0 and temp_state.double_roll_stack < 3:
-                # Player rolled doubles, stays with same player
+                # Player rolled doubles and didn't exit jail - stays with same player
                 temp_state.pending_actions.append(PendingAction(
                     type="end_turn",
                     data={"next_player": False}
                 ))
             else:
-                # Normal turn end or 3 doubles - move to next player
+                # Normal turn end, exited jail, or 3 doubles - move to next player
                 temp_state.pending_actions.append(PendingAction(
                     type="end_turn",
                     data={"next_player": True}
@@ -643,6 +738,38 @@ async def pay_rent(request: PayRentRequest):
         ))
     
     return PayRentResponse(new_game_state=game_state)
+
+
+class PayJailFineRequest(BaseModel):
+    game_state: GameState
+
+
+class PayJailFineResponse(BaseModel):
+    new_game_state: GameState
+
+
+@app.post("/pay_jail_fine", response_model=PayJailFineResponse)
+async def pay_jail_fine(request: PayJailFineRequest):
+    game_state = request.game_state.model_copy(deep=True)
+    current_player = game_state.current_player
+    
+    # Check if player is in jail
+    if game_state.players[current_player].in_jail:
+        # Pay 50k to exit jail
+        game_state.players[current_player].budget -= 50
+        game_state.players[current_player].in_jail = False
+        game_state.players[current_player].jail_turns = 0
+        game_state.players[current_player].total = calculate_player_total(game_state, current_player)
+        # Move player to TT (just visiting)
+        game_state.players[current_player].at = "TT"
+        
+        # Add message
+        game_state.pending_actions.append(PendingAction(
+            type="show_message",
+            data={"message": "Đã trả 50k để ra tù"}
+        ))
+    
+    return PayJailFineResponse(new_game_state=game_state)
 
 
 # -----------------------------------------------------------------------------

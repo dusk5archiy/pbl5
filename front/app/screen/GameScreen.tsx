@@ -7,7 +7,7 @@ import LeftPanel from '../ui/LeftPanel';
 import TitleDeed from '../ui/TitleDeed';
 import { GameData, GameState } from '@/app/game/model';
 import { formatBudget } from '../ui/lib/utils';
-import { moveWithDice, nextTurn, buyProperty, payRent } from '@/app/game/data';
+import { moveWithDice, nextTurn, buyProperty, payRent, payJailFine } from '@/app/game/data';
 import FunctionalityScreen from './FunctionalityScreen';
 interface GameScreenProps {
   selectedCamera: string;
@@ -132,6 +132,7 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
   const [showPayRentPopup, setShowPayRentPopup] = useState(false);
   const [payRentData, setPayRentData] = useState<{ property_id: string; owner: string; rent: number } | null>(null);
   const [isInDebtMode, setIsInDebtMode] = useState(false);
+  const [showPayJailPopup, setShowPayJailPopup] = useState(false);
   const [functionalityTab, setFunctionalityTab] = useState<'main' | 'dev'>('main');
   const [devDice1, setDevDice1] = useState(1);
   const [devDice2, setDevDice2] = useState(1);
@@ -247,12 +248,29 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
         // Build movement lines from consecutive states
         if (index > 0) {
           const currentPlayer = states[0].current_player;
-          const fromPos = states[index - 1].players[currentPlayer].at;
-          const toPos = states[index].players[currentPlayer].at;
-          const isLast = index === states.length - 1;
+          const prevState = states[index - 1];
+          const currentState = states[index];
+          const fromPos = prevState.players[currentPlayer].at;
+          const toPos = currentState.players[currentPlayer].at;
+          let isLast = index === states.length - 1;
 
-          lines.push({ from: fromPos, to: toPos, isLast });
-          setMovementLines([...lines]);
+          // Don't draw line if jumping to OT (jail position) - this happens when going to jail
+          const jumpingToJail = toPos === "OT" && currentState.players[currentPlayer].in_jail;
+          
+          // Check if next state is jumping to jail - if so, mark current line as last
+          if (index < states.length - 1) {
+            const nextState = states[index + 1];
+            const nextPos = nextState.players[currentPlayer].at;
+            const nextIsJumpToJail = nextPos === "OT" && nextState.players[currentPlayer].in_jail;
+            if (nextIsJumpToJail) {
+              isLast = true; // Draw arrow head at current position (VT)
+            }
+          }
+          
+          if (!jumpingToJail && fromPos !== toPos) {
+            lines.push({ from: fromPos, to: toPos, isLast });
+            setMovementLines([...lines]);
+          }
         }
 
         index++;
@@ -393,6 +411,24 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
     setShowPayRentPopup(true);
   };
 
+  const handlePayJailFine = async (confirm: boolean) => {
+    setShowPayJailPopup(false);
+
+    if (!confirm) return;
+
+    try {
+      const response = await payJailFine({
+        game_state: gameState
+      });
+
+      // Update game state
+      onGameStateUpdate(response.new_game_state);
+
+    } catch (error) {
+      console.error('Error paying jail fine:', error);
+    }
+  };
+
   // Check if roll button should be shown (same logic as in the game screen)
   const canRoll = !showEndTurnButton && !isMoving;
 
@@ -446,6 +482,7 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
           setMovementLines([]);
         }}
         onReturnToPayRent={handleReturnToPayRent}
+        onPayJailFine={() => setShowPayJailPopup(true)}
       />
       <div className='relative'>
         {showBDSTab ? (
@@ -564,6 +601,34 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
                 className="px-5 py-2 bg-blue-600 text-white rounded-lg font-bold text-[5vh] hover:bg-blue-700"
               >
                 Tiếp tục
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Pay Jail Fine Popup */}
+      {showPayJailPopup && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="w-[50%] h-auto flex flex-col gap-4 bg-gray-800 border-4 border-yellow-500 rounded-lg p-6 max-w-md mx-4">
+            <div className="text-[4vh] font-bold text-white text-center">
+              Trả 50k để ra tù?
+            </div>
+            <div className="text-[3vh] text-gray-300 text-center">
+              Bạn đang ở tù (Lượt {gameState.players[gameState.current_player].jail_turns}/3)
+            </div>
+            <div className="flex gap-4 justify-center">
+              <button
+                onClick={() => handlePayJailFine(true)}
+                className="px-5 py-3 bg-green-600 text-white rounded-lg font-bold text-[5vh] hover:bg-green-700"
+              >
+                Trả
+              </button>
+              <button
+                onClick={() => handlePayJailFine(false)}
+                className="px-5 py-3 bg-red-600 text-white rounded-lg font-bold text-[5vh] hover:bg-red-700"
+              >
+                Hủy
               </button>
             </div>
           </div>
