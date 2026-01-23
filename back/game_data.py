@@ -21,6 +21,15 @@ for bds_id, bds_info in bds_data.items():
     if group not in group_bds:
         group_bds[group] = []
     group_bds[group].append(bds_id)
+    
+    # Calculate unmortgage (110% of mortgage)
+    bds_info["unmortgage"] = int(bds_info["mortgage"] * 1.1)
+    
+    # Calculate downgrade (50% of upgrade if upgrade exists)
+    if "upgrade" in bds_info and bds_info["upgrade"] is not None:
+        bds_info["downgrade"] = bds_info["upgrade"] // 2
+    else:
+        bds_info["downgrade"] = None
 
 # Sort property IDs within each group
 for group in group_bds:

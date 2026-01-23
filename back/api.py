@@ -25,12 +25,28 @@ SpaceEffect = Callable[[GameState, str], None]
 # Game constants
 BDAU_SALARY = 200
 
+# Helper function to calculate player total wealth
+def calculate_player_total(state: GameState, player_id: str) -> int:
+    """Calculate total wealth: budget + property values"""
+    total = state.players[player_id].budget
+    
+    # Add value of all owned properties
+    for property_id, property_state in state.bds.items():
+        if property_state.owner == player_id:
+            property_price = GAME_DATA.bds[property_id].price
+            if property_state.level == -1:  # Mortgaged
+                total += property_price // 2
+            else:
+                total += property_price
+    
+    return total
+
 # Space effects configuration
 # Effects that trigger when touching a space (passing through or landing)
 def bdau_effect(state: GameState, player_id: str) -> None:
     """Add salary when passing through or landing on BDAU"""
     state.players[player_id].budget += BDAU_SALARY
-    state.players[player_id].total += BDAU_SALARY
+    state.players[player_id].total = calculate_player_total(state, player_id)
 
 
 EFFECTS_ON_TOUCH: dict[str, SpaceEffect] = {
@@ -144,6 +160,24 @@ async def move_with_dice(request: DiceRollRequest):
             if position in EFFECTS_ON_LAND:
                 EFFECTS_ON_LAND[position](temp_state, current_player)
             
+            # Check if this is an unowned property
+            if position in GAME_DATA.bds:
+                property_state = temp_state.bds.get(position)
+                if not property_state or property_state.owner == "":
+                    # Property is unowned, check if player can buy
+                    property_price = GAME_DATA.bds[position].price
+                    player_budget = temp_state.players[current_player].budget
+                    buyable = player_budget >= property_price
+                    
+                    temp_state.pending_actions.append(PendingAction(
+                        type="buy_property",
+                        data={
+                            "property_id": position,
+                            "price": property_price,
+                            "buyable": buyable
+                        }
+                    ))
+            
             
             # Add end turn action with flag for next player
             if temp_state.double_roll_stack > 0 and temp_state.double_roll_stack < 3:
@@ -211,6 +245,60 @@ async def next_turn(request: NextTurnRequest):
     ))
 
     return NextTurnResponse(new_game_state=game_state)
+
+
+# -----------------------------------------------------------------------------
+
+
+class BuyPropertyRequest(BaseModel):
+    game_state: GameState
+    property_id: str
+    buy: bool
+
+
+class BuyPropertyResponse(BaseModel):
+    new_game_state: GameState
+
+
+@app.post("/buy_property", response_model=BuyPropertyResponse)
+async def buy_property(request: BuyPropertyRequest):
+    game_state = request.game_state.model_copy(deep=True)
+    property_id = request.property_id
+    buy = request.buy
+    current_player = game_state.current_player
+    
+    # Remove the buy_property pending action
+    game_state.pending_actions = [
+        action for action in game_state.pending_actions 
+        if not (action.type == "buy_property" and action.data.get("property_id") == property_id)
+    ]
+    
+    if buy:
+        # Check if property exists and player has enough money
+        if property_id in GAME_DATA.bds:
+            property_price = GAME_DATA.bds[property_id].price
+            player_budget = game_state.players[current_player].budget
+            
+            if player_budget >= property_price:
+                # Deduct money
+                game_state.players[current_player].budget -= property_price
+                
+                # Assign ownership
+                from game_model import GameStateBDS
+                game_state.bds[property_id] = GameStateBDS(owner=current_player, level=0)
+                
+                # Recalculate total wealth (budget + property values)
+                game_state.players[current_player].total = calculate_player_total(game_state, current_player)
+                
+                # Add success message
+                game_state.pending_actions.append(PendingAction(
+                    type="show_message",
+                    data={
+                        "message": f"Đã mua {property_id} với giá {property_price}k"
+                    }
+                ))
+    
+    return BuyPropertyResponse(new_game_state=game_state)
 
 
 # -----------------------------------------------------------------------------

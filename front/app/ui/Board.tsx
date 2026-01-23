@@ -1,17 +1,11 @@
 import React from 'react';
-import { PlayerState } from './lib/gameLogic';
-import { Color } from './lib/colors';
 import { GameData, GameState } from '@/app/game/model';
 import { formatBudget } from './lib/utils';
 
 export const DEFAULT_UNIT_SIZE = 45;
 
 interface BoardProps {
-  unitSize?: number;
-  playerStates?: PlayerState[];
   movementLines?: { from: string, to: string, isLast?: boolean }[];
-  highlightCircle?: { playerIndex: number, position: string } | null;
-  currentPlayerColor?: Color;
   gameData: GameData;
   gameState: GameState;
   message?: string;
@@ -23,8 +17,6 @@ const Board: React.FC<BoardProps> = ({
   gameState,
   message
 }) => {
-  console.log('Board component received message:', message);
-
   // Board layout constants
   const vt_max = gameData.vt_max;
 
@@ -176,7 +168,7 @@ const Board: React.FC<BoardProps> = ({
 
   const OT_SPACE = gameData.space.OT;
 
-  const drawTextLabel = (key: string, text: string, x: string, y: string, color: string, rotate: boolean = false) => {
+  const drawTextLabel = (key: string, text: string, x: string, y: string, color: string, rotate: boolean = false, fontFamily: string = "Bahnschrift, Arial, sans-serif", fontWeight: string = "normal") => {
     const lines = text.split('\n');
     const lineCount = lines.length;
 
@@ -194,8 +186,8 @@ const Board: React.FC<BoardProps> = ({
         textAnchor="middle"
         fontSize={fontSize}
         fill={color}
-        fontFamily="Bahnschrift, Arial, sans-serif"
-        fontWeight="normal"
+        fontFamily={fontFamily}
+        fontWeight={fontWeight}
         style={{
           transform,
           transformOrigin: rotate ? `${x} ${y}` : undefined
@@ -212,11 +204,36 @@ const Board: React.FC<BoardProps> = ({
 
   const drawBDSLabel = (spaceId: string) => {
     const space = gameData.space[spaceId];
-    const price = gameData.bds[spaceId].price;
-    const text = `${spaceId}\n${formatBudget(price)}`;
-    const { w, h } = orient_to_offset_label(space.orient);
-    return drawTextLabel(`text-${spaceId}`, text, vt(space.x + w), vt(space.y + h), "black");
+    const bdsState = gameState.bds[spaceId];
+    const isOwned = bdsState && bdsState.owner !== "";
 
+    let text: string;
+    let color: string;
+    let fontFamily: string;
+    let fontWeight: string;
+
+    if (isOwned) {
+      // Get player color index (0-5) for styling
+      const playerColorIndex = Object.keys(gameData.color_pallete.players).indexOf(bdsState.owner);
+      const colors = ['FireBrick', 'red', 'DarkGoldenRod', 'darkgreen', 'dodgerblue', 'purple'];
+      const fonts = ['Cambria', 'Seaford', 'Itim', 'Seaford', 'Cambria', 'Itim'];
+
+      color = colors[playerColorIndex] || 'black';
+      fontFamily = fonts[playerColorIndex] || 'Bahnschrift, Arial, sans-serif';
+      fontWeight = 'bold';
+
+      const level = bdsState.level === -1 ? '-' : bdsState.level.toString();
+      text = `${spaceId}\nLv.${level}`;
+    } else {
+      const price = gameData.bds[spaceId].price;
+      text = `${spaceId}\n${formatBudget(price)}`;
+      color = "black";
+      fontFamily = "Bahnschrift, Arial, sans-serif";
+      fontWeight = "normal";
+    }
+
+    const { w, h } = orient_to_offset_label(space.orient);
+    return drawTextLabel(`text-${spaceId}`, text, vt(space.x + w), vt(space.y + h), color, false, fontFamily, fontWeight);
   };
 
   const drawBDAU = () => {
@@ -306,6 +323,27 @@ const Board: React.FC<BoardProps> = ({
       const imageX = `calc(${centerX} - ${halfPiece}%)`;
       const imageY = `calc(${centerY} - ${halfPiece}%)`;
 
+      if (rotated) {
+        // Use a <g> wrapper with CSS transform for rotation
+        return (
+          <g
+            key={`player-${playerId}`}
+            style={{
+              transform: `rotate(90deg)`,
+              transformOrigin: `${centerX} ${centerY}`,
+            }}
+          >
+            <image
+              x={imageX}
+              y={imageY}
+              width={pieceSize}
+              height={pieceSize}
+              href={`/assets/players/${playerId}.png`}
+            />
+          </g>
+        );
+      }
+
       return (
         <image
           key={`player-${playerId}`}
@@ -314,7 +352,6 @@ const Board: React.FC<BoardProps> = ({
           width={pieceSize}
           height={pieceSize}
           href={`/assets/players/${playerId}.png`}
-          transform={rotated ? `rotate(90, ${centerX}, ${centerY})` : undefined}
         />
       );
     });
@@ -324,7 +361,6 @@ const Board: React.FC<BoardProps> = ({
     const playerId = gameState.current_player;
     const space = gameData.space[gameState.players[playerId].at];
     const { off_w, off_h } = orient_to_player_offset(space.orient);
-    console.log(gameData.color_pallete.circle);
     return (
       <circle
         cx={vt(space.x + off_w)}

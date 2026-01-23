@@ -106,7 +106,9 @@ class BDS(BaseModel):
     price: int
     rent: list[int]
     mortgage: int
-    upgrade: int = 0
+    upgrade: int | None = None
+    downgrade: int | None = None
+    unmortgage: int
 
 
 # -----------------------------------------------------------------------------

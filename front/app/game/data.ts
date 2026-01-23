@@ -50,7 +50,34 @@ export async function moveWithDice(request: MoveWithDiceRequest): Promise<MoveWi
     throw error;
   }
 }
+export interface BuyPropertyRequest {
+  game_state: GameState;
+  property_id: string;
+  buy: boolean;
+}
 
+export interface BuyPropertyResponse {
+  new_game_state: GameState;
+}
+
+export async function buyProperty(request: BuyPropertyRequest): Promise<BuyPropertyResponse> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/buy_property`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    });
+    if (!response.ok) {
+      throw new Error(`Failed to buy property: ${response.statusText}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error buying property:', error);
+    throw error;
+  }
+}
 export interface NextTurnRequest {
   game_state: GameState;
 }

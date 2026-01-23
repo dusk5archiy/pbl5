@@ -13,9 +13,9 @@ interface FunctionalityScreenProps {
   canRoll: boolean;
 }
 
-export default function FunctionalityScreen({ 
-  onBack, 
-  onExit, 
+export default function FunctionalityScreen({
+  onBack,
+  onExit,
   onDevRoll,
   activeTab,
   setActiveTab,
@@ -33,40 +33,37 @@ export default function FunctionalityScreen({
 
   return (
     <div className="flex flex-col h-screen bg-[#2E6C3D]">
-      <div className="flex flex-col p-4 gap-4 flex-1">
+      <div className="flex flex-col p-2 gap-2 flex-1">
         {/* Back Button and Tabs */}
         <div className="flex gap-2">
           <button
             onClick={onBack}
-            className="px-4 py-1 bg-blue-600 text-white font-bold rounded hover:bg-blue-700 flex items-center gap-2"
+            className="px-4 bg-blue-600 text-white font-bold rounded hover:bg-blue-700 flex items-center gap-2"
           >
-            <span className="text-xl">←</span>
-            <span>Quay lại</span>
+            <span>Trở về</span>
           </button>
           <button
             onClick={() => setActiveTab('main')}
-            className={`px-4 py-1 rounded font-bold ${
-              activeTab === 'main'
-                ? 'bg-green-600 text-white'
-                : 'bg-gray-700 text-gray-300'
-            }`}
+            className={`px-4 rounded font-bold ${activeTab === 'main'
+              ? 'bg-green-600 text-white'
+              : 'bg-gray-700 text-gray-300'
+              }`}
           >
             Chính
           </button>
           <button
             onClick={() => setActiveTab('dev')}
-            className={`px-4 py-1 rounded font-bold ${
-              activeTab === 'dev'
-                ? 'bg-green-600 text-white'
-                : 'bg-gray-700 text-gray-300'
-            }`}
+            className={`px-4 rounded font-bold ${activeTab === 'dev'
+              ? 'bg-green-600 text-white'
+              : 'bg-gray-700 text-gray-300'
+              }`}
           >
             Dev
           </button>
         </div>
 
         {/* Tab Content */}
-        <div className="flex-1 bg-gray-800 p-6 rounded flex items-center justify-center">
+        <div className="flex-1 bg-gray-800 p-2 rounded flex items-center justify-center">
           {activeTab === 'main' && (
             <div className="flex flex-col items-center gap-4">
               <button

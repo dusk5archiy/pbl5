@@ -11,6 +11,8 @@ export interface BDS {
   rent: number[];
   mortgage: number;
   upgrade?: number;
+  downgrade?: number;
+  unmortgage: number;
 }
 
 export interface ColorPalette {

@@ -2,10 +2,12 @@
 
 import { useRef, useState, useEffect } from 'react';
 import Board from '../ui/Board';
-import PropertyBoard from '../ui/PropertyBoard';
+import BDSTab from '../ui/BDSTab';
+import LeftPanel from '../ui/LeftPanel';
+import TitleDeed from '../ui/TitleDeed';
 import { GameData, GameState } from '@/app/game/model';
 import { formatBudget } from '../ui/lib/utils';
-import { moveWithDice, nextTurn } from '@/app/game/data';
+import { moveWithDice, nextTurn, buyProperty } from '@/app/game/data';
 import FunctionalityScreen from './FunctionalityScreen';
 interface GameScreenProps {
   selectedCamera: string;
@@ -117,28 +119,28 @@ function DetectionResult({ imageData, result, onBack, onConfirm }: { imageData: 
 export default function GameScreen({ selectedCamera, gameState, gameData, onBack, onGameStateUpdate }: GameScreenProps) {
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [detectionResult, setDetectionResult] = useState<DetectionResult | null>(null);
-  const [showBoardPopup, setShowBoardPopup] = useState(false);
   const [isMoving, setIsMoving] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showConfirmationPopup, setShowConfirmationPopup] = useState(false);
-  // const [intermediateStates, setIntermediateStates] = useState<GameState[]>([]);
-  // const [currentStateIndex, setCurrentStateIndex] = useState(0);
   const [showEndTurnButton, setShowEndTurnButton] = useState(false);
   const [isFunctionDisabled, setIsFunctionDisabled] = useState(false);
   const [movementLines, setMovementLines] = useState<{ from: string, to: string, isLast: boolean }[]>([]);
   const [showFunctionalityScreen, setShowFunctionalityScreen] = useState(false);
   const [boardMessage, setBoardMessage] = useState<string>('');
-
-  // Functionality screen persistent state
+  const [showBuyPropertyPopup, setShowBuyPropertyPopup] = useState(false);
+  const [buyPropertyData, setBuyPropertyData] = useState<{ property_id: string; price: number; buyable: boolean } | null>(null);
   const [functionalityTab, setFunctionalityTab] = useState<'main' | 'dev'>('main');
   const [devDice1, setDevDice1] = useState(1);
   const [devDice2, setDevDice2] = useState(1);
+  const [showBDSTab, setShowBDSTab] = useState(false);
+  const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
 
 
   const handleBackToCamera = () => {
     setCapturedImage(null);
     setDetectionResult(null);
     setShowConfirmationPopup(false);
+    setIsFunctionDisabled(false);
   };
 
   const handleCaptureFromAmberBox = async () => {
@@ -152,6 +154,7 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
 
       if (ctx) {
         setIsAnalyzing(true);
+        setIsFunctionDisabled(true);
         ctx.drawImage(videoElement, 0, 0);
 
         canvas.toBlob(async (blob) => {
@@ -169,6 +172,7 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
               setCapturedImage(imageData);
               setDetectionResult(data);
               setShowConfirmationPopup(true);
+              setIsFunctionDisabled(true);
             } catch (error) {
               console.error('Error analyzing image:', error);
             } finally {
@@ -251,17 +255,39 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
         index++;
         setTimeout(moveToNextState, 100);
       } else {
-        // Animation finished, check pending actions for turn control
-        setIsMoving(false);
-        setIsFunctionDisabled(false); // Re-enable "Chức năng" button after movement
+        // Animation finished, wait 500ms before processing final state
+        setTimeout(() => {
+          setIsMoving(false);
+          setIsFunctionDisabled(false);
 
-        const finalState = states[states.length - 1];
-        const endTurnAction = finalState.pending_actions?.find(a => a.type === 'end_turn');
+          const finalState = states[states.length - 1];
+          const currentPlayer = finalState.current_player;
+          const finalPosition = finalState.players[currentPlayer].at;
+          
+          // Set selected property if player landed on a BDS
+          if (finalPosition in gameData.bds) {
+            setSelectedPropertyId(finalPosition);
+          }
 
-        if (endTurnAction) {
-          // Always show "Kết thúc lượt" button regardless of doubles
-          setShowEndTurnButton(true);
-        }
+          // Check for buy_property action
+          const buyPropertyAction = finalState.pending_actions?.find(a => a.type === 'buy_property');
+          if (buyPropertyAction) {
+            setBuyPropertyData({
+              property_id: buyPropertyAction.data.property_id,
+              price: buyPropertyAction.data.price,
+              buyable: buyPropertyAction.data.buyable
+            });
+            setShowBuyPropertyPopup(true);
+            setIsFunctionDisabled(true);
+          }
+
+          const endTurnAction = finalState.pending_actions?.find(a => a.type === 'end_turn');
+
+          if (endTurnAction) {
+            // Always show "Kết thúc lượt" button regardless of doubles
+            setShowEndTurnButton(true);
+          }
+        }, 300);
       }
     };
     moveToNextState();
@@ -281,13 +307,35 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
       setShowEndTurnButton(false);
       setMovementLines([]); // Clear movement lines
       setBoardMessage(''); // Clear board message
+      setShowBDSTab(false); // Switch back to board view
 
     } catch (error) {
       console.error('Error ending turn:', error);
     }
   };
 
-  const current_player_color = gameData.color_pallete.players[gameState.current_player];
+  const handleBuyProperty = async (buy: boolean) => {
+    if (!buyPropertyData) return;
+
+    try {
+      const response = await buyProperty({
+        game_state: gameState,
+        property_id: buyPropertyData.property_id,
+        buy: buy
+      });
+
+      // Update game state
+      onGameStateUpdate(response.new_game_state);
+
+      // Close popup
+      setShowBuyPropertyPopup(false);
+      setBuyPropertyData(null);
+      setIsFunctionDisabled(false);
+
+    } catch (error) {
+      console.error('Error buying property:', error);
+    }
+  };
 
   // Check if roll button should be shown (same logic as in the game screen)
   const canRoll = !showEndTurnButton && !isMoving;
@@ -318,121 +366,61 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
   return (
     <div className="flex h-screen p-1 bg-[#2E6C3D] gap-1">
       {/* Left Panel */}
-      <div className="flex flex-col w-[40vw] gap-1 overflow-hidden">
-        {/*Game Board */}
-        <div
-          className="flex gap-1 border-2 border-white p-1 rounded h-[25%] bg-[#446655] items-center"
-          onClick={() => setShowBoardPopup(true)}
-        >
-          <PropertyBoard
-            key={`property-board-${movementLines.length}`}
+      <LeftPanel
+        gameData={gameData}
+        gameState={gameState}
+        movementLines={movementLines}
+        showEndTurnButton={showEndTurnButton}
+        isFunctionDisabled={isFunctionDisabled}
+        isRollDiceButtonActive={isRollDiceButtonActive}
+        isAnalyzing={isAnalyzing}
+        showBDSTab={showBDSTab}
+        onEndTurn={handleEndTurn}
+        onRollDice={() => {
+          setBoardMessage('');
+          setMovementLines([]);
+          setShowBDSTab(false);
+          handleCaptureFromAmberBox();
+        }}
+        onToggleBDSTab={() => setShowBDSTab(!showBDSTab)}
+        onShowFunctionality={() => setShowFunctionalityScreen(true)}
+        onClearBoard={() => {
+          setBoardMessage('');
+          setMovementLines([]);
+        }}
+      />
+      <div className='relative'>
+        {showBDSTab ? (
+          <BDSTab
             gameData={gameData}
             gameState={gameState}
-            showBorders={movementLines.length > 0}
+            selectedPropertyId={selectedPropertyId}
+            onPropertySelect={(propertyId) => setSelectedPropertyId(propertyId)}
           />
-        </div>
-        <div className="flex flex-1 gap-1">
-          <div className='flex flex-col gap-1 w-[70%] h-full'>
-            <div className="flex flex-col border-2 border-white p-[2vh] rounded bg-gray-700 h-[70%]">
-              <div className="flex flex-col gap-[1vh] overflow-hidden">
-                {gameState?.players && Object.entries(gameState.players).map(([playerId, playerData]: [string, any]) => (
-                  <div
-                    key={playerId}
-                    className="flex items-center gap-1 max-h-[5vh]"
-                  >
-                    <div
-                      className="border-2 border-white flex items-center justify-center h-full w-[10%] min-w-2"
-                      style={{
-                        backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0,0,0,0.2) 5px, rgba(0,0,0,0.2) 10px)',
-                        backgroundColor: gameData.color_pallete.players[playerId]
-                      }}
-                    />
-                    <span className="font-bold text-gray-100 text-[5vh]">{formatBudget(playerData.budget)}</span>
-                    <span className="font-bold text-gray-300 text-[5vh] whitespace-nowrap">• {formatBudget(playerData.total)}</span>
-                  </div>
-                ))}
-                <div
-                  key="house"
-                  className="flex items-center gap-1 max-h-[6vh]"
-                >
-                  <div
-                    className={`border-2 border-white flex items-center justify-center h-full w-[10%] min-w-2`}
-                    style={{
-                      backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0,0,0,0.2) 5px, rgba(0,0,0,0.2) 10px)',
-                      backgroundColor: "gray"
-                    }}
-                  />
-                  <span className="font-bold text-[5vh] text-gray-100 whitespace-nowrap">{`32 • 12`}</span>
-                </div>
-              </div>
-            </div>
-            <button
-              onClick={handleEndTurn}
-              className="flex-1 text-[5vh] font-bold rounded border-2 border-gray-500 disabled:text-white"
-              style={{ backgroundColor: current_player_color }}
-              disabled={!showEndTurnButton}
+        ) : (
+          <>
+            <Board
+              gameData={gameData}
+              gameState={gameState}
+              movementLines={movementLines}
+              message={boardMessage}
+            />
+            {/* Amber Box with Camera */}
+            <div className="w-1/2 flex flex-col items-center justify-center overflow-hidden"
+              style={
+                {
+                  position: "absolute",
+                  top: `${4 / 13 * 100}%`,
+                  left: `${2 / 13 * 100}%`,
+                  width: `${(13 - 4) / 13 * 100}%`,
+                  height: `${(13 - 7) / 13 * 100}%`,
+                }
+              }
             >
-              Kết thúc lượt
-            </button>
-          </div>
-          <div className='flex flex-col flex-1 gap-1'>
-            <div className='flex flex-col h-[70%] gap-1'>
-              <button
-                onClick={() => {
-                  setBoardMessage('');
-                  setMovementLines([]);
-                  handleCaptureFromAmberBox();
-                }}
-                className="w-full h-[50%] text-[5vh] text-gray-600 font-bold rounded border-3 border-gray-500 disabled:text-white"
-                disabled={!isRollDiceButtonActive || isAnalyzing}
-                style={{ backgroundColor: current_player_color }}
-              >
-                Thảy
-              </button>
-              <button
-                onClick={() => setShowFunctionalityScreen(true)}
-                disabled={isFunctionDisabled}
-                className="w-full h-[50%] border-2 text-[3vh] border-gray-600 font-bold py-1 rounded text-gray-700 disabled:text-white bg-white"
-              >Chức năng
-              </button>
+              <CameraInBoard selectedCamera={selectedCamera} />
             </div>
-            <button
-              onClick={() => {
-                setBoardMessage('');
-                setMovementLines([]);
-              }}
-              className="w-full flex-1 text-[5vh] text-gray-600 font-bold rounded border-3 border-gray-500 disabled:text-white"
-              disabled
-              style={{ backgroundColor: current_player_color }}
-            >
-              Tiếp
-            </button>
-          </div>
-        </div>
-
-        {/* Function Button */}
-      </div>
-      <div className='relative'>
-        <Board
-          gameData={gameData}
-          gameState={gameState}
-          movementLines={movementLines}
-          message={boardMessage}
-        />
-        {/* Amber Box with Camera */}
-        <div className="w-1/2 flex flex-col items-center justify-center overflow-hidden"
-          style={
-            {
-              position: "absolute",
-              top: `${4 / 13 * 100}%`,
-              left: `${2 / 13 * 100}%`,
-              width: `${(13 - 4) / 13 * 100}%`,
-              height: `${(13 - 7) / 13 * 100}%`,
-            }
-          }
-        >
-          <CameraInBoard selectedCamera={selectedCamera} />
-        </div>
+          </>
+        )}
       </div>
 
       {/* Confirmation Popup */}
@@ -449,39 +437,43 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
         </div>
       )}
 
-      {/* Board Popup */}
-      {/* {showBoardPopup && ( */}
-      {/*   <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50"> */}
-      {/*     <div className="bg-gray-900 rounded-lg p-6 max-w-4xl w-full mx-4" style={{ maxHeight: '90vh' }}> */}
-      {/*       <div className="flex justify-between items-center mb-4"> */}
-      {/*         <button */}
-      {/*           onClick={() => setShowBoardPopup(false)} */}
-      {/*           className="close-popup text-4xl text-white hover:text-red-500" */}
-      {/*         > */}
-      {/*           × */}
-      {/*         </button> */}
-      {/*       </div> */}
-      {/*       <div className="bg-gray-800 p-4 rounded" style={{ height: '70vh' }}> */}
-      {/*         <div className="flex gap-2 h-full"> */}
-      {/*           {cols.map((col, colIndex) => ( */}
-      {/*             <div key={col} className="flex-1 flex flex-col gap-2 justify-end"> */}
-      {/*               {Array.from({ length: cols1[colIndex] }, (_, rowIndex) => ( */}
-      {/*                 <div */}
-      {/*                   key={`${col}${rowIndex + 1}`} */}
-      {/*                   style={{ color: 'orange', fontSize: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900' }} */}
-      {/*                   className="border-2 bg-white aspect-square rounded" */}
-      {/*                 >1</div> */}
-      {/*               ))} */}
-      {/*               <div className="text-center text-2xl font-bold items-center justify-center text-white"> */}
-      {/*                 {col} */}
-      {/*               </div> */}
-      {/*             </div> */}
-      {/*           ))} */}
-      {/*         </div> */}
-      {/*       </div> */}
-      {/*     </div> */}
-      {/*   </div> */}
-      {/* )} */}
+      {/* Buy Property Popup */}
+      {showBuyPropertyPopup && buyPropertyData && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="h-[90%] flex flex-col justify-between gap-2 bg-gray-800 border-4 border-blue-500 rounded-lg p-4 max-w-md mx-4">
+            <div className='flex flex-col'>
+              <div className="text-[4vh] font-bold text-white text-center">Bạn có muốn mua BĐS {buyPropertyData.property_id}</div>
+              <div className="text-[4vh] font-bold text-white text-center">với giá {formatBudget(buyPropertyData.price)}?</div>
+            </div>
+            <div className="h-[50%]">
+              <TitleDeed
+                gameData={gameData}
+                gameState={gameState}
+                propertyId={buyPropertyData.property_id}
+              />
+            </div>
+            <div className="flex gap-4 justify-center">
+              {
+                buyPropertyData.buyable && (
+
+                  <button
+                    onClick={() => handleBuyProperty(true)}
+                    className="px-2 py-3 bg-green-600 text-white rounded-lg font-bold text-[5vh] hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed"
+                  >
+                    Mua
+                  </button>
+                )
+              }
+              <button
+                onClick={() => handleBuyProperty(false)}
+                className="px-2 py-3 bg-red-600 text-white rounded-lg font-bold text-[5vh] hover:bg-red-700"
+              >
+                Hủy
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
