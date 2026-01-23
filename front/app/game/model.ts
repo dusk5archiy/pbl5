@@ -57,6 +57,10 @@ export interface GameStatePlayer {
 export interface GameStateBDS {
   owner: string;
   level: number;
+  can_upgrade: boolean;
+  can_downgrade: boolean;
+  can_mortgage: boolean;
+  can_unmortgage: boolean;
 }
 
 export interface PendingAction {
@@ -74,4 +78,6 @@ export interface GameState {
   current_player: string;
   double_roll_stack: number;
   pending_actions: PendingAction[];
+  houses_left: number;
+  hotels_left: number;
 }

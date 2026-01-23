@@ -17,6 +17,10 @@ const TitleDeed: React.FC<TitleDeedProps> = ({
   if (!property) return null;
 
   const groupColor = gameData.color_pallete.groups[property.group];
+  const fontSize = "75%";
+  const propertyState = gameState.bds[propertyId];
+  const currentLevel = propertyState?.level ?? -1;
+  const isOwned = propertyState?.owner && propertyState.owner !== "";
 
   return (
     <svg width="100%" height="100%">
@@ -27,12 +31,12 @@ const TitleDeed: React.FC<TitleDeedProps> = ({
       <rect x="95%" y="0" width="5%" height="100%" fill={groupColor} stroke="black" strokeWidth="2" />
 
       {/* Property ID */}
-      <text x="2%" y="10%" fontSize="70%" textAnchor="start" fill="green">
+      <text x="2%" y="10%" fontSize="55%" textAnchor="start" fill="green">
         {propertyId} - Giá {formatBudget(property.price)}
         {property.downgrade !== null && property.downgrade !== undefined && `/HC: ${formatBudget(property.downgrade)}`}
         /Ch: {formatBudget(property.unmortgage)}
       </text>
-      <text x="2%" y="21%" fontSize="100%" textAnchor="start" fill="chocolate">
+      <text x="2%" y="21%" fontSize="80%" textAnchor="start" fill="chocolate">
         {property.name}
       </text>
 
@@ -42,10 +46,19 @@ const TitleDeed: React.FC<TitleDeedProps> = ({
         const row = index < Math.ceil(property.rent.length / 2) ? index : index - Math.ceil(property.rent.length / 2);
         const x = column === 0 ? "10%" : "50%";
         const y = `${35 + row * 10}%`;
+        const isBold = isOwned && index === currentLevel;
 
         return (
-          <text key={index} x={x} y={y} fontSize="80%" textAnchor='start' fill="black">
-            Lv.{index}: {formatBudget(rentValue)}
+          <text 
+            key={index} 
+            x={x} 
+            y={y} 
+            fontSize={fontSize} 
+            textAnchor='start' 
+            fill="black"
+            fontWeight={isBold ? "bold" : "normal"}
+          >
+            {isBold && '• '}Lv.{index}: {formatBudget(rentValue)}
           </text>
         );
       })}
@@ -58,10 +71,11 @@ const TitleDeed: React.FC<TitleDeedProps> = ({
         let yPosition = 71;
         const lineIncrement = 10;
         const elements = [];
+        const isMortgaged = isOwned && currentLevel === -1;
 
         if (property.upgrade !== null && property.upgrade !== undefined) {
           elements.push(
-            <text key="upgrade" x="10%" y={`${yPosition}%`} fontSize="80%" fill="black">
+            <text key="upgrade" x="10%" y={`${yPosition}%`} fontSize={fontSize} fill="black">
               Nâng cấp: -{formatBudget(property.upgrade)}
             </text>
           );
@@ -70,8 +84,15 @@ const TitleDeed: React.FC<TitleDeedProps> = ({
 
         // Add mortgage
         elements.push(
-          <text key="mortgage" x="10%" y={`${yPosition}%`} fontSize="80%" fill="black">
-            Cầm cố: +{formatBudget(property.mortgage)}
+          <text 
+            key="mortgage" 
+            x="10%" 
+            y={`${yPosition}%`} 
+            fontSize={fontSize} 
+            fill="black"
+            fontWeight={isMortgaged ? "bold" : "normal"}
+          >
+            {isMortgaged && '• '}Cầm cố: +{formatBudget(property.mortgage)}
           </text>
         );
 

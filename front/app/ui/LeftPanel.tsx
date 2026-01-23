@@ -80,7 +80,7 @@ export default function LeftPanel({
                     backgroundColor: "gray"
                   }}
                 />
-                <span className="font-bold text-[5vh] text-gray-100 whitespace-nowrap">{`32 • 12`}</span>
+                <span className="font-bold text-[5vh] text-gray-100 whitespace-nowrap">{`${gameState.houses_left} • ${gameState.hotels_left}`}</span>
               </div>
             </div>
           </div>

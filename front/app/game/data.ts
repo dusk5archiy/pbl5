@@ -104,3 +104,88 @@ export async function nextTurn(request: NextTurnRequest): Promise<NextTurnRespon
     throw error;
   }
 }
+
+export interface PropertyActionRequest {
+  game_state: GameState;
+  property_id: string;
+}
+
+export interface PropertyActionResponse {
+  new_game_state: GameState;
+}
+
+export async function upgradeProperty(request: PropertyActionRequest): Promise<PropertyActionResponse> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/upgrade_property`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    });
+    if (!response.ok) {
+      throw new Error(`Failed to upgrade property: ${response.statusText}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error upgrading property:', error);
+    throw error;
+  }
+}
+
+export async function downgradeProperty(request: PropertyActionRequest): Promise<PropertyActionResponse> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/downgrade_property`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    });
+    if (!response.ok) {
+      throw new Error(`Failed to downgrade property: ${response.statusText}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error downgrading property:', error);
+    throw error;
+  }
+}
+
+export async function mortgageProperty(request: PropertyActionRequest): Promise<PropertyActionResponse> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/mortgage_property`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    });
+    if (!response.ok) {
+      throw new Error(`Failed to mortgage property: ${response.statusText}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error mortgaging property:', error);
+    throw error;
+  }
+}
+
+export async function unmortgageProperty(request: PropertyActionRequest): Promise<PropertyActionResponse> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/unmortgage_property`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    });
+    if (!response.ok) {
+      throw new Error(`Failed to unmortgage property: ${response.statusText}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error unmortgaging property:', error);
+    throw error;
+  }
+}

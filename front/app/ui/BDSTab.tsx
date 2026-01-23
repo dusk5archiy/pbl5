@@ -1,19 +1,22 @@
 import { useState, useEffect } from 'react';
 import TitleDeed from './TitleDeed';
 import { GameData, GameState } from '@/app/game/model';
+import { upgradeProperty, downgradeProperty, mortgageProperty, unmortgageProperty } from '@/app/game/data';
 
 interface BDSTabProps {
   gameData: GameData;
   gameState: GameState;
   selectedPropertyId: string | null;
   onPropertySelect: (propertyId: string) => void;
+  onGameStateUpdate: (newGameState: GameState) => void;
 }
 
 export default function BDSTab({
   gameData,
   gameState,
   selectedPropertyId,
-  onPropertySelect
+  onPropertySelect,
+  onGameStateUpdate
 }: BDSTabProps) {
   // Get the property to display - default to first property of first group if null
   const getDefaultPropertyId = () => {
@@ -39,8 +42,83 @@ export default function BDSTab({
     }
   }, []);
 
+  // Get property state
+  const propertyState = displayPropertyId ? gameState.bds[displayPropertyId] : null;
+  const propertyInfo = displayPropertyId ? gameData.bds[displayPropertyId] : null;
+
+  // Check if current player owns this property
+  const currentPlayer = gameState.current_player;
+  const isOwnedByCurrentPlayer = propertyState?.owner === currentPlayer;
+
+  // Get action availability from backend (already calculated for current player only)
+  const canUpgrade = propertyState?.can_upgrade || false;
+  const canDowngrade = propertyState?.can_downgrade || false;
+  const canMortgage = propertyState?.can_mortgage || false;
+  const canUnmortgage = propertyState?.can_unmortgage || false;
+
+  // Helper function to format price
+  const formatPrice = (price: number) => {
+    if (price >= 1000) {
+      return `-${price / 1000}tr`;
+    }
+    return `-${price}k`;
+  };
+
+  // Action handlers
+  const handleUpgrade = async () => {
+    if (!canUpgrade || !displayPropertyId) return;
+    try {
+      const response = await upgradeProperty({
+        game_state: gameState,
+        property_id: displayPropertyId
+      });
+      onGameStateUpdate(response.new_game_state);
+    } catch (error) {
+      console.error('Error upgrading property:', error);
+    }
+  };
+
+  const handleDowngrade = async () => {
+    if (!canDowngrade || !displayPropertyId) return;
+    try {
+      const response = await downgradeProperty({
+        game_state: gameState,
+        property_id: displayPropertyId
+      });
+      onGameStateUpdate(response.new_game_state);
+    } catch (error) {
+      console.error('Error downgrading property:', error);
+    }
+  };
+
+  const handleMortgage = async () => {
+    if (!canMortgage || !displayPropertyId) return;
+    try {
+      const response = await mortgageProperty({
+        game_state: gameState,
+        property_id: displayPropertyId
+      });
+      onGameStateUpdate(response.new_game_state);
+    } catch (error) {
+      console.error('Error mortgaging property:', error);
+    }
+  };
+
+  const handleUnmortgage = async () => {
+    if (!canUnmortgage || !displayPropertyId) return;
+    try {
+      const response = await unmortgageProperty({
+        game_state: gameState,
+        property_id: displayPropertyId
+      });
+      onGameStateUpdate(response.new_game_state);
+    } catch (error) {
+      console.error('Error unmortgaging property:', error);
+    }
+  };
+
   return (
-    <div className="h-full aspect-square flex flex-col gap-2 p-2">
+    <div className="w-auto h-full aspect-square flex flex-col gap-1 p-2 overflow-hidden">
       {/* Title Deed Card */}
       <div className='h-[50%] flex justify-center'>
         <div className="w-[75%] h-full">
@@ -52,9 +130,9 @@ export default function BDSTab({
         </div>
       </div>
       {/* Property Selector */}
-      <div className="flex-1 flex flex-col gap-2">
+      <div className="flex-1 flex flex-col gap-1">
         {/* First row: Property groups */}
-        <div className="flex gap-1 justify-center">
+        <div className="flex flex-1 gap-1 px-1 py-1 overflow-x-auto bg-green-900">
           {gameData.bds_groups_order.map((group) => (
             <button
               key={group}
@@ -65,11 +143,9 @@ export default function BDSTab({
                   onPropertySelect(firstProperty);
                 }
               }}
-              className="text-[3vh] px-2 py-1 font-bold border-2 rounded"
+              className="text-[5vh] w-[30%] px-2 py-1 font-bold border-2 rounded shrink-0"
               style={{
-                backgroundColor: gameData.color_pallete.groups[group],
-                borderColor: selectedGroup === group ? 'white' : 'black',
-                opacity: selectedGroup === group ? 1 : 0.7
+                backgroundColor: selectedGroup === group ? "white" : "gray",
               }}
             >
               {group}
@@ -79,14 +155,14 @@ export default function BDSTab({
 
         {/* Second row: Property IDs for selected group */}
         {selectedGroup && (
-          <div className="text-[3vh] flex gap-1 justify-center flex-wrap">
+          <div className="text-[5vh] flex flex-1 gap-1 justify-center flex-wrap">
             {gameData.group_bds[selectedGroup]?.map((propertyId) => (
               <button
                 key={propertyId}
                 onClick={() => onPropertySelect(propertyId)}
-                className="px-2 py-1 font-bold border-2 rounded"
+                className="flex-1 px-2 font-bold border-2 rounded"
                 style={{
-                  backgroundColor: selectedPropertyId === propertyId ? gameData.color_pallete.groups[selectedGroup] : 'white',
+                  backgroundColor: selectedPropertyId === propertyId ? "white" : "gray",
                   borderColor: 'black',
                 }}
               >
@@ -97,20 +173,40 @@ export default function BDSTab({
         )}
 
         {/* Action buttons */}
-        <div className="grid grid-cols-2 gap-2 mt-auto">
-          <button className="text-[5vh] px-4 py-1 bg-[lightgreen] text-white rounded">
-            Nâng cấp
-          </button>
-          <button className="text-[5vh] px-4 py-1 bg-[salmon] text-white rounded">
-            Hạ cấp
-          </button>
-          <button className="text-[5vh] px-4 py-1 bg-[lightgray] text-white rounded">
-            Cầm cố
-          </button>
-          <button className="text-[5vh] px-4 py-1 bg-[lightgray] text-white rounded">
-            Chuộc
-          </button>
-        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-1">
+        <button
+          onClick={handleUpgrade}
+          disabled={!canUpgrade}
+          className="text-[5vh] px-1 py-1 bg-[lightgreen] rounded"
+          style={{ color: canUpgrade ? 'black' : 'white' }}
+        >
+          Nâng cấp{isOwnedByCurrentPlayer && propertyInfo?.upgrade ? ` (${formatPrice(propertyInfo.upgrade)})` : ''}
+        </button>
+        <button
+          onClick={handleDowngrade}
+          disabled={!canDowngrade}
+          className="text-[5vh] px-1 py-1 bg-[salmon] rounded"
+          style={{ color: canDowngrade ? 'black' : 'white' }}
+        >
+          Hạ cấp{isOwnedByCurrentPlayer && propertyInfo?.downgrade ? ` (+${propertyInfo.downgrade}k)` : ''}
+        </button>
+        <button
+          onClick={handleMortgage}
+          disabled={!canMortgage}
+          className="text-[5vh] px-1 py-1 bg-[lightgray] rounded"
+          style={{ color: canMortgage ? 'black' : 'white' }}
+        >
+          Cầm cố{isOwnedByCurrentPlayer && propertyInfo?.mortgage ? ` (+${propertyInfo.mortgage}k)` : ''}
+        </button>
+        <button
+          onClick={handleUnmortgage}
+          disabled={!canUnmortgage}
+          className="text-[5vh] px-1 py-1 bg-[lightgray] rounded"
+          style={{ color: canUnmortgage ? 'black' : 'white' }}
+        >
+          Chuộc{isOwnedByCurrentPlayer && propertyInfo?.unmortgage ? ` (${formatPrice(propertyInfo.unmortgage)})` : ''}
+        </button>
       </div>
     </div>
   );

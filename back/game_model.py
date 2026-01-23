@@ -69,6 +69,10 @@ class GameStatePlayer(BaseModel):
 class GameStateBDS(BaseModel):
     owner: str
     level: int
+    can_upgrade: bool = False
+    can_downgrade: bool = False
+    can_mortgage: bool = False
+    can_unmortgage: bool = False
 
 
 class PendingAction(BaseModel):
@@ -86,6 +90,8 @@ class GameState(BaseModel):
     current_player: str
     double_roll_stack: int
     pending_actions: list[PendingAction] = []
+    houses_left: int = 32
+    hotels_left: int = 12
 
 
 # Models for Cards ------------------------------------------------------------

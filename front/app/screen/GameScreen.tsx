@@ -263,7 +263,7 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
           const finalState = states[states.length - 1];
           const currentPlayer = finalState.current_player;
           const finalPosition = finalState.players[currentPlayer].at;
-          
+
           // Set selected property if player landed on a BDS
           if (finalPosition in gameData.bds) {
             setSelectedPropertyId(finalPosition);
@@ -396,6 +396,7 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
             gameState={gameState}
             selectedPropertyId={selectedPropertyId}
             onPropertySelect={(propertyId) => setSelectedPropertyId(propertyId)}
+            onGameStateUpdate={onGameStateUpdate}
           />
         ) : (
           <>
@@ -440,7 +441,7 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
       {/* Buy Property Popup */}
       {showBuyPropertyPopup && buyPropertyData && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="h-[90%] flex flex-col justify-between gap-2 bg-gray-800 border-4 border-blue-500 rounded-lg p-4 max-w-md mx-4">
+          <div className="w-[50%] h-[90%] flex flex-col justify-between gap-2 bg-gray-800 border-4 border-blue-500 rounded-lg p-4 max-w-md mx-4">
             <div className='flex flex-col'>
               <div className="text-[4vh] font-bold text-white text-center">Bạn có muốn mua BĐS {buyPropertyData.property_id}</div>
               <div className="text-[4vh] font-bold text-white text-center">với giá {formatBudget(buyPropertyData.price)}?</div>
@@ -458,7 +459,7 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
 
                   <button
                     onClick={() => handleBuyProperty(true)}
-                    className="px-2 py-3 bg-green-600 text-white rounded-lg font-bold text-[5vh] hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed"
+                    className="px-5 py-3 bg-green-600 text-white rounded-lg font-bold text-[5vh] hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed"
                   >
                     Mua
                   </button>
@@ -466,7 +467,7 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
               }
               <button
                 onClick={() => handleBuyProperty(false)}
-                className="px-2 py-3 bg-red-600 text-white rounded-lg font-bold text-[5vh] hover:bg-red-700"
+                className="px-5 py-3 bg-red-600 text-white rounded-lg font-bold text-[5vh] hover:bg-red-700"
               >
                 Hủy
               </button>
