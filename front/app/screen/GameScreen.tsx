@@ -259,7 +259,7 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
 
           // Don't draw line if jumping to OT (jail position) - this happens when going to jail
           const jumpingToJail = toPos === "OT" && currentState.players[currentPlayer].in_jail;
-          
+
           // Check if next state is jumping to jail - if so, mark current line as last
           if (index < states.length - 1) {
             const nextState = states[index + 1];
@@ -269,7 +269,7 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
               isLast = true; // Draw arrow head at current position (VT)
             }
           }
-          
+
           if (!jumpingToJail && fromPos !== toPos) {
             lines.push({ from: fromPos, to: toPos, isLast });
             setMovementLines([...lines]);
@@ -483,7 +483,7 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
         dice1: forcedJailDice?.dice1,
         dice2: forcedJailDice?.dice2
       });
-      
+
       // If should_move is true, continue with movement
       if (response.should_move && response.dice1 !== undefined && response.dice2 !== undefined) {
         setForcedJailDice(null);
@@ -493,7 +493,7 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
           dice1: response.dice1,
           dice2: response.dice2
         });
-        
+
         setIsMoving(true);
         setIsFunctionDisabled(true);
         startMovementAnimation(moveResponse.intermediate_states);

@@ -9,7 +9,7 @@ interface PropertyBoardProps {
 export default function PropertyBoard({ gameData, gameState, showBorders }: PropertyBoardProps) {
   return (
     <div className='flex w-full gap-[1vw] justify-evenly'>
-      <div className="flex gap-[0.5vw]">
+      <div className="flex gap-[0.5vw] active:opacity-50">
         {/* Columns */}
         {gameData.bds_groups_order.map((group) => (
           <div key={group} className="flex flex-col-reverse gap-[1vh] justify-start">
