@@ -9,7 +9,7 @@ class GameDataResponse(BaseModel):
     game_data: GameData
 
 
-async def get_game_data():
+def get_game_data():
     return GameDataResponse(game_data=GAME_DATA)
 
 
