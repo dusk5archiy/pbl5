@@ -58,14 +58,14 @@ export default function Home() {
       );
     case 'game':
       return gameData && (
-           <GameScreen
-             selectedCamera={selectedCamera}
-             gameState={gameState}
-             gameData={gameData}
-             onBack={() => setCurrentScreen('checkCamera')}
-             onGameStateUpdate={setGameState}
-           />
-         );
+        <GameScreen
+          selectedCamera={selectedCamera}
+          gameState={gameState!}
+          gameData={gameData}
+          onBack={() => setCurrentScreen('checkCamera')}
+          onGameStateUpdate={setGameState}
+        />
+      );
     default:
       return <WelcomeScreen onStart={() => setCurrentScreen('chooseColors')} />;
   }
