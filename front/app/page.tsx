@@ -57,10 +57,10 @@ export default function Home() {
         />
       );
     case 'game':
-      return gameData && (
+      return gameData && gameState && (
         <GameScreen
           selectedCamera={selectedCamera}
-          gameState={gameState!}
+          gameState={gameState}
           gameData={gameData}
           onBack={() => setCurrentScreen('checkCamera')}
           onGameStateUpdate={setGameState}
