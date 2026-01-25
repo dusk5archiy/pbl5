@@ -170,7 +170,7 @@ export default function GameScreen({ selectedCamera, gameState, gameData, onBack
             formData.append('file', blob, 'capture.jpg');
 
             try {
-              const response = await fetch('http://localhost:8000/detect', {
+              const response = await fetch('http://192.168.137.1:8000/detect', {
                 method: 'POST',
                 body: formData,
               });

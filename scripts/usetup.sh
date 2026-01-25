@@ -18,7 +18,7 @@ Before=snapd.service
 
 [Service]
 WorkingDirectory=/home/$USER/pbl5
-ExecStart=/bin/bash /home/$USER/pbl5/scripts/run.sh
+ExecStart=/bin/bash /home/$USER/pbl5/scripts/urun.sh
 
 [Install]
 WantedBy=basic.target

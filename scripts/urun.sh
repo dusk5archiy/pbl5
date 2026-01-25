@@ -5,10 +5,6 @@ else
 fi
 
 (
-  cd ai
-  python3 api.py
-) &
-(
   cd back
   python3 api.py
 ) &
@@ -16,4 +12,4 @@ fi
 (
   cd front
   npm run start
-) &
+)
