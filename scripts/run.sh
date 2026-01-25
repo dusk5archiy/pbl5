@@ -13,5 +13,7 @@ fi
   python3 api.py
 ) &
 
-cd front
-npm run start
+(
+  cd front
+  npm run start
+) &
