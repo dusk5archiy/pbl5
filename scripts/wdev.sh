@@ -7,12 +7,9 @@ else
 fi
 
 (
-  cd ai
-  python api.py
-) &
-(
   cd back
   python api.py
 ) &
 
-cd front npm run dev
+cd front
+npm run dev
