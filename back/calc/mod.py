@@ -183,9 +183,13 @@ def mod_release(
         game_state = mod_reset_card_effects(game_state)
         game_state.logic.viewing_player = None
         game_state.effect.select_bds = None
-        game_state.effect.bds_enabled = True
-        game_state.effect.can_trade = True
         player = game_state.logic.current_player
+        if game_state.logic.player[player].alive:
+            game_state.effect.bds_enabled = True
+            game_state.effect.can_trade = True
+        else:
+            game_state.effect.bds_enabled = False
+            game_state.effect.can_trade = False
 
         if len(chores := then.jail) > 0:
             game_state.current_chore.jail = chores[0]

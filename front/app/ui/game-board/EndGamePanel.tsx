@@ -17,7 +17,7 @@ export function EndGamePanel(
 
   return (
     <div className="w-full h-full flex flex-col gap-[1.5vw] justify-center">
-      <div className="w-full flex justify-center font-bold whitespace-nowrap text-[4cqw]">Trò chơi kết thúc.</div>
+      <div className="w-full flex justify-center font-bold whitespace-nowrap text-[4cqw]">Trò chơi kết thúc</div>
       <div className="w-full grid grid-cols-3 grid-rows-2 text-[4cqw] gap-[0.5vw] p-[0.5vw]">
         {
           player_order.map(
