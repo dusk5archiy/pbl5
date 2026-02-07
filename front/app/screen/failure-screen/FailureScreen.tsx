@@ -1,6 +1,4 @@
-'use server'
-
-export default async function FailureScreen(error?: any) {
+export default function FailureScreen(error?: any) {
   console.log(error);
   return (
     <div className="w-screen h-screen flex flex-col">
