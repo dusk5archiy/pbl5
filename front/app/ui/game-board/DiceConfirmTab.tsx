@@ -18,7 +18,7 @@ export function DiceConfirmTab(props: GameBoardProps) {
 
           // Draw bounding boxes and scores
           ctx.lineWidth = 5;
-          ctx.font = '5vw Bahnschrift';
+          ctx.font = '5vw sans-serif';
           diceDetectionResult.bboxes.forEach((bbox, index) => {
             const [x, y, w, h] = bbox;
             ctx.strokeStyle = 'blue';

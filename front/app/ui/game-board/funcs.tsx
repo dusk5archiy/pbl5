@@ -127,7 +127,7 @@ export function getDrawBDSBannerFunction(props: GameBoardProps) {
 function getDrawTextFunction(gameData: GameData, getBoardNum: number) {
   const scale = 0.35 / gameData.board_size[getBoardNum];
   const fontSize = `${scale * 50}vw`;
-  return (key: string, text: string, x: string, y: string, color: string, rotate: boolean = false, fontFamily: string = "Bahnschrift, Arial, sans-serif", fontWeight: string = "normal") => {
+  return (key: string, text: string, x: string, y: string, color: string, rotate: boolean = false, fontFamily: string = "sans-serif", fontWeight: string = "normal") => {
     const lines = text.split('\n');
     const lineCount = lines.length;
     const verticalShift = -lineCount / 2 + 0.75;
@@ -168,7 +168,7 @@ export function getDrawLabelFunction(props: GameBoardProps) {
   const vt = getVtFunction(props);
   const drawText = getDrawTextFunction(gameData, getBoardNum);
   return (key: string, text: string, space: Space, color: string = "black", fontWeight: string = "normal", rotate: boolean = false) => {
-    const fontFamily: string = "Bahnschrift, Arial, sans-serif";
+    const fontFamily: string = "sans-serif";
     return drawText(key, text, vt(space.x + space.w / 2), vt(space.y + space.h / 2), color, rotate, fontFamily, fontWeight);
   };
 }
