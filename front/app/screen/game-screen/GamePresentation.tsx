@@ -161,7 +161,7 @@ export function GamePresentation(props: GameScreenProps) {
         formData.append("file", blob, "capture.jpg");
         try {
           console.log(formData);
-          const response = await fetch("http://localhost:8000/detect", { method: 'POST', body: formData });
+          const response = await fetch("http://192.168.137.1:8000/detect", { method: 'POST', body: formData });
           const data = await response.json();
           setDiceDetectionResult(data);
           setEncodedImage(canvas.toDataURL());
