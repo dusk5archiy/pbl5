@@ -7,7 +7,7 @@ export default function FailureScreen(error?: any) {
       {
         error != null &&
         <div className="w-full text-center text-[5vh] mt-[5vh] mb-[5vh]">
-          {error}
+          {`${error}`}
         </div>
       }
     </div>
