@@ -2,9 +2,9 @@ import { PropertyStatePanel } from "./BuildPanel";
 import { MortgagePanel as PropertyUpgradePanel } from "./PropertyUpgradePanel";
 import { PropertyDock } from "./PropertyDock";
 import { PropertySelector } from "./PropertySelector";
-import { PropertyPanelProps } from "./props";
+import { GameBoardProps } from "./props";
 
-export function PropertyTab(props: PropertyPanelProps) {
+export function PropertyTab(props: GameBoardProps) {
   return (
     <div className="w-full h-full flex flex-col gap-[1vw]">
       <div className="w-full h-[65%] flex gap-[1vw]">

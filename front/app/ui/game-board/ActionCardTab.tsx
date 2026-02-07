@@ -1,9 +1,9 @@
 import { ActionCardPanel } from "./ActionCardPanel";
 import { ActionCardModal } from "./ActionCardModal";
 import { ActionCardSelector } from "./ActionCardSelector";
-import { PropertyPanelProps } from "./props";
+import { GameBoardProps } from "./props";
 
-export function ActionCardTab(props: PropertyPanelProps) {
+export function ActionCardTab(props: GameBoardProps) {
   return (
     <div className="w-full h-full flex gap-[2%]">
       <div className="w-[50vw] h-full gap-[1vw] flex flex-col justify-center">

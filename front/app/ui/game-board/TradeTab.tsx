@@ -1,9 +1,9 @@
 import { formatBudget } from "@/app/utils/format";
-import { PropertyPanelProps } from "./props";
 import { COLOR_UI_INFO } from "@/app/utils/pallete";
 import { CSSProperties } from "react";
+import { GameBoardProps } from "./props";
 
-export function TradeTab(props: PropertyPanelProps) {
+export function TradeTab(props: GameBoardProps) {
   const {
     gameState,
     startTradeFunc,

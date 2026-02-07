@@ -1,8 +1,8 @@
 import { formatBudget } from "@/app/utils/format";
-import { PropertyPanelProps } from "./props";
 import { CSSProperties } from "react";
+import { GameBoardProps } from "./props";
 
-export function MortgagePanel(props: PropertyPanelProps) {
+export function MortgagePanel(props: GameBoardProps) {
   const { upgradeBdsFunc, downgradeBdsFunc, mortgageBdsFunc, unmortgageBdsFunc, setPropertyTab } = props;
   const buttonClassName = "flex-1 h-full flex flex-col justify-center overflow-hidden rounded border-2 border-white disabled:text-white whitespace-nowrap bg-(--bg-color) active:bg-gray-400 disabled:active:bg-(--bg-color)";
   const { selectedBds, gameState, tradeFunc } = props;

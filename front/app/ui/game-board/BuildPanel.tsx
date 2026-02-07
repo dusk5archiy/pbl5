@@ -1,8 +1,8 @@
 import { COLOR_UI_INFO } from "@/app/utils/pallete";
-import { PropertyPanelProps } from "./props";
 import { CSSProperties } from "react";
+import { GameBoardProps } from "./props";
 
-export function PropertyStatePanel(props: PropertyPanelProps) {
+export function PropertyStatePanel(props: GameBoardProps) {
   const { gameState, selectedBds } = props;
   const house = gameState.logic.build.house;
   const hotel = gameState.logic.build.hotel;
