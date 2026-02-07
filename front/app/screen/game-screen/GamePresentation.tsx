@@ -39,6 +39,7 @@ export function GamePresentation(props: GameScreenProps) {
   const { onBack, gameData, gameState, selectedCamera, diceDetection } = props;
   const [bdsShown, setBdsShown] = useState<number>(0);
   const [propertyTab, setPropertyTab] = useState<number>(0);
+  const [boardShown, setBoardShown] = useState<boolean>(false);
 
   // Default values for selectors
   function getDefault() {
@@ -256,10 +257,12 @@ export function GamePresentation(props: GameScreenProps) {
             <>
               <div className={`flex-1 h-full flex flex-col gap-[2vh]`}>
                 <div className="w-full h-full flex flex-col gap-[1vh] overflow-y-scroll">
-                  <div className="w-full min-h-[50%] flex">
-                    <PromptModal {...game_board_props} />
-                  </div>
-                  <div className="w-full min-h-[49%] flex">
+                  {
+                    boardShown && <div className="w-full min-h-[50%] flex">
+                      <PromptModal {...game_board_props} />
+                    </div>
+                  }
+                  <div className={`"w-full ${boardShown ? "min-h-[49%]" : "min-h-full"} flex"`}>
                     <LeftPanel {...game_board_props} />
                   </div>
                   <div className="w-full h-[10%] flex gap-[0.5vw]">
@@ -273,6 +276,11 @@ export function GamePresentation(props: GameScreenProps) {
                       className="w-max h-max px-[2vw] py-[2vh] text-[1.5vw] font-bold text-gray-600 rounded bg-emerald-200 active:bg-emerald-400"
                     >Đổi bàn
                     </button>
+                    <button
+                      onClick={() => setBoardShown(!boardShown)}
+                      className="w-max h-max px-[2vw] py-[2vh] text-[1.5vw] font-bold text-gray-600 rounded bg-rose-200 active:bg-rose-400"
+                    >{!boardShown ? "Hiện bàn" : "Ẩn bàn"}
+                    </button>
                     {
                       gameState.turns != null &&
                       <div
@@ -284,13 +292,17 @@ export function GamePresentation(props: GameScreenProps) {
                 </div>
               </div>
               <div className="h-[95%] aspect-square">
-                <div style={{
-                  width: "100%",
-                  height: "100%",
-                  aspectRatio: "1 / 1"
-                }}>
-                  <GameBoard {...game_board_props} /> :
-                </div>
+                {
+                  boardShown ? <div style={{
+                    width: "100%",
+                    height: "100%",
+                    aspectRatio: "1 / 1"
+                  }}>
+                    <GameBoard {...game_board_props} /> :
+                  </div>
+                    :
+                    <PromptModal {...game_board_props} />
+                }
               </div>
             </>
             :

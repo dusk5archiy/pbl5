@@ -23,11 +23,11 @@ export function PromptModal(props: GameBoardProps) {
   const buy_chore = gameState.current_chore.buy;
 
   return (
-    <div className="w-full h-full flex flex-col">
-      <div className="w-full h-[25%] flex">
+    <div className="@container w-full h-full flex flex-col">
+      <div className="w-full h-[18cqw] flex">
         <DiceDock {...props} />
       </div>
-      <div className="@container w-full h-[75%] flex rounded bg-emerald-200">
+      <div className="@container w-full h-[calc(100%-18cqw)] flex rounded bg-emerald-200">
         {(roll_dice_chore != null || jail_chore != null || two_dice_rent_u != null) && diceDetection && <GameCamera {...props} />}
         {buy_chore != null && <BuyModal {...{ ...props, func: buyFunc, chore: buy_chore }} />}
         {gameState.current_chore.auction_bds != null && <AuctionModal {...{ ...props, func: auctionFunc, chore: gameState.current_chore.auction_bds }} />}
