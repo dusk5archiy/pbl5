@@ -1,0 +1,3623 @@
+{
+  "logic": {
+    "init_budget": 7000,
+    "start_at": "BDAU",
+    "init_house": 150,
+    "init_hotel": 50,
+    "init_skyscraper": 30,
+    "constants": {
+      "$BDAU_SALARY": 200
+    }
+  },
+  "action": {
+    "space": {
+      "1KV1": {
+        "group": "KV",
+        "near": "1A"
+      },
+      "1CH1": {
+        "group": "CH",
+        "near": "1B"
+      },
+      "1BC1": {
+        "group": "BC",
+        "near": "1C"
+      },
+      "1KV2": {
+        "group": "KV",
+        "near": "1D"
+      },
+      "1CH2": {
+        "group": "CH",
+        "near": "1E"
+      },
+      "1TX1": {
+        "group": "TX",
+        "near": "1F"
+      },
+      "1BC2": {
+        "group": "BC",
+        "near": "1G"
+      },
+      "1TX2": {
+        "group": "TX",
+        "near": "1H"
+      },
+      "2KV1": {
+        "group": "KV",
+        "near": "2A"
+      },
+      "2CH1": {
+        "group": "CH",
+        "near": "2B"
+      },
+      "2KV2": {
+        "group": "KV",
+        "near": "2D"
+      },
+      "2CH2": {
+        "group": "CH",
+        "near": "2E"
+      },
+      "2KV3": {
+        "group": "KV",
+        "near": "2G"
+      },
+      "2CH3": {
+        "group": "CH",
+        "near": "2H"
+      },
+      "3KV1": {
+        "group": "KV",
+        "near": "3A"
+      },
+      "3BC1": {
+        "group": "BC",
+        "near": "3B"
+      },
+      "3CH1": {
+        "group": "CH",
+        "near": "3C"
+      },
+      "3TX1": {
+        "group": "TX",
+        "near": "3D"
+      },
+      "5CH1": {
+        "group": "CH",
+        "near": "5A"
+      },
+      "5TX1": {
+        "group": "TX",
+        "near": "5B"
+      },
+      "5BC1": {
+        "group": "BC",
+        "near": "5C"
+      },
+      "5TX2": {
+        "group": "TX",
+        "near": "5E"
+      },
+      "5BC2": {
+        "group": "TX",
+        "near": "5F"
+      },
+      "5KV1": {
+        "group": "KV",
+        "near": "5G"
+      },
+      "5CH2": {
+        "group": "CH",
+        "near": "5H"
+      },
+      "5KV2": {
+        "group": "CH",
+        "near": "5I"
+      },
+      "6TX1": {
+        "group": "TX",
+        "near": "6A"
+      },
+      "6BC1": {
+        "group": "BC",
+        "near": "6B"
+      },
+      "6KV1": {
+        "group": "KV",
+        "near": "6C"
+      },
+      "6BC2": {
+        "group": "BC",
+        "near": "6D"
+      },
+      "6CH1": {
+        "group": "CH",
+        "near": "6E"
+      },
+      "6TX2": {
+        "group": "TX",
+        "near": "6F"
+      },
+      "6CH2": {
+        "group": "CH",
+        "near": "6F"
+      },
+      "6KV2": {
+        "group": "KV",
+        "near": "6G"
+      },
+      "7CH1": {
+        "group": "CH",
+        "near": "7A"
+      },
+      "7TX1": {
+        "group": "TX",
+        "near": "7B"
+      },
+      "7BC1": {
+        "group": "BC",
+        "near": "7D"
+      },
+      "7KV1": {
+        "group": "KV",
+        "near": "7D"
+      },
+      "8KV1": {
+        "group": "KV",
+        "near": "8A"
+      },
+      "8TX1": {
+        "group": "TX",
+        "near": "8A"
+      },
+      "8CH1": {
+        "group": "CH",
+        "near": "8B"
+      },
+      "8BC1": {
+        "group": "BC",
+        "near": "8C"
+      }
+    },
+    "group": {
+      "KV": {
+        "name": "Khí vận",
+        "cards": {}
+      },
+      "CH": {
+        "name": "Cơ hội",
+        "cards": {}
+      },
+      "BC": {
+        "name": "Bất chính",
+        "cards": {}
+      },
+      "TX": {
+        "name": "Tiểu xảo",
+        "cards": {}
+      }
+    },
+    "label": {
+      "BDX": "Bãi Đậu Xe\nMiễn Phí",
+      "CAU-1": "Cầu Vượt",
+      "CAU-2": "Cầu Vượt",
+      "VT": "Vào Tù",
+      "TTN": "Thuế\nThu\nNhập",
+      "TXX": "Thuế\nXa Xỉ"
+    },
+    "special_label": {
+      "OT": "Ở tù"
+    }
+  },
+  "bds": {
+    "bds": {
+      "1A1": {
+        "name": "NGUYỄN DU",
+        "price_group": "1A1"
+      },
+      "1A2": {
+        "name": "NGUYỄN LỮ",
+        "price_group": "1A1"
+      },
+      "1A3": {
+        "name": "NGUYỄN HOÀNG",
+        "price_group": "1A1"
+      },
+      "1A4": {
+        "name": "NGUYỄN NHẠC",
+        "price_group": "1A4"
+      },
+      "1A5": {
+        "name": "NGUYỄN DỮ",
+        "price_group": "1A4"
+      },
+      "1B1": {
+        "name": "KIM ĐỒNG",
+        "price_group": "1B1"
+      },
+      "1B2": {
+        "name": "ĐINH TIÊN HOÀNG",
+        "price_group": "1B1"
+      },
+      "1B3": {
+        "name": "PHAN ĐĂNG LƯU",
+        "price_group": "1B1"
+      },
+      "1B4": {
+        "name": "XUÂN THUỶ",
+        "price_group": "1B4"
+      },
+      "1B5": {
+        "name": "CAO THẮNG",
+        "price_group": "1B4"
+      },
+      "1C1": {
+        "name": "NGUYỄN HỮU THỌ",
+        "price_group": "1C1"
+      },
+      "1C2": {
+        "name": "XÔ VIẾT NGHỆ TĨNH",
+        "price_group": "1C1"
+      },
+      "1C3": {
+        "name": "ĐẶNG PHÚC THÔNG",
+        "price_group": "1C1"
+      },
+      "1C4": {
+        "name": "TÔN ĐẢN",
+        "price_group": "1C4"
+      },
+      "1C5": {
+        "name": "TRẦN CAO VÂN",
+        "price_group": "1C4"
+      },
+      "1D1": {
+        "name": "TRƯNG NỮ VƯƠNG",
+        "price_group": "1D1"
+      },
+      "1D2": {
+        "name": "LÊ DUẨN",
+        "price_group": "1D1"
+      },
+      "1D3": {
+        "name": "LÝ THÁI TỔ",
+        "price_group": "1D1"
+      },
+      "1D4": {
+        "name": "DUY TÂN",
+        "price_group": "1D4"
+      },
+      "1D5": {
+        "name": "BẠCH ĐẰNG",
+        "price_group": "1D4"
+      },
+      "1E1": {
+        "name": "HÀM NGHI",
+        "price_group": "1E1"
+      },
+      "1E2": {
+        "name": "HOÀNG DIỆU",
+        "price_group": "1E1"
+      },
+      "1E3": {
+        "name": "TRIỆU NỮ VƯƠNG",
+        "price_group": "1E1"
+      },
+      "1E4": {
+        "name": "ÔNG ÍCH ĐƯỜNG",
+        "price_group": "1E4"
+      },
+      "1E5": {
+        "name": "ÔNG ÍCH KHIÊM",
+        "price_group": "1E4"
+      },
+      "1F1": {
+        "name": "NGUYỄN BỈNH KHIÊM",
+        "price_group": "1F1"
+      },
+      "1F2": {
+        "name": "NGUYỄN ĐÌNH CHIỂU",
+        "price_group": "1F1"
+      },
+      "1F3": {
+        "name": "NGUYỄN PHƯỚC NGUYÊN",
+        "price_group": "1F1"
+      },
+      "1F4": {
+        "name": "NGUYỄN THỊ ĐỊNH",
+        "price_group": "1F4"
+      },
+      "1F5": {
+        "name": "ĐIỆN BIÊN PHỦ",
+        "price_group": "1F4"
+      },
+      "1G1": {
+        "name": "PHAN BỘI CHÂU",
+        "price_group": "1G1"
+      },
+      "1G2": {
+        "name": "NGUYỄN KHUYẾN",
+        "price_group": "1G1"
+      },
+      "1G3": {
+        "name": "ĐÀO DUY TỪ",
+        "price_group": "1G1"
+      },
+      "1G4": {
+        "name": "PHAN CHÂU TRINH",
+        "price_group": "1G4"
+      },
+      "1G5": {
+        "name": "LÊ QUÝ ĐÔN",
+        "price_group": "1G4"
+      },
+      "1H1": {
+        "name": "TRẦN HƯNG ĐẠO",
+        "price_group": "1H1"
+      },
+      "1H2": {
+        "name": "TRẦN NHÂN TÔNG",
+        "price_group": "1H1"
+      },
+      "1H3": {
+        "name": "VÕ NGUYÊN GIÁP",
+        "price_group": "1H3"
+      },
+      "1H4": {
+        "name": "NGUYỄN ÁI QUỐC",
+        "price_group": "1H4"
+      },
+      "2A1": {
+        "name": "NGUYỄN HUỆ",
+        "price_group": "2A1"
+      },
+      "2A2": {
+        "name": "LÊ LỢI",
+        "price_group": "2A2"
+      },
+      "2A3": {
+        "name": "LÝ BÍ",
+        "price_group": "2A3"
+      },
+      "2B1": {
+        "name": "LƯƠNG ĐỊNH CỦA",
+        "price_group": "2B1"
+      },
+      "2B2": {
+        "name": "VÕ THỊ SÁU",
+        "price_group": "2B1"
+      },
+      "2B3": {
+        "name": "NGUYỄN VĂN TRỖI",
+        "price_group": "2B3"
+      },
+      "2B4": {
+        "name": "HAI BÀ TRƯNG",
+        "price_group": "2B3"
+      },
+      "2C1": {
+        "name": "NGUYỄN TẤT THÀNH",
+        "price_group": "2C1"
+      },
+      "2C2": {
+        "name": "NGUYỄN TRÃI",
+        "price_group": "2C1"
+      },
+      "2C3": {
+        "name": "LÊ VĂN HIẾN",
+        "price_group": "2C3"
+      },
+      "2C4": {
+        "name": "AN DƯƠNG VƯƠNG",
+        "price_group": "2C3"
+      },
+      "2D1": {
+        "name": "HẬU GIANG",
+        "price_group": "2D1"
+      },
+      "2D2": {
+        "name": "HÙNG VƯƠNG",
+        "price_group": "2D1"
+      },
+      "2D3": {
+        "name": "TRƯỜNG SƠN",
+        "price_group": "2D3"
+      },
+      "2D4": {
+        "name": "HUỲNH TẤN PHÁT",
+        "price_group": "2D3"
+      },
+      "2E1": {
+        "name": "PHẠM THẾ HIỂN",
+        "price_group": "2E1"
+      },
+      "2E2": {
+        "name": "KHA VẠNG CÂN",
+        "price_group": "2E1"
+      },
+      "2E3": {
+        "name": "CÙ CHÍNH LAN",
+        "price_group": "2E3"
+      },
+      "2E4": {
+        "name": "NGUYỄN TRI PHƯƠNG",
+        "price_group": "2E3"
+      },
+      "2F1": {
+        "name": "LÊ ĐẠI HÀNH",
+        "price_group": "2F1"
+      },
+      "2F2": {
+        "name": "TRƯỜNG CHINH",
+        "price_group": "2F1"
+      },
+      "2F3": {
+        "name": "BẾ VĂN ĐÀN",
+        "price_group": "2F3"
+      },
+      "2F4": {
+        "name": "HOÀNG VĂN THỤ",
+        "price_group": "2F3"
+      },
+      "2G1": {
+        "name": "CỘNG HOÀ",
+        "price_group": "2G1"
+      },
+      "2G2": {
+        "name": "NGUYỄN KIỆM",
+        "price_group": "2G1"
+      },
+      "2G3": {
+        "name": "LÝ TRIỆN",
+        "price_group": "2G3"
+      },
+      "2G4": {
+        "name": "QUANG TRUNG",
+        "price_group": "2G3"
+      },
+      "2H1": {
+        "name": "LUỸ BÁN BÍCH",
+        "price_group": "2H1"
+      },
+      "2H2": {
+        "name": "NGUYỄN VĂN LINH",
+        "price_group": "2H2"
+      },
+      "2H3": {
+        "name": "TÂN KỲ TÂN QUÝ",
+        "price_group": "2H3"
+      },
+      "3A1": {
+        "name": "PHẠM NGỌC MẬU",
+        "price_group": "3A1"
+      },
+      "3A2": {
+        "name": "ĐỖ ĐỨC DỤC",
+        "price_group": "3A1"
+      },
+      "3A3": {
+        "name": "NGUYỄN HỮU THẬN",
+        "price_group": "3A3"
+      },
+      "3A4": {
+        "name": "TRẦN THÁI TÔNG",
+        "price_group": "3A3"
+      },
+      "3B1": {
+        "name": "HÀ HUY TẬP",
+        "price_group": "3B1"
+      },
+      "3B2": {
+        "name": "NGÔ QUYỀN",
+        "price_group": "3B1"
+      },
+      "3B3": {
+        "name": "HÀ KHÊ",
+        "price_group": "3B3"
+      },
+      "3B4": {
+        "name": "LÊ TRỌNG TẤN",
+        "price_group": "3B3"
+      },
+      "3C1": {
+        "name": "NGUYỄN THỊ MINH KHAI",
+        "price_group": "3C1"
+      },
+      "3C2": {
+        "name": "PHAN XÍCH LONG",
+        "price_group": "3C1"
+      },
+      "3C3": {
+        "name": "NGUYỄN THIỆN THUẬT",
+        "price_group": "3C3"
+      },
+      "3C4": {
+        "name": "HOÀNG THỊ LOAN",
+        "price_group": "3C3"
+      },
+      "3D1": {
+        "name": "NGUYỄN SINH SẮC",
+        "price_group": "3D1"
+      },
+      "3D2": {
+        "name": "NGUYỄN LƯƠNG BẰNG",
+        "price_group": "3D1"
+      },
+      "3D3": {
+        "name": "VÕ VĂN KIỆT",
+        "price_group": "3D3"
+      },
+      "3D4": {
+        "name": "TÔN ĐỨC THẮNG",
+        "price_group": "3D3"
+      },
+      "4A1": {
+        "name": "ĐỐNG ĐA",
+        "price_group": "4A1"
+      },
+      "4A2": {
+        "name": "NÚI THÀNH",
+        "price_group": "4A1"
+      },
+      "4A3": {
+        "name": "NGÔ TẤT TỐ",
+        "price_group": "4A3"
+      },
+      "4A4": {
+        "name": "HỒ XUÂN HƯƠNG",
+        "price_group": "4A3"
+      },
+      "4B1": {
+        "name": "CỔ LOA",
+        "price_group": "4B1"
+      },
+      "4B2": {
+        "name": "ÂU CƠ",
+        "price_group": "4B1"
+      },
+      "4B3": {
+        "name": "LẠC LONG QUÂN",
+        "price_group": "4B3"
+      },
+      "4B4": {
+        "name": "THĂNG LONG",
+        "price_group": "4B3"
+      },
+      "5A1": {
+        "name": "HÀ KHÊ",
+        "price_group": "5A1"
+      },
+      "5A2": {
+        "name": "HẢI PHÒNG",
+        "price_group": "5A2"
+      },
+      "5A3": {
+        "name": "NGUYỄN BÍNH",
+        "price_group": "5A3"
+      },
+      "5A4": {
+        "name": "NGUYỄN XÍ",
+        "price_group": "5A4"
+      },
+      "5A5": {
+        "name": "TÚ MỠ",
+        "price_group": "5A5"
+      },
+      "5B1": {
+        "name": "TRẦN XUÂN LÊ",
+        "price_group": "5B1"
+      },
+      "5B2": {
+        "name": "TÔ VĨNH DIỆN",
+        "price_group": "5B2"
+      },
+      "5B3": {
+        "name": "TRẦN VĂN ƠN",
+        "price_group": "5B3"
+      },
+      "5B4": {
+        "name": "TỐNG DUY TÂN",
+        "price_group": "5B4"
+      },
+      "5B5": {
+        "name": "NGUYỄN TƯỜNG PHỔ",
+        "price_group": "5B5"
+      },
+      "5C1": {
+        "name": "PHẠM PHÚ THỨ",
+        "price_group": "5C1"
+      },
+      "5C2": {
+        "name": "PHAN THÀNH TÀI",
+        "price_group": "5C2"
+      },
+      "5C3": {
+        "name": "NGÔ CHẤN LƯU",
+        "price_group": "5C3"
+      },
+      "5C4": {
+        "name": "NGUYỄN ĐỖ CUNG",
+        "price_group": "5C4"
+      },
+      "5C5": {
+        "name": "NGUYỄN VIẾT XUÂN",
+        "price_group": "5C5"
+      },
+      "5D1": {
+        "name": "TÔ HIỆU",
+        "price_group": "5D1"
+      },
+      "5D2": {
+        "name": "THANH TỊNH",
+        "price_group": "5D2"
+      },
+      "5D3": {
+        "name": "ĐỖ NHUẬN",
+        "price_group": "5D3"
+      },
+      "5D4": {
+        "name": "TÂN TRÀO",
+        "price_group": "5D4"
+      },
+      "5D5": {
+        "name": "NAM TRÂN",
+        "price_group": "5D5"
+      },
+      "5E1": {
+        "name": "LÝ THÁI TÔNG",
+        "price_group": "5E1"
+      },
+      "5E2": {
+        "name": "NGUYỄN CHÍCH",
+        "price_group": "5E2"
+      },
+      "5E3": {
+        "name": "HÀ HỒI",
+        "price_group": "5E3"
+      },
+      "5E4": {
+        "name": "NGỌC HỒI",
+        "price_group": "5E4"
+      },
+      "5E5": {
+        "name": "HỒ QUÝ LY",
+        "price_group": "5E5"
+      },
+      "5F1": {
+        "name": "NGUYỄN ĐÌNH TỰU",
+        "price_group": "5F1"
+      },
+      "5F2": {
+        "name": "PHẠM NHỮ TĂNG",
+        "price_group": "5F2"
+      },
+      "5F3": {
+        "name": "LÊ DUY ĐÌNH",
+        "price_group": "5F3"
+      },
+      "5F4": {
+        "name": "NGÔ GIA KHẢM",
+        "price_group": "5F4"
+      },
+      "5F5": {
+        "name": "VÕ VĂN TẦN",
+        "price_group": "5F5"
+      },
+      "5G1": {
+        "name": "VĂN CAO",
+        "price_group": "5G1"
+      },
+      "5G2": {
+        "name": "LÊ ĐỘ",
+        "price_group": "5G2"
+      },
+      "5G3": {
+        "name": "CHI LĂNG",
+        "price_group": "5G3"
+      },
+      "5G4": {
+        "name": "MẠC ĐĨNH CHI",
+        "price_group": "5G4"
+      },
+      "5G5": {
+        "name": "ĐOÀN THỊ ĐIỂM",
+        "price_group": "5G5"
+      },
+      "5H1": {
+        "name": "PASTEUR",
+        "price_group": "5H1"
+      },
+      "5H2": {
+        "name": "PHAN ĐÌNH PHÙNG",
+        "price_group": "5H2"
+      },
+      "5H3": {
+        "name": "YÊN BÁI",
+        "price_group": "5H3"
+      },
+      "5H4": {
+        "name": "TRẦN PHÚ",
+        "price_group": "5H4"
+      },
+      "5H5": {
+        "name": "NGUYỄN THÁI HỌC",
+        "price_group": "5H5"
+      },
+      "5I1": {
+        "name": "TRẦN QUỐC TOẢN",
+        "price_group": "5I1"
+      },
+      "5I2": {
+        "name": "THÁI PHIÊN",
+        "price_group": "5I2"
+      },
+      "5I3": {
+        "name": "LÊ HỒNG PHONG",
+        "price_group": "5I3"
+      },
+      "5I4": {
+        "name": "LÊ ĐÌNH DƯƠNG",
+        "price_group": "5I4"
+      },
+      "5I5": {
+        "name": "HUỲNH THÚC KHÁNG",
+        "price_group": "5I5"
+      },
+      "5J1": {
+        "name": "TRẦN THỊ LÝ",
+        "price_group": "5J1"
+      },
+      "5J2": {
+        "name": "CÁCH MẠNG THÁNG 8",
+        "price_group": "5J2"
+      },
+      "5J3": {
+        "name": "30 THÁNG 4",
+        "price_group": "5J3"
+      },
+      "5J4": {
+        "name": "2 THÁNG 9",
+        "price_group": "5J4"
+      },
+      "6A1": {
+        "name": "TỐ HỮU",
+        "price_group": "6A1"
+      },
+      "6A2": {
+        "name": "BÙI TÁ HÁN",
+        "price_group": "6A1"
+      },
+      "6A3": {
+        "name": "MẠC CỬU",
+        "price_group": "6A1"
+      },
+      "6A4": {
+        "name": "XUÂN QUỲNH",
+        "price_group": "6A4"
+      },
+      "6A5": {
+        "name": "VŨ TRỌNG PHỤNG",
+        "price_group": "6A4"
+      },
+      "6B1": {
+        "name": "LÊ VĂN TÁM",
+        "price_group": "6B1"
+      },
+      "6B2": {
+        "name": "NGUYỄN CƠ THẠCH",
+        "price_group": "6B1"
+      },
+      "6B3": {
+        "name": "MINH MẠNG",
+        "price_group": "6B1"
+      },
+      "6B4": {
+        "name": "HẢI TRIỀU",
+        "price_group": "6B4"
+      },
+      "6B5": {
+        "name": "NON NƯỚC",
+        "price_group": "6B4"
+      },
+      "6C1": {
+        "name": "SƯ VẠN HẠNH",
+        "price_group": "6C1"
+      },
+      "6C2": {
+        "name": "BÙI THẾ MỸ",
+        "price_group": "6C1"
+      },
+      "6C3": {
+        "name": "VÕ CHÍ CÔNG",
+        "price_group": "6C1"
+      },
+      "6C4": {
+        "name": "PHÙNG HƯNG",
+        "price_group": "6C4"
+      },
+      "6C5": {
+        "name": "NGUYỄN VĂN TRỖI",
+        "price_group": "6C4"
+      },
+      "6D1": {
+        "name": "TRƯƠNG VĨNH KÝ",
+        "price_group": "6D1"
+      },
+      "6D2": {
+        "name": "NGUYỄN KIM",
+        "price_group": "6D1"
+      },
+      "6D3": {
+        "name": "ĐÔ ĐỐC LỘC",
+        "price_group": "6D1"
+      },
+      "6D4": {
+        "name": "ĐINH GIA TRINH",
+        "price_group": "6D4"
+      },
+      "6D5": {
+        "name": "NGUYỄN HỒNG ÁNH",
+        "price_group": "6D4"
+      },
+      "6E1": {
+        "name": "MẸ THỨ",
+        "price_group": "6E1"
+      },
+      "6E2": {
+        "name": "ĐẶNG HOÀ",
+        "price_group": "6E1"
+      },
+      "6E3": {
+        "name": "ÂU DƯƠNG LÂN",
+        "price_group": "6E1"
+      },
+      "6E4": {
+        "name": "TRẦN TỬ BÌNH",
+        "price_group": "6E4"
+      },
+      "6E5": {
+        "name": "VÕ THÀNH VỸ",
+        "price_group": "6E4"
+      },
+      "6F1": {
+        "name": "NGUYỄN VĂN VĨNH",
+        "price_group": "6F1"
+      },
+      "6F2": {
+        "name": "VŨ MIÊN",
+        "price_group": "6F1"
+      },
+      "6F3": {
+        "name": "PHẠM HÙNG",
+        "price_group": "6F1"
+      },
+      "6F4": {
+        "name": "VĂN TIẾN DŨNG",
+        "price_group": "6F4"
+      },
+      "6F5": {
+        "name": "HOÀNG CHÂU KÝ",
+        "price_group": "6F4"
+      },
+      "6G1": {
+        "name": "TRẦN VĂN LAN",
+        "price_group": "6G1"
+      },
+      "6G2": {
+        "name": "NGUYỄN THẾ LỊCH",
+        "price_group": "6G1"
+      },
+      "6G3": {
+        "name": "TRẦN NGỌC SƯƠNG",
+        "price_group": "6G1"
+      },
+      "6G4": {
+        "name": "LÊ KIM LĂNG",
+        "price_group": "6G4"
+      },
+      "6G5": {
+        "name": "LÊ DUY LƯƠNG",
+        "price_group": "6G4"
+      },
+      "7A1": {
+        "name": "PHẠM VINH",
+        "price_group": "7A1"
+      },
+      "7A2": {
+        "name": "LÊ BÁ TRINH",
+        "price_group": "7A2"
+      },
+      "7A3": {
+        "name": "NGUYỄN TRƯỜNG TỘ",
+        "price_group": "7A2"
+      },
+      "7A4": {
+        "name": "NGUYỄN CHÍ THANH",
+        "price_group": "7A4"
+      },
+      "7B1": {
+        "name": "TRẦN BÌNH TRỌNG",
+        "price_group": "7B1"
+      },
+      "7B2": {
+        "name": "PHẠM HỒNG THÁI",
+        "price_group": "7B1"
+      },
+      "7B3": {
+        "name": "NGUYỄN THÁI HỌC",
+        "price_group": "7B1"
+      },
+      "7B4": {
+        "name": "LÝ THƯỜNG KIỆT",
+        "price_group": "7B4"
+      },
+      "7B5": {
+        "name": "TRẦN QUÝ CÁP",
+        "price_group": "7B4"
+      },
+      "7C1": {
+        "name": "PHAN KẾ BÍNH",
+        "price_group": "7C1"
+      },
+      "7C2": {
+        "name": "NGÔ SĨ LIÊN",
+        "price_group": "7C1"
+      },
+      "7C3": {
+        "name": "THANH HẢI",
+        "price_group": "7C1"
+      },
+      "7C4": {
+        "name": "THANH THUỶ",
+        "price_group": "7C4"
+      },
+      "7C5": {
+        "name": "THANH SƠN",
+        "price_group": "7C4"
+      },
+      "7D1": {
+        "name": "BẮC ĐẨU",
+        "price_group": "7D1"
+      },
+      "7D2": {
+        "name": "HÀ KHÊ",
+        "price_group": "7D1"
+      },
+      "7D3": {
+        "name": "ĐỖ NGỌC DU",
+        "price_group": "7D1"
+      },
+      "7D4": {
+        "name": "THÁI THỊ BÔI",
+        "price_group": "7D1"
+      },
+      "7D5": {
+        "name": "THÂN NHÂN TRUNG",
+        "price_group": "7D4"
+      },
+      "7E1": {
+        "name": "NGUYÊN HỒNG",
+        "price_group": "7E1"
+      },
+      "7E2": {
+        "name": "NGUYỄN NGHIÊM",
+        "price_group": "7E2"
+      },
+      "7E3": {
+        "name": "HUỲNH NGỌC HUỆ",
+        "price_group": "7E2"
+      },
+      "7E4": {
+        "name": "CẦN GIUỘC",
+        "price_group": "7E4"
+      },
+      "8A1": {
+        "name": "THÚC TỀ",
+        "price_group": "8A1"
+      },
+      "8A2": {
+        "name": "NGUYỄN KHANG",
+        "price_group": "8A1"
+      },
+      "8A3": {
+        "name": "NGUYỄN GIẢN THANH",
+        "price_group": "8A3"
+      },
+      "8A4": {
+        "name": "NGUYỄN CÔNG HÃNG",
+        "price_group": "8A3"
+      },
+      "8B1": {
+        "name": "BẮC SƠN",
+        "price_group": "8B1"
+      },
+      "8B2": {
+        "name": "NGUYỄN VĂN TẠO",
+        "price_group": "8B1"
+      },
+      "8B3": {
+        "name": "HOÀNG VĂN THÁI",
+        "price_group": "8B3"
+      },
+      "8B4": {
+        "name": "HOÀNG TRUNG THÔNG",
+        "price_group": "8B3"
+      },
+      "8C1": {
+        "name": "NGUYỄN GIA THIỀU",
+        "price_group": "8C1"
+      },
+      "8C2": {
+        "name": "TRẦN ĐẠI NGHĨA",
+        "price_group": "8C1"
+      },
+      "8C3": {
+        "name": "NAM KỲ KHỞI NGHĨA",
+        "price_group": "8C3"
+      },
+      "8C4": {
+        "name": "KINH DƯƠNG VƯƠNG",
+        "price_group": "8C3"
+      },
+      "1R1": {
+        "name": "ĐƯỜNG SẮT HÀ NỘI",
+        "price_group": "R"
+      },
+      "1R2": {
+        "name": "ĐƯỜNG SẮT SÀI GÒN",
+        "price_group": "R"
+      },
+      "2R1": {
+        "name": "ĐƯỜNG SẮT HẢI PHÒNG",
+        "price_group": "R"
+      },
+      "2R2": {
+        "name": "ĐƯỜNG SẮT ĐÀ NẴNG",
+        "price_group": "R"
+      },
+      "3R1": {
+        "name": "ĐƯỜNG SẮT CẦN THƠ",
+        "price_group": "R"
+      },
+      "5R1": {
+        "name": "ĐƯỜNG SẮT CAO BẰNG",
+        "price_group": "R"
+      },
+      "5R2": {
+        "name": "ĐƯỜNG SẮT KHÁNH HOÀ",
+        "price_group": "R"
+      },
+      "6R1": {
+        "name": "ĐƯỜNG SẮT PHÚ YÊN",
+        "price_group": "R"
+      },
+      "6R2": {
+        "name": "ĐƯỜNG SẮT LÂM ĐỒNG",
+        "price_group": "R"
+      },
+      "7R1": {
+        "name": "ĐƯỜNG SẮT LẠNG SƠN",
+        "price_group": "R"
+      },
+      "7R2": {
+        "name": "ĐƯỜNG SẮT QUẢNG NINH",
+        "price_group": "R"
+      },
+      "1U1": {
+        "name": "TRUYỀN HÌNH CÁP",
+        "price_group": "U"
+      },
+      "1U2": {
+        "name": "CÔNG TY RÁC THẢI",
+        "price_group": "U"
+      },
+      "2U1": {
+        "name": "CÔNG TY ĐIỆN LỰC",
+        "price_group": "U"
+      },
+      "2U2": {
+        "name": "CÔNG TY CẤP NƯỚC",
+        "price_group": "U"
+      },
+      "3U1": {
+        "name": "CÔNG TY ĐIỆN THOẠI",
+        "price_group": "U"
+      },
+      "3U2": {
+        "name": "CÔNG TY KHÍ ĐỐT",
+        "price_group": "U"
+      },
+      "5U1": {
+        "name": "DỊCH VỤ THƯ TÍN",
+        "price_group": "U"
+      },
+      "5U2": {
+        "name": "CÔNG TY ĐỒNG HỒ",
+        "price_group": "U"
+      },
+      "6U1": {
+        "name": "NHÀ C.CẤP D.VỤ MẠNG",
+        "price_group": "U"
+      },
+      "6U2": {
+        "name": "CÔNG TY GIA DỤNG",
+        "price_group": "U"
+      },
+      "7U1": {
+        "name": "HỆ THỐNG NƯỚC THẢI",
+        "price_group": "U"
+      },
+      "7U2": {
+        "name": "TRUYỀN HÌNH VỆ TINH",
+        "price_group": "U"
+      },
+      "8U1": {
+        "name": "TRUNG TÂM TÁI CHẾ",
+        "price_group": "U"
+      },
+      "8U2": {
+        "name": "CÔNG TY PHÂN BÓN",
+        "price_group": "U"
+      },
+      "1T1": {
+        "name": "CTY TAXI MAI LINH",
+        "price_group": "T"
+      },
+      "1T2": {
+        "name": "CTY TAXI HÀ ĐÔNG",
+        "price_group": "T"
+      },
+      "1T3": {
+        "name": "CTY TAXI GRAB",
+        "price_group": "T"
+      },
+      "1T4": {
+        "name": "CTY TAXI TIÊN SA",
+        "price_group": "T"
+      },
+      "1CB1": {
+        "name": "CẢNG TIÊN SA",
+        "price_group": "CB"
+      },
+      "1CB2": {
+        "name": "CẢNG CAM RANH",
+        "price_group": "CB"
+      },
+      "5CB1": {
+        "name": "CẢNG HẢI PHÒNG",
+        "price_group": "CB"
+      },
+      "5CB2": {
+        "name": "CẢNG DUNG QUẤT",
+        "price_group": "CB"
+      },
+      "3SB1": {
+        "name": "SÂN BAY NỘI BÀI",
+        "price_group": "SB"
+      },
+      "3SB2": {
+        "name": "SÂN BAY ĐÀ NẴNG",
+        "price_group": "SB"
+      },
+      "7SB1": {
+        "name": "SÂN BAY VÂN ĐỒN",
+        "price_group": "SB"
+      },
+      "7SB2": {
+        "name": "SÂN BAY TÂN SƠN NHẤT",
+        "price_group": "SB"
+      },
+      "5MT1": {
+        "name": "METRO MÊ LINH",
+        "price_group": "MT"
+      },
+      "5MT2": {
+        "name": "METRO NGỌC HỒI",
+        "price_group": "MT"
+      },
+      "5MT3": {
+        "name": "METRO CỦ CHI",
+        "price_group": "MT"
+      },
+      "5MT4": {
+        "name": "METRO BẾN THÀNH",
+        "price_group": "MT"
+      }
+    },
+    "price_groups": {
+      "1A1": {
+        "group": "1A",
+        "price": 30,
+        "rent": [
+          1,
+          5,
+          15,
+          45,
+          80,
+          125,
+          625
+        ],
+        "upgrade": 50
+      },
+      "1A4": {
+        "group": "1A",
+        "price": 60,
+        "rent": [
+          3,
+          15,
+          45,
+          120,
+          240,
+          350,
+          850
+        ],
+        "upgrade": 50
+      },
+      "1B1": {
+        "group": "1B",
+        "price": 90,
+        "rent": [
+          5,
+          25,
+          80,
+          225,
+          360,
+          500,
+          1000
+        ],
+        "upgrade": 50
+      },
+      "1B4": {
+        "group": "1B",
+        "price": 120,
+        "rent": [
+          8,
+          40,
+          100,
+          300,
+          450,
+          600,
+          1100
+        ],
+        "upgrade": 50
+      },
+      "1C1": {
+        "group": "1C",
+        "price": 150,
+        "rent": [
+          11,
+          55,
+          160,
+          475,
+          650,
+          800,
+          1300
+        ],
+        "upgrade": 100
+      },
+      "1C4": {
+        "group": "1C",
+        "price": 180,
+        "rent": [
+          14,
+          70,
+          200,
+          550,
+          750,
+          950,
+          1450
+        ],
+        "upgrade": 100
+      },
+      "1D1": {
+        "group": "1D",
+        "price": 210,
+        "rent": [
+          17,
+          85,
+          240,
+          670,
+          840,
+          1025,
+          2025
+        ],
+        "upgrade": 150
+      },
+      "1D4": {
+        "group": "1D",
+        "price": 240,
+        "rent": [
+          20,
+          100,
+          300,
+          750,
+          925,
+          1100,
+          2100
+        ],
+        "upgrade": 150
+      },
+      "1E1": {
+        "group": "1E",
+        "price": 270,
+        "rent": [
+          23,
+          115,
+          345,
+          825,
+          1010,
+          1180,
+          2180
+        ],
+        "upgrade": 150
+      },
+      "1E4": {
+        "group": "1E",
+        "price": 300,
+        "rent": [
+          26,
+          130,
+          390,
+          900,
+          1100,
+          1275,
+          2275
+        ],
+        "upgrade": 150
+      },
+      "1F1": {
+        "group": "1F",
+        "price": 300,
+        "rent": [
+          30,
+          160,
+          470,
+          1050,
+          1250,
+          1450,
+          2450
+        ],
+        "upgrade": 200
+      },
+      "1F4": {
+        "group": "1F",
+        "price": 360,
+        "rent": [
+          38,
+          180,
+          520,
+          1125,
+          1425,
+          1600,
+          2600
+        ],
+        "upgrade": 200
+      },
+      "1G1": {
+        "group": "1G",
+        "price": 390,
+        "rent": [
+          45,
+          195,
+          575,
+          1300,
+          1600,
+          1800,
+          3300,
+          250
+        ],
+        "upgrade": 250
+      },
+      "1G4": {
+        "group": "1G",
+        "price": 420,
+        "rent": [
+          55,
+          210,
+          630,
+          1450,
+          1750,
+          2050,
+          3550
+        ],
+        "upgrade": 250
+      },
+      "1H1": {
+        "group": "1H",
+        "price": 450,
+        "rent": [
+          65,
+          240,
+          700,
+          1600,
+          1850,
+          2200,
+          3700
+        ],
+        "upgrade": 250
+      },
+      "1H3": {
+        "group": "1H",
+        "price": 480,
+        "rent": [
+          75,
+          275,
+          750,
+          1700,
+          2100,
+          2500,
+          4000
+        ],
+        "upgrade": 250
+      },
+      "1H4": {
+        "group": "1H",
+        "price": 510,
+        "rent": [
+          85,
+          325,
+          825,
+          1850,
+          2300,
+          2750,
+          4250
+        ],
+        "upgrade": 250
+      },
+      "2A1": {
+        "group": "2A",
+        "price": 60,
+        "rent": [
+          2,
+          10,
+          30,
+          90,
+          160,
+          250,
+          750
+        ],
+        "upgrade": 50
+      },
+      "2A2": {
+        "group": "2A",
+        "price": 80,
+        "rent": [
+          4,
+          20,
+          60,
+          180,
+          320,
+          450,
+          900
+        ],
+        "upgrade": 50
+      },
+      "2A3": {
+        "group": "2A",
+        "price": 90,
+        "rent": [
+          5,
+          23,
+          75,
+          210,
+          350,
+          490,
+          990
+        ],
+        "upgrade": 50
+      },
+      "2B1": {
+        "group": "2B",
+        "price": 100,
+        "rent": [
+          6,
+          30,
+          90,
+          270,
+          400,
+          550,
+          1050
+        ],
+        "upgrade": 50
+      },
+      "2B3": {
+        "group": "2B",
+        "price": 120,
+        "rent": [
+          8,
+          40,
+          100,
+          300,
+          450,
+          600,
+          1100
+        ],
+        "upgrade": 50
+      },
+      "2C1": {
+        "group": "2C",
+        "price": 140,
+        "rent": [
+          10,
+          50,
+          150,
+          450,
+          625,
+          750,
+          1250
+        ],
+        "upgrade": 100
+      },
+      "2C3": {
+        "group": "2C",
+        "price": 160,
+        "rent": [
+          12,
+          60,
+          180,
+          500,
+          700,
+          900,
+          1400
+        ],
+        "upgrade": 100
+      },
+      "2D1": {
+        "group": "2D",
+        "price": 180,
+        "rent": [
+          14,
+          70,
+          200,
+          550,
+          750,
+          950,
+          1450
+        ],
+        "upgrade": 100
+      },
+      "2D3": {
+        "group": "2D",
+        "price": 200,
+        "rent": [
+          16,
+          80,
+          220,
+          600,
+          800,
+          1000,
+          1500
+        ],
+        "upgrade": 100
+      },
+      "2E1": {
+        "group": "2E",
+        "price": 220,
+        "rent": [
+          18,
+          90,
+          250,
+          700,
+          875,
+          1050,
+          2050
+        ],
+        "upgrade": 150
+      },
+      "2E3": {
+        "group": "2E",
+        "price": 240,
+        "rent": [
+          20,
+          100,
+          300,
+          750,
+          925,
+          1100,
+          2100
+        ],
+        "upgrade": 150
+      },
+      "2F1": {
+        "group": "2F",
+        "price": 260,
+        "rent": [
+          22,
+          110,
+          330,
+          800,
+          975,
+          1150,
+          2150
+        ],
+        "upgrade": 150
+      },
+      "2F3": {
+        "group": "2F",
+        "price": 280,
+        "rent": [
+          24,
+          120,
+          350,
+          850,
+          1025,
+          1200,
+          2200
+        ],
+        "upgrade": 150
+      },
+      "2G1": {
+        "group": "2G",
+        "price": 300,
+        "rent": [
+          26,
+          130,
+          390,
+          900,
+          1100,
+          1275,
+          2275
+        ],
+        "upgrade": 200
+      },
+      "2G3": {
+        "group": "2G",
+        "price": 320,
+        "rent": [
+          28,
+          150,
+          450,
+          1000,
+          1200,
+          1400,
+          2400
+        ],
+        "upgrade": 200
+      },
+      "2H1": {
+        "group": "2H",
+        "price": 350,
+        "rent": [
+          35,
+          175,
+          500,
+          1100,
+          1300,
+          1500,
+          2500
+        ],
+        "upgrade": 200
+      },
+      "2H2": {
+        "group": "2H",
+        "price": 370,
+        "rent": [
+          39,
+          185,
+          535,
+          1150,
+          1450,
+          1650,
+          2650
+        ],
+        "upgrade": 200
+      },
+      "2H3": {
+        "group": "2H",
+        "price": 400,
+        "rent": [
+          50,
+          200,
+          600,
+          1400,
+          1700,
+          2000,
+          3000
+        ],
+        "upgrade": 200
+      },
+      "3A1": {
+        "group": "3A",
+        "price": 130,
+        "rent": [
+          9,
+          45,
+          120,
+          350,
+          500,
+          700,
+          1200
+        ],
+        "upgrade": 100
+      },
+      "3A3": {
+        "group": "3A",
+        "price": 150,
+        "rent": [
+          11,
+          55,
+          160,
+          475,
+          650,
+          800,
+          1300
+        ],
+        "upgrade": 100
+      },
+      "3B1": {
+        "group": "3B",
+        "price": 210,
+        "rent": [
+          17,
+          85,
+          240,
+          670,
+          840,
+          1025,
+          2025
+        ],
+        "upgrade": 150
+      },
+      "3B3": {
+        "group": "3B",
+        "price": 250,
+        "rent": [
+          21,
+          105,
+          320,
+          780,
+          950,
+          1125,
+          2125
+        ],
+        "upgrade": 150
+      },
+      "3C1": {
+        "group": "3C",
+        "price": 330,
+        "rent": [
+          30,
+          160,
+          470,
+          1050,
+          1250,
+          1450,
+          2450
+        ],
+        "upgrade": 200
+      },
+      "3C3": {
+        "group": "3C",
+        "price": 380,
+        "rent": [
+          40,
+          190,
+          550,
+          1200,
+          1500,
+          1700,
+          2700
+        ],
+        "upgrade": 200
+      },
+      "3D1": {
+        "group": "3D",
+        "price": 430,
+        "rent": [
+          60,
+          220,
+          650,
+          1500,
+          1800,
+          2100,
+          3600
+        ],
+        "upgrade": 250
+      },
+      "3D3": {
+        "group": "3D",
+        "price": 500,
+        "rent": [
+          80,
+          300,
+          800,
+          1800,
+          2200,
+          2700,
+          4200
+        ],
+        "upgrade": 250
+      },
+      "4A1": {
+        "group": "4A",
+        "price": 150,
+        "rent": [
+          11,
+          55,
+          160,
+          475,
+          650,
+          800,
+          1800
+        ],
+        "upgrade": 150
+      },
+      "4A3": {
+        "group": "4A",
+        "price": 300,
+        "rent": [
+          26,
+          130,
+          390,
+          900,
+          1100,
+          1275,
+          2275
+        ],
+        "upgrade": 150
+      },
+      "4B1": {
+        "group": "4B",
+        "price": 450,
+        "rent": [
+          65,
+          240,
+          700,
+          1600,
+          1850,
+          2200,
+          3700
+        ],
+        "upgrade": 300
+      },
+      "4B3": {
+        "group": "4B",
+        "price": 600,
+        "rent": [
+          100,
+          500,
+          1000,
+          2500,
+          3000,
+          3500,
+          5000
+        ],
+        "upgrade": 300
+      },
+      "5A1": {
+        "group": "5A",
+        "price": 10,
+        "rent": [
+          1,
+          2,
+          5,
+          15,
+          30,
+          50,
+          550
+        ],
+        "upgrade": 50
+      },
+      "5A2": {
+        "group": "5A",
+        "price": 20,
+        "rent": [
+          1,
+          3,
+          10,
+          30,
+          65,
+          100,
+          600
+        ],
+        "upgrade": 50
+      },
+      "5A3": {
+        "group": "5A",
+        "price": 40,
+        "rent": [
+          2,
+          6,
+          20,
+          60,
+          105,
+          200,
+          700
+        ],
+        "upgrade": 50
+      },
+      "5A4": {
+        "group": "5A",
+        "price": 50,
+        "rent": [
+          2,
+          8,
+          25,
+          75,
+          130,
+          225,
+          725
+        ],
+        "upgrade": 50
+      },
+      "5A5": {
+        "group": "5A",
+        "price": 60,
+        "rent": [
+          3,
+          15,
+          45,
+          120,
+          240,
+          350,
+          850
+        ],
+        "upgrade": 50
+      },
+      "5B1": {
+        "group": "5B",
+        "price": 80,
+        "rent": [
+          5,
+          23,
+          75,
+          210,
+          350,
+          490,
+          990
+        ],
+        "upgrade": 50
+      },
+      "5B2": {
+        "group": "5B",
+        "price": 100,
+        "rent": [
+          6,
+          30,
+          90,
+          270,
+          400,
+          550,
+          1050
+        ],
+        "upgrade": 50
+      },
+      "5B3": {
+        "group": "5B",
+        "price": 110,
+        "rent": [
+          7,
+          35,
+          95,
+          285,
+          425,
+          575,
+          1075
+        ],
+        "upgrade": 50
+      },
+      "5B4": {
+        "group": "5B",
+        "price": 120,
+        "rent": [
+          8,
+          40,
+          100,
+          300,
+          450,
+          600,
+          1100
+        ],
+        "upgrade": 50
+      },
+      "5B5": {
+        "group": "5B",
+        "price": 130,
+        "rent": [
+          9,
+          45,
+          120,
+          350,
+          500,
+          700,
+          1200
+        ],
+        "upgrade": 50
+      },
+      "5C1": {
+        "group": "5C",
+        "price": 150,
+        "rent": [
+          11,
+          55,
+          160,
+          475,
+          650,
+          800,
+          1300
+        ],
+        "upgrade": 100
+      },
+      "5C2": {
+        "group": "5C",
+        "price": 160,
+        "rent": [
+          12,
+          60,
+          180,
+          500,
+          700,
+          900,
+          1400
+        ],
+        "upgrade": 100
+      },
+      "5C3": {
+        "group": "5C",
+        "price": 170,
+        "rent": [
+          13,
+          65,
+          190,
+          525,
+          725,
+          925,
+          1425
+        ],
+        "upgrade": 100
+      },
+      "5C4": {
+        "group": "5C",
+        "price": 190,
+        "rent": [
+          15,
+          75,
+          210,
+          575,
+          775,
+          975,
+          1475
+        ],
+        "upgrade": 100
+      },
+      "5C5": {
+        "group": "5C",
+        "price": 200,
+        "rent": [
+          16,
+          80,
+          220,
+          600,
+          800,
+          1000,
+          1500
+        ],
+        "upgrade": 100
+      },
+      "5D1": {
+        "group": "5D",
+        "price": 220,
+        "rent": [
+          18,
+          90,
+          250,
+          700,
+          875,
+          1050,
+          2050
+        ],
+        "upgrade": 150
+      },
+      "5D2": {
+        "group": "5D",
+        "price": 240,
+        "rent": [
+          20,
+          100,
+          300,
+          750,
+          925,
+          1100,
+          2100
+        ],
+        "upgrade": 150
+      },
+      "5D3": {
+        "group": "5D",
+        "price": 250,
+        "rent": [
+          21,
+          105,
+          320,
+          780,
+          950,
+          1125,
+          2125
+        ],
+        "upgrade": 150
+      },
+      "5D4": {
+        "group": "5D",
+        "price": 260,
+        "rent": [
+          22,
+          110,
+          330,
+          800,
+          975,
+          1150,
+          2150
+        ],
+        "upgrade": 150
+      },
+      "5D5": {
+        "group": "5D",
+        "price": 280,
+        "rent": [
+          24,
+          120,
+          360,
+          850,
+          1025,
+          1200,
+          2200
+        ],
+        "upgrade": 150
+      },
+      "5E1": {
+        "group": "5E",
+        "price": 300,
+        "rent": [
+          26,
+          130,
+          390,
+          900,
+          1100,
+          1275,
+          2275
+        ],
+        "upgrade": 200
+      },
+      "5E2": {
+        "group": "5E",
+        "price": 310,
+        "rent": [
+          27,
+          140,
+          420,
+          950,
+          1150,
+          1350,
+          2350
+        ],
+        "upgrade": 200
+      },
+      "5E3": {
+        "group": "5E",
+        "price": 320,
+        "rent": [
+          28,
+          150,
+          450,
+          1000,
+          1200,
+          1400,
+          2400
+        ],
+        "upgrade": 200
+      },
+      "5E4": {
+        "group": "5E",
+        "price": 330,
+        "rent": [
+          30,
+          160,
+          470,
+          1050,
+          1250,
+          1450,
+          2450
+        ],
+        "upgrade": 200
+      },
+      "5E5": {
+        "group": "5E",
+        "price": 350,
+        "rent": [
+          35,
+          175,
+          500,
+          1100,
+          1400,
+          1500,
+          2500
+        ],
+        "upgrade": 200
+      },
+      "5F1": {
+        "group": "5F",
+        "price": 370,
+        "rent": [
+          39,
+          185,
+          535,
+          1150,
+          1450,
+          1650,
+          2650
+        ],
+        "upgrade": 200
+      },
+      "5F2": {
+        "group": "5F",
+        "price": 380,
+        "rent": [
+          40,
+          190,
+          550,
+          1200,
+          1500,
+          1700,
+          2700
+        ],
+        "upgrade": 200
+      },
+      "5F3": {
+        "group": "5F",
+        "price": 390,
+        "rent": [
+          45,
+          195,
+          575,
+          1300,
+          1600,
+          1800,
+          2800
+        ],
+        "upgrade": 200
+      },
+      "5F4": {
+        "group": "5F",
+        "price": 410,
+        "rent": [
+          52,
+          205,
+          615,
+          1425,
+          1725,
+          2025,
+          3025
+        ],
+        "upgrade": 200
+      },
+      "5F5": {
+        "group": "5F",
+        "price": 420,
+        "rent": [
+          55,
+          210,
+          630,
+          1450,
+          1750,
+          2050,
+          3050
+        ],
+        "upgrade": 200
+      },
+      "5G1": {
+        "group": "5G",
+        "price": 440,
+        "rent": [
+          62,
+          230,
+          675,
+          1550,
+          1825,
+          2150,
+          3650
+        ],
+        "upgrade": 250
+      },
+      "5G2": {
+        "group": "5G",
+        "price": 460,
+        "rent": [
+          70,
+          250,
+          725,
+          1625,
+          1900,
+          2300,
+          3800
+        ],
+        "upgrade": 250
+      },
+      "5G3": {
+        "group": "5G",
+        "price": 470,
+        "rent": [
+          73,
+          260,
+          740,
+          1650,
+          2000,
+          2400,
+          3900
+        ],
+        "upgrade": 250
+      },
+      "5G4": {
+        "group": "5G",
+        "price": 480,
+        "rent": [
+          75,
+          275,
+          750,
+          1700,
+          2100,
+          2500,
+          4000
+        ],
+        "upgrade": 250
+      },
+      "5G5": {
+        "group": "5G",
+        "price": 490,
+        "rent": [
+          78,
+          285,
+          775,
+          1750,
+          2150,
+          2600,
+          4100
+        ],
+        "upgrade": 250
+      },
+      "5H1": {
+        "group": "5H",
+        "price": 510,
+        "rent": [
+          85,
+          325,
+          825,
+          1850,
+          2300,
+          2750,
+          4250
+        ],
+        "upgrade": 300
+      },
+      "5H2": {
+        "group": "5H",
+        "price": 520,
+        "rent": [
+          86,
+          340,
+          840,
+          1900,
+          2350,
+          2800,
+          4300
+        ],
+        "upgrade": 300
+      },
+      "5H3": {
+        "group": "5H",
+        "price": 530,
+        "rent": [
+          87,
+          360,
+          860,
+          1950,
+          2400,
+          2850,
+          4350
+        ],
+        "upgrade": 300
+      },
+      "5H4": {
+        "group": "5H",
+        "price": 550,
+        "rent": [
+          90,
+          400,
+          900,
+          2000,
+          2500,
+          3000,
+          4500
+        ],
+        "upgrade": 300
+      },
+      "5H5": {
+        "group": "5H",
+        "price": 560,
+        "rent": [
+          92,
+          420,
+          920,
+          2100,
+          2600,
+          3100,
+          4600
+        ],
+        "upgrade": 300
+      },
+      "5I1": {
+        "group": "5I",
+        "price": 580,
+        "rent": [
+          96,
+          460,
+          960,
+          2300,
+          2800,
+          3300,
+          5300
+        ],
+        "upgrade": 350
+      },
+      "5I2": {
+        "group": "5I",
+        "price": 590,
+        "rent": [
+          98,
+          480,
+          980,
+          2400,
+          2900,
+          3400,
+          5400
+        ],
+        "upgrade": 350
+      },
+      "5I3": {
+        "group": "5I",
+        "price": 610,
+        "rent": [
+          102,
+          520,
+          1025,
+          2600,
+          3100,
+          3600,
+          5600
+        ],
+        "upgrade": 350
+      },
+      "5I4": {
+        "group": "5I",
+        "price": 620,
+        "rent": [
+          104,
+          540,
+          1050,
+          2700,
+          3200,
+          3700,
+          5700
+        ],
+        "upgrade": 350
+      },
+      "5I5": {
+        "group": "5I",
+        "price": 640,
+        "rent": [
+          108,
+          580,
+          1100,
+          2900,
+          3400,
+          3900,
+          5900
+        ],
+        "upgrade": 350
+      },
+      "5J1": {
+        "group": "5J",
+        "price": 660,
+        "rent": [
+          113,
+          620,
+          1150,
+          3100,
+          3600,
+          4100,
+          6100
+        ],
+        "upgrade": 350
+      },
+      "5J2": {
+        "group": "5J",
+        "price": 670,
+        "rent": [
+          116,
+          640,
+          1175,
+          3200,
+          3700,
+          4200,
+          6200
+        ],
+        "upgrade": 350
+      },
+      "5J3": {
+        "group": "5J",
+        "price": 690,
+        "rent": [
+          122,
+          680,
+          1225,
+          3400,
+          3900,
+          4400,
+          6400
+        ],
+        "upgrade": 350
+      },
+      "5J4": {
+        "group": "5J",
+        "price": 700,
+        "rent": [
+          125,
+          700,
+          1250,
+          3500,
+          4000,
+          4500,
+          6500
+        ],
+        "upgrade": 350
+      },
+      "6A1": {
+        "group": "6A",
+        "price": 40,
+        "rent": [
+          2,
+          6,
+          20,
+          60,
+          105,
+          200,
+          700
+        ],
+        "upgrade": 50
+      },
+      "6A4": {
+        "group": "6A",
+        "price": 70,
+        "rent": [
+          4,
+          22,
+          70,
+          200,
+          340,
+          840,
+          980
+        ],
+        "upgrade": 50
+      },
+      "6B1": {
+        "group": "6B",
+        "price": 120,
+        "rent": [
+          8,
+          40,
+          100,
+          300,
+          450,
+          600,
+          1100
+        ],
+        "upgrade": 100
+      },
+      "6B4": {
+        "group": "6B",
+        "price": 150,
+        "rent": [
+          11,
+          55,
+          160,
+          475,
+          650,
+          800,
+          1300
+        ],
+        "upgrade": 100
+      },
+      "6C1": {
+        "group": "6C",
+        "price": 200,
+        "rent": [
+          16,
+          80,
+          220,
+          600,
+          800,
+          1000,
+          2000
+        ],
+        "upgrade": 150
+      },
+      "6C4": {
+        "group": "6C",
+        "price": 230,
+        "rent": [
+          19,
+          95,
+          275,
+          725,
+          900,
+          1075,
+          2075
+        ],
+        "upgrade": 150
+      },
+      "6D1": {
+        "group": "6D",
+        "price": 280,
+        "rent": [
+          24,
+          120,
+          350,
+          850,
+          1025,
+          1200,
+          2200
+        ],
+        "upgrade": 150
+      },
+      "6D4": {
+        "group": "6D",
+        "price": 310,
+        "rent": [
+          27,
+          140,
+          420,
+          950,
+          1150,
+          1350,
+          2350
+        ],
+        "upgrade": 150
+      },
+      "6E1": {
+        "group": "6E",
+        "price": 360,
+        "rent": [
+          38,
+          180,
+          520,
+          1125,
+          1425,
+          1600,
+          2600
+        ],
+        "upgrade": 200
+      },
+      "6E4": {
+        "group": "6E",
+        "price": 390,
+        "rent": [
+          45,
+          195,
+          575,
+          1300,
+          1600,
+          1800,
+          2800
+        ],
+        "upgrade": 200
+      },
+      "6F1": {
+        "group": "6F",
+        "price": 440,
+        "rent": [
+          62,
+          230,
+          675,
+          1550,
+          1825,
+          2150,
+          3650
+        ],
+        "upgrade": 250
+      },
+      "6F4": {
+        "group": "6F",
+        "price": 470,
+        "rent": [
+          73,
+          260,
+          740,
+          1650,
+          2100,
+          2400,
+          3900
+        ],
+        "upgrade": 250
+      },
+      "6G1": {
+        "group": "6G",
+        "price": 520,
+        "rent": [
+          86,
+          340,
+          840,
+          1900,
+          2350,
+          2800,
+          4300
+        ],
+        "upgrade": 300
+      },
+      "6G4": {
+        "group": "6G",
+        "price": 550,
+        "rent": [
+          90,
+          400,
+          900,
+          2000,
+          2500,
+          3000,
+          4500
+        ],
+        "upgrade": 300
+      },
+      "7A1": {
+        "group": "7A",
+        "price": 20,
+        "rent": [
+          1,
+          3,
+          10,
+          30,
+          65,
+          100,
+          600
+        ],
+        "upgrade": 50
+      },
+      "7A2": {
+        "group": "7A",
+        "price": 60,
+        "rent": [
+          3,
+          15,
+          45,
+          120,
+          240,
+          350,
+          850
+        ],
+        "upgrade": 50
+      },
+      "7A4": {
+        "group": "7A",
+        "price": 100,
+        "rent": [
+          6,
+          30,
+          90,
+          270,
+          400,
+          550,
+          1050
+        ],
+        "upgrade": 50
+      },
+      "7B1": {
+        "group": "7B",
+        "price": 140,
+        "rent": [
+          10,
+          50,
+          150,
+          450,
+          625,
+          750,
+          1250
+        ],
+        "upgrade": 100
+      },
+      "7B4": {
+        "group": "7B",
+        "price": 180,
+        "rent": [
+          14,
+          70,
+          200,
+          550,
+          700,
+          950,
+          1450
+        ],
+        "upgrade": 100
+      },
+      "7C1": {
+        "group": "7C",
+        "price": 220,
+        "rent": [
+          18,
+          90,
+          250,
+          700,
+          875,
+          1050,
+          2050
+        ],
+        "upgrade": 150
+      },
+      "7C4": {
+        "group": "7C",
+        "price": 260,
+        "rent": [
+          22,
+          110,
+          330,
+          800,
+          975,
+          1150,
+          2150
+        ],
+        "upgrade": 150
+      },
+      "7D1": {
+        "group": "7D",
+        "price": 300,
+        "rent": [
+          26,
+          130,
+          390,
+          900,
+          1100,
+          1275,
+          2275
+        ],
+        "upgrade": 200
+      },
+      "7D4": {
+        "group": "7D",
+        "price": 340,
+        "rent": [
+          33,
+          165,
+          485,
+          1075,
+          1275,
+          1475,
+          2475
+        ],
+        "upgrade": 200
+      },
+      "7E1": {
+        "group": "7E",
+        "price": 380,
+        "rent": [
+          40,
+          190,
+          550,
+          1200,
+          1500,
+          1700,
+          3200
+        ],
+        "upgrade": 250
+      },
+      "7E2": {
+        "group": "7E",
+        "price": 420,
+        "rent": [
+          55,
+          210,
+          630,
+          1450,
+          1750,
+          2050,
+          3550
+        ],
+        "upgrade": 250
+      },
+      "7E4": {
+        "group": "7E",
+        "price": 460,
+        "rent": [
+          70,
+          250,
+          725,
+          1625,
+          1900,
+          2300,
+          3800
+        ],
+        "upgrade": 250
+      },
+      "8A1": {
+        "group": "8A",
+        "price": 220,
+        "rent": [
+          18,
+          90,
+          250,
+          700,
+          875,
+          1050,
+          2050
+        ],
+        "upgrade": 150
+      },
+      "8A3": {
+        "group": "8A",
+        "price": 290,
+        "rent": [
+          25,
+          125,
+          375,
+          875,
+          1050,
+          1250,
+          2250
+        ],
+        "upgrade": 150
+      },
+      "8B1": {
+        "group": "8B",
+        "price": 400,
+        "rent": [
+          50,
+          200,
+          600,
+          1400,
+          1700,
+          2000,
+          3500
+        ],
+        "upgrade": 250
+      },
+      "8B3": {
+        "group": "8B",
+        "price": 470,
+        "rent": [
+          73,
+          260,
+          740,
+          1650,
+          2100,
+          2400,
+          3900
+        ],
+        "upgrade": 250
+      },
+      "8C1": {
+        "group": "8C",
+        "price": 580,
+        "rent": [
+          96,
+          460,
+          960,
+          2300,
+          2800,
+          3300,
+          5300
+        ],
+        "upgrade": 350
+      },
+      "8C3": {
+        "group": "8C",
+        "price": 650,
+        "rent": [
+          110,
+          600,
+          1125,
+          3000,
+          3500,
+          4000,
+          6000
+        ],
+        "upgrade": 350
+      },
+      "R": {
+        "group": "R",
+        "price": 200,
+        "level_start": 1,
+        "type": 1,
+        "rent": [
+          25,
+          50,
+          75,
+          100,
+          150,
+          200,
+          300,
+          400,
+          550,
+          750,
+          1000,
+          2000
+        ],
+        "upgrade": 100
+      },
+      "U": {
+        "group": "U",
+        "price": 150,
+        "level_start": 1,
+        "type": 1,
+        "rent": [
+          4,
+          10,
+          20,
+          30,
+          40,
+          60,
+          80,
+          100,
+          150,
+          200,
+          250,
+          300,
+          400,
+          500
+        ]
+      },
+      "T": {
+        "group": "T",
+        "price": 300,
+        "level_start": 1,
+        "type": 1,
+        "rent": [
+          35,
+          75,
+          150,
+          300,
+          600
+        ],
+        "upgrade": 150
+      },
+      "MT": {
+        "group": "MT",
+        "price": 600,
+        "level_start": 1,
+        "type": 1,
+        "rent": [
+          75,
+          150,
+          300,
+          600,
+          1200
+        ],
+        "upgrade": 300
+      },
+      "CB": {
+        "group": "CB",
+        "price": 400,
+        "level_start": 1,
+        "type": 1,
+        "rent": [
+          50,
+          100,
+          200,
+          400,
+          800
+        ],
+        "upgrade": 200
+      },
+      "SB": {
+        "group": "SB",
+        "price": 500,
+        "level_start": 1,
+        "type": 1,
+        "rent": [
+          60,
+          125,
+          250,
+          500,
+          1000
+        ],
+        "upgrade": 250
+      }
+    }
+  },
+  "board": [
+    [
+      {
+        "S": [
+          "1A1",
+          "1KV1",
+          "1A2",
+          "1A3",
+          "1A4",
+          "1A5",
+          "1T1",
+          "1R1",
+          "1B1",
+          "1B2",
+          "1B3",
+          "1CH1",
+          "1U1",
+          "1B4",
+          "1B5"
+        ],
+        "W": [
+          "DGIA",
+          "1C1",
+          "1C2",
+          "1C3",
+          "1BC1",
+          "1C4",
+          "1C5",
+          "1CB1",
+          "1T2",
+          "1D1",
+          "1D2",
+          "1KV2",
+          "1D3",
+          "1D4",
+          "1D5"
+        ],
+        "N": [
+          "1E1",
+          "1E2",
+          "1CH2",
+          "1E3",
+          "1E4",
+          "1E5",
+          "1T3",
+          "1R2",
+          "1TX1",
+          "1F1",
+          "1F2",
+          "1F3",
+          "1U2",
+          "1F4",
+          "1F5"
+        ],
+        "E": [
+          "1G1",
+          "1G2",
+          "1G3",
+          "1G4",
+          "1BC2",
+          "1G5",
+          "TNC",
+          "1CB2",
+          "1T4",
+          "QSN",
+          "1H1",
+          "1H2",
+          "1H3",
+          "1TX2",
+          "1H4"
+        ],
+        "NW": "NTT",
+        "NE": "LAC3",
+        "SW": "DH",
+        "SE": "TDN"
+      },
+      {
+        "S": [
+          "2A1",
+          "2KV1",
+          "2A2",
+          "2A3",
+          "TTN",
+          "1R1A",
+          "2B1",
+          "2CH1",
+          "2B2",
+          "2B3",
+          "2B4"
+        ],
+        "W": [
+          "2C1",
+          "2U1",
+          "2C2",
+          "2C3",
+          "2C4",
+          "2R1",
+          "2D1",
+          "2KV2",
+          "2D2",
+          "2D3",
+          "2D4"
+        ],
+        "N": [
+          "2E1",
+          "2CH2",
+          "2E2",
+          "2E3",
+          "2E4",
+          "1R2A",
+          "2F1",
+          "2F2",
+          "2F3",
+          "2U2",
+          "2F4"
+        ],
+        "E": [
+          "2G1",
+          "2G2",
+          "2KV3",
+          "2G3",
+          "2G4",
+          "2R2",
+          "2CH3",
+          "2H1",
+          "TXX",
+          "2H2",
+          "2H3"
+        ],
+        "NW": "BDX",
+        "NE": "VT",
+        "SW": "TT",
+        "SE": "BDAU"
+      },
+      {
+        "S": [
+          "3B2",
+          "3B3",
+          "3B4",
+          "3U1",
+          "3CH1",
+          "3C1",
+          "3SB2"
+        ],
+        "W": [
+          "3C2",
+          "3C3",
+          "3C4",
+          "2R1A",
+          "3D1",
+          "3TX1",
+          "3D2"
+        ],
+        "N": [
+          "3D3",
+          "3D4",
+          "3U2",
+          "3R1",
+          "3KV1",
+          "3A1",
+          "3SB1"
+        ],
+        "E": [
+          "3A2",
+          "3A3",
+          "3A4",
+          "2R2A",
+          "DCHO",
+          "3B1",
+          "3BC1"
+        ],
+        "NW": "GDCP",
+        "NE": "SK",
+        "SW": "THUONG",
+        "SE": "TCQL"
+      },
+      {
+        "S": [
+          "4A4",
+          "TBK",
+          "4B1"
+        ],
+        "W": [
+          "4B2",
+          "4B3",
+          "HT"
+        ],
+        "N": [
+          "4B4",
+          "3R1A",
+          "4A1"
+        ],
+        "E": [
+          "4A2",
+          "TCP",
+          "4A3"
+        ],
+        "NW": "KC",
+        "NE": "UT",
+        "SW": "GGKN",
+        "SE": "CAU-1"
+      }
+    ],
+    [
+      {
+        "S": [
+          "5A1",
+          "5A2",
+          "5MT1",
+          "5A3",
+          "5A4",
+          "5A5",
+          "5CH1",
+          "5B1",
+          "5R1",
+          "5B2",
+          "5B3",
+          "5B4",
+          "5B5",
+          "5TX1",
+          "5C1",
+          "5C2",
+          "5C3"
+        ],
+        "W": [
+          "5C4",
+          "5C5",
+          "5BC1",
+          "5D1",
+          "5U1",
+          "5D2",
+          "5D3",
+          "5D4",
+          "5CB1",
+          "5D5",
+          "5MT2",
+          "5E1",
+          "5E2",
+          "5E3",
+          "5E4",
+          "5TX2",
+          "5E5"
+        ],
+        "N": [
+          "5F1",
+          "5F2",
+          "5F3",
+          "5MT3",
+          "5F4",
+          "5F5",
+          "5BC2",
+          "5G1",
+          "5R2",
+          "5G2",
+          "5G3",
+          "5G4",
+          "5G5",
+          "5KV1",
+          "5H1",
+          "5H2",
+          "5H3"
+        ],
+        "E": [
+          "5H4",
+          "5H5",
+          "5CH2",
+          "5I1",
+          "5I2",
+          "5MT4",
+          "5I3",
+          "5I4",
+          "5CB2",
+          "5I5",
+          "5KV2",
+          "5J1",
+          "5J2",
+          "5U2",
+          "5J3",
+          "5J4",
+          "TDT"
+        ],
+        "NW": "CPB",
+        "NE": "GKT-2",
+        "SW": "GKT",
+        "SE": "CAU-2"
+      },
+      {
+        "S": [
+          "6B4",
+          "6B5",
+          "6KV1",
+          "6C1",
+          "6C2",
+          "6C3",
+          "5R1A",
+          "6C4",
+          "6C5",
+          "6BC2",
+          "6D1",
+          "6D2",
+          "6D3"
+        ],
+        "W": [
+          "GT",
+          "6D4",
+          "6D5",
+          "6CH1",
+          "6E1",
+          "6E2",
+          "6R2",
+          "6E3",
+          "TBDS",
+          "6E4",
+          "6E5",
+          "6TX2",
+          "6F1"
+        ],
+        "N": [
+          "6F2",
+          "6F3",
+          "6U2",
+          "6F4",
+          "6F5",
+          "6CH2",
+          "5R2A",
+          "6G1",
+          "6G2",
+          "6G3",
+          "6KV2",
+          "6G4",
+          "6G5"
+        ],
+        "E": [
+          "6TX1",
+          "6A1",
+          "6A2",
+          "6U1",
+          "6A3",
+          "6A4",
+          "6R1",
+          "6A5",
+          "6BC1",
+          "6B1",
+          "6B2",
+          "PTD",
+          "6B3"
+        ],
+        "NW": "TCQL2",
+        "NE": "VT2",
+        "SW": "TNV",
+        "SE": "KTT"
+      },
+      {
+        "S": [
+          "7TX1",
+          "7B3",
+          "7B4",
+          "7B5",
+          "7R1",
+          "7C1",
+          "7U1",
+          "7C2",
+          "7C3"
+        ],
+        "W": [
+          "7C4",
+          "7C5",
+          "7SB2",
+          "7D1",
+          "6R2A",
+          "7D2",
+          "7D3",
+          "7BC1",
+          "7D4"
+        ],
+        "N": [
+          "7D5",
+          "7KV1",
+          "7U2",
+          "7E1",
+          "7R2",
+          "7E2",
+          "7E3",
+          "TNK",
+          "7E4"
+        ],
+        "E": [
+          "7A1",
+          "7CH1",
+          "7A2",
+          "7A3",
+          "6R1A",
+          "7A4",
+          "7SB1",
+          "7B1",
+          "7B2"
+        ],
+        "NW": "GDCP2",
+        "NE": "TDN2",
+        "SW": "DTU",
+        "SE": "LOTO"
+      },
+      {
+        "S": [
+          "8C3",
+          "8C4",
+          "7R1A",
+          "8KV1",
+          "8A1"
+        ],
+        "W": [
+          "8A2",
+          "8A3",
+          "8U1",
+          "8A4",
+          "8TX1"
+        ],
+        "N": [
+          "8B1",
+          "8B2",
+          "7R2A",
+          "8CH1",
+          "8B3"
+        ],
+        "E": [
+          "8B4",
+          "8U2",
+          "8C1",
+          "8C2",
+          "8BC1"
+        ],
+        "NW": "LAC3-2",
+        "NE": "TCT",
+        "SW": "DH-2",
+        "SE": "DN-2"
+      }
+    ]
+  ],
+  "pallete": {
+    "1A": "#BAD191",
+    "1B": "#C7CCE3",
+    "1C": "#71EDE1",
+    "1D": "#FFF24F",
+    "1E": "#F46A95",
+    "1F": "#F0F7D5",
+    "1G": "#97FF8F",
+    "1H": "#AC9FFB",
+    "2A": "#C98FCF",
+    "2B": "#9A7340",
+    "2C": "#F2BC6C",
+    "2D": "#D6F2EF",
+    "2E": "#14BC3C",
+    "2F": "#5FB7FE",
+    "2G": "#FFB3FF",
+    "2H": "#F59469",
+    "3A": "#B4D200",
+    "3B": "#6CFCDA",
+    "3C": "#FFB92D",
+    "3D": "#FF5DBA",
+    "4A": "#CDF1B4",
+    "4B": "#B79385",
+    "5A": "#85F633",
+    "5B": "#C55B2D",
+    "5C": "#739D92",
+    "5D": "#C8EF22",
+    "5E": "#ABEDDB",
+    "5F": "#A6CBFF",
+    "5G": "#CF8594",
+    "5H": "#F2EA95",
+    "5I": "#27CC45",
+    "5J": "#928874",
+    "6A": "#13CAC4",
+    "6B": "#FC256D",
+    "6C": "#749BCA",
+    "6D": "#AF6F6A",
+    "6E": "#7B8FB2",
+    "6F": "#CBABED",
+    "6G": "#4FF3BC",
+    "7A": "#BC788A",
+    "7B": "#FCCBEA",
+    "7C": "#51AAF6",
+    "7D": "#F6A3BA",
+    "7E": "#95AADD",
+    "8A": "#FACE00",
+    "8B": "#9F7AFB",
+    "8C": "#89ABC2",
+    "R": "lightgrey",
+    "U": "#DDEBFF",
+    "T": "#EBFFEE",
+    "KV": "gold",
+    "CH": "lightpink",
+    "VX": "lightblue",
+    "BC": "brown",
+    "TX": "lightgreen",
+    "CB": "lightcyan",
+    "SB": "yellow",
+    "MT": "lightpink",
+    "BDAU": "#FA0000",
+    "OT": "orange"
+  }
+}

@@ -1,0 +1,5 @@
+- Thiết lập môi trường planner trong Office 365, tạo dự án, add thành viên, add thầy
+- Gán đường link vào tab channel ms teams
+
+- Thiết lập github, add thành viên nhóm & gắn lên tab
+- Tạo file kế hoạch theo nội dung bữa trước (online), update thường xuyên (pp 10 bước)

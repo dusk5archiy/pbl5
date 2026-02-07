@@ -1,0 +1,638 @@
+{
+  "logic": {
+    "init_budget": 1500,
+    "start_at": "BDAU",
+    "init_house": 32,
+    "init_hotel": 12,
+    "constants": {
+      "$BDAU_SALARY": 200
+    }
+  },
+  "action": {
+    "space": {
+      "KV1": {
+        "group": "KV",
+        "near": "A"
+      },
+      "CH1": {
+        "group": "CH",
+        "near": "B"
+      },
+      "KV2": {
+        "group": "KV",
+        "near": "D"
+      },
+      "CH2": {
+        "group": "CH",
+        "near": "E"
+      },
+      "KV3": {
+        "group": "KV",
+        "near": "G"
+      },
+      "CH3": {
+        "group": "CH",
+        "near": "H"
+      }
+    },
+    "group": {
+      "KV": {
+        "name": "Khí vận",
+        "cards": {
+          "#TTSD": {
+            "name": "Trả tiền sửa đường",
+            "content": "Trả {$house} / 1 nhà\nTrả {$hotel} / 1 khách sạn",
+            "values": {
+              "$house": 40,
+              "$hotel": 115
+            }
+          },
+          "+DGAH": {
+            "name": "Đoạt giải Á Hậu",
+            "content": "Lãnh {$amount}",
+            "collect": 10
+          },
+          "+NBLT": {
+            "name": "Nhà Bank lộn tiền",
+            "content": "Lãnh {$amount}",
+            "collect": 200
+          },
+          "+LTTK": {
+            "name": "Lãnh tiền thừa kế",
+            "content": "Lãnh {$amount}",
+            "collect": 100
+          },
+          "+TTKB": {
+            "name": "Trả tiền khám bệnh",
+            "content": "Trả {$amount}",
+            "pay": 50
+          },
+          "+TTBV": {
+            "name": "Trả tiền bệnh viện",
+            "content": "Trả {$amount}",
+            "pay": 100
+          },
+          "+QGS": {
+            "name": "Quà Giáng Sinh",
+            "content": "Lãnh {$amount}",
+            "collect": 100
+          },
+          "+CCDH": {
+            "name": "Cho con đi học",
+            "content": "Trả {$amount}",
+            "pay": 150
+          },
+          "+NTPV": {
+            "name": "Nhận tiền phục vụ",
+            "content": "Lãnh {$amount}",
+            "collect": 25
+          },
+          "-BDAU": {
+            "name": "Đến ô Bắt Đầu",
+            "content": "Lãnh lương {$BDAU_SALARY}",
+            "move": "BDAU"
+          },
+          "#KTNH": {
+            "name": "Khai trường nhà hát",
+            "content": "Thu mỗi người chơi {$price}",
+            "values": {
+              "$price": 50
+            }
+          },
+          "TDRT": {
+            "name": "Tự Do Ra Tù",
+            "content": "Giữ lại để sử dụng hoặc bán.",
+            "keep": true
+          },
+          "#VT": {
+            "name": "Vào Tù",
+            "content": "Đi thẳng vào tù\nKhông đi ngang ô Bắt Đầu\nKhông được lãnh lương {$BDAU_SALARY}"
+          },
+          "+QKM": {
+            "name": "Quà khuyến mãi",
+            "content": "Lãnh {$amount}",
+            "collect": 50
+          },
+          "+LTG": {
+            "name": "Làm thêm giờ",
+            "content": "Lãnh {$amount}",
+            "collect": 20
+          }
+        }
+      },
+      "CH": {
+        "name": "Cơ hội",
+        "cards": {
+          "#DBLGD": {
+            "name": "Được bầu làm giám đốc",
+            "content": "Trả mỗi người {$price}",
+            "values": {
+              "$price": 50
+            }
+          },
+          "+NBLT": {
+            "name": "Nhà Bank lộn tiền",
+            "content": "Lãnh {$amount}",
+            "collect": 50
+          },
+          "+KGMT": {
+            "name": "Kẻ gian móc túi",
+            "content": "Trả {$amount}",
+            "pay": 15
+          },
+          "#DL3B": {
+            "name": "Đi lùi 3 bước",
+            "content": ""
+          },
+          "-E3": {
+            "name": "Đến ô {name} ({id})",
+            "content": "",
+            "move": "E3"
+          },
+          "#SCN": {
+            "name": "Sửa chữa nhà",
+            "content": "Trả {$house} / 1 nhà\nTrả {$hotel} / 1 khách sạn",
+            "values": {
+              "$house": 25,
+              "$hotel": 100
+            }
+          },
+          "#VT": {
+            "name": "Vào Tù",
+            "content": "Đi thẳng vào tù\nKhông đi ngang ô Bắt Đầu\nKhông được lãnh lương {$BDAU_SALARY}",
+            "values": {}
+          },
+          "+GLCN": {
+            "name": "Gặp lại cố nhân",
+            "content": "Lãnh {$amount}",
+            "collect": 150
+          },
+          "TDRT": {
+            "name": "Tự Do Ra Tù",
+            "content": "Giữ lại để sử dụng hoặc bán.",
+            "keep": true
+          },
+          "#U": {
+            "name": "Đến ô CÔNG TY gần nhất",
+            "content": "Có thể mua nếu chưa ai sở hữu.\nNếu đã có người sở hữu thì thảy\nxúc xắc và trả chờ người đó số tiền\n{times} lần số điểm thảy được.",
+            "values": {
+              "times": 10
+            }
+          },
+          "-BDAU": {
+            "name": "Đến ô Bắt Đầu",
+            "content": "Lãnh lương {$BDAU_SALARY}",
+            "move": "BDAU"
+          },
+          "-H2": {
+            "name": "Đến ô {name} ({id})",
+            "content": "",
+            "move": "H2"
+          },
+          "-C1": {
+            "name": "Đến ô {name} ({id})",
+            "content": "Nếu đi ngang ô Bắt Đầu, lãnh {$BDAU_SALARY}",
+            "move": "C1"
+          },
+          "-R1": {
+            "name": "Đến ô {name} ({id})",
+            "content": "Nếu đi ngang ô Bắt Đầu, lãnh {$BDAU_SALARY}",
+            "move": "R1"
+          },
+          "#R": {
+            "name": "Đến ô Đường Sắt gần nhất",
+            "content": "Trả tiền thuê gấp đôi\ncho người sở hữu,\nhoặc mua nếu còn trống",
+            "copies": 2
+          }
+        }
+      }
+    },
+    "label": {
+      "BDX": "Bãi Đậu Xe\nMiễn Phí",
+      "VT": "Vào Tù",
+      "TTN": "Thuế\nThu\nNhập",
+      "TXX": "Thuế\nXa Xỉ"
+    },
+    "special_label": {
+      "OT": "Ở tù"
+    }
+  },
+  "bds": {
+    "bds": {
+      "A1": {
+        "name": "NGUYỄN HUỆ",
+        "price_group": "A1"
+      },
+      "A2": {
+        "name": "LÊ LỢI",
+        "price_group": "A2"
+      },
+      "B1": {
+        "name": "LƯƠNG ĐỊNH CỦA",
+        "price_group": "B1"
+      },
+      "B2": {
+        "name": "VÕ THỊ SÁU",
+        "price_group": "B1"
+      },
+      "B3": {
+        "name": "HAI BÀ TRƯNG",
+        "price_group": "B3"
+      },
+      "C1": {
+        "name": "NGUYỄN TẤT THÀNH",
+        "price_group": "C1"
+      },
+      "C2": {
+        "name": "NGUYỄN TRÃI",
+        "price_group": "C1"
+      },
+      "C3": {
+        "name": "AN DƯƠNG VƯƠNG",
+        "price_group": "C3"
+      },
+      "D1": {
+        "name": "HẬU GIANG",
+        "price_group": "D1"
+      },
+      "D2": {
+        "name": "HÙNG VƯƠNG",
+        "price_group": "D1"
+      },
+      "D3": {
+        "name": "HUỲNH TẤN PHÁT",
+        "price_group": "D3"
+      },
+      "E1": {
+        "name": "PHẠM THẾ HIỂN",
+        "price_group": "E1"
+      },
+      "E2": {
+        "name": "KHA VẠNG CÂN",
+        "price_group": "E1"
+      },
+      "E3": {
+        "name": "NGUYỄN TRI PHƯƠNG",
+        "price_group": "E3"
+      },
+      "F1": {
+        "name": "LÊ ĐẠI HÀNH",
+        "price_group": "F1"
+      },
+      "F2": {
+        "name": "TRƯỜNG CHINH",
+        "price_group": "F1"
+      },
+      "F3": {
+        "name": "HOÀNG VĂN THỤ",
+        "price_group": "F3"
+      },
+      "G1": {
+        "name": "CỘNG HOÀ",
+        "price_group": "G1"
+      },
+      "G2": {
+        "name": "NGUYỄN KIỆM",
+        "price_group": "G1"
+      },
+      "G3": {
+        "name": "QUANG TRUNG",
+        "price_group": "G3"
+      },
+      "H1": {
+        "name": "LUỸ BÁN BÍCH",
+        "price_group": "H1"
+      },
+      "H2": {
+        "name": "TÂN KỲ TÂN QUÝ",
+        "price_group": "H2"
+      },
+      "R1": {
+        "name": "ĐƯỜNG SẮT HÀ NỘI",
+        "price_group": "R"
+      },
+      "R2": {
+        "name": "ĐƯỜNG SẮT HẢI PHÒNG",
+        "price_group": "R"
+      },
+      "R3": {
+        "name": "ĐƯỜNG SẮT SÀI GÒN",
+        "price_group": "R"
+      },
+      "R4": {
+        "name": "ĐƯỜNG SẮT ĐÀ NẴNG",
+        "price_group": "R"
+      },
+      "U1": {
+        "name": "CÔNG TY ĐIỆN LỰC",
+        "price_group": "U"
+      },
+      "U2": {
+        "name": "CÔNG TY CẤP NƯỚC",
+        "price_group": "U"
+      }
+    },
+    "price_groups": {
+      "A1": {
+        "group": "A",
+        "price": 60,
+        "rent": [
+          2,
+          10,
+          30,
+          90,
+          160,
+          250
+        ],
+        "upgrade": 50
+      },
+      "A2": {
+        "group": "A",
+        "price": 80,
+        "rent": [
+          4,
+          20,
+          60,
+          180,
+          320,
+          450
+        ],
+        "upgrade": 50
+      },
+      "B1": {
+        "group": "B",
+        "price": 100,
+        "rent": [
+          6,
+          30,
+          90,
+          270,
+          400,
+          550
+        ],
+        "upgrade": 50
+      },
+      "B3": {
+        "group": "B",
+        "price": 120,
+        "rent": [
+          8,
+          40,
+          100,
+          300,
+          450,
+          600
+        ],
+        "upgrade": 50
+      },
+      "C1": {
+        "group": "C",
+        "price": 140,
+        "rent": [
+          10,
+          50,
+          150,
+          450,
+          625,
+          750
+        ],
+        "upgrade": 100
+      },
+      "C3": {
+        "group": "C",
+        "price": 160,
+        "rent": [
+          12,
+          60,
+          180,
+          500,
+          700,
+          900
+        ],
+        "upgrade": 100
+      },
+      "D1": {
+        "group": "D",
+        "price": 180,
+        "rent": [
+          14,
+          70,
+          200,
+          550,
+          750,
+          950
+        ],
+        "upgrade": 100
+      },
+      "D3": {
+        "group": "D",
+        "price": 200,
+        "rent": [
+          16,
+          80,
+          220,
+          600,
+          800,
+          1000
+        ],
+        "upgrade": 100
+      },
+      "E1": {
+        "group": "E",
+        "price": 220,
+        "rent": [
+          18,
+          90,
+          250,
+          700,
+          875,
+          1050
+        ],
+        "upgrade": 150
+      },
+      "E3": {
+        "group": "E",
+        "price": 240,
+        "rent": [
+          20,
+          100,
+          300,
+          750,
+          925,
+          1100
+        ],
+        "upgrade": 150
+      },
+      "F1": {
+        "group": "F",
+        "price": 260,
+        "rent": [
+          22,
+          110,
+          330,
+          800,
+          975,
+          1150
+        ],
+        "upgrade": 150
+      },
+      "F3": {
+        "group": "F",
+        "price": 280,
+        "rent": [
+          24,
+          120,
+          350,
+          850,
+          1025,
+          1200
+        ],
+        "upgrade": 150
+      },
+      "G1": {
+        "group": "G",
+        "price": 300,
+        "rent": [
+          26,
+          130,
+          390,
+          900,
+          1100,
+          1275
+        ],
+        "upgrade": 200
+      },
+      "G3": {
+        "group": "G",
+        "price": 320,
+        "rent": [
+          28,
+          150,
+          450,
+          1000,
+          1200,
+          1400
+        ],
+        "upgrade": 200
+      },
+      "H1": {
+        "group": "H",
+        "price": 350,
+        "rent": [
+          35,
+          175,
+          500,
+          1100,
+          1300,
+          1500
+        ],
+        "upgrade": 200
+      },
+      "H2": {
+        "group": "H",
+        "price": 400,
+        "rent": [
+          50,
+          200,
+          600,
+          1400,
+          1700,
+          2000
+        ],
+        "upgrade": 200
+      },
+      "R": {
+        "group": "R",
+        "price": 200,
+        "level_start": 1,
+        "type": 1,
+        "rent": [
+          25,
+          50,
+          100,
+          200
+        ]
+      },
+      "U": {
+        "group": "U",
+        "price": 150,
+        "level_start": 1,
+        "type": 1,
+        "rent": [
+          4,
+          10
+        ]
+      }
+    }
+  },
+  "board": [
+    [
+      {
+        "S": [
+          "A1",
+          "KV1",
+          "A2",
+          "TTN",
+          "R1",
+          "B1",
+          "CH1",
+          "B2",
+          "B3"
+        ],
+        "W": [
+          "C1",
+          "U1",
+          "C2",
+          "C3",
+          "R2",
+          "D1",
+          "KV2",
+          "D2",
+          "D3"
+        ],
+        "N": [
+          "E1",
+          "CH2",
+          "E2",
+          "E3",
+          "R3",
+          "F1",
+          "F2",
+          "U2",
+          "F3"
+        ],
+        "E": [
+          "G1",
+          "G2",
+          "KV3",
+          "G3",
+          "R4",
+          "CH3",
+          "H1",
+          "TXX",
+          "H2"
+        ],
+        "NW": "BDX",
+        "NE": "VT",
+        "SW": "TT",
+        "SE": "BDAU"
+      }
+    ]
+  ],
+  "pallete": {
+    "A": "#C98FCF",
+    "B": "#9A7340",
+    "C": "#F2BC6C",
+    "D": "#D6F2EF",
+    "E": "#14BC3C",
+    "F": "#5FB7FE",
+    "G": "#FFB3FF",
+    "H": "#F59469",
+    "R": "lightgrey",
+    "U": "#DDEBFF",
+    "KV": "gold",
+    "CH": "lightpink",
+    "BDAU": "#FA0000",
+    "OT": "orange"
+  }
+}

@@ -7,9 +7,17 @@ else
 fi
 
 (
+  cd back-setup
+  python main.py
+)
+
+(
   cd back
-  python api.py
+  python main.py
 ) &
 
-cd front
-npm run dev
+(
+  . var/env.sh
+  cd front
+  PORT=$FRONTEND_PORT BACKEND_PORT=$BACKEND_PORT npm run dev
+)

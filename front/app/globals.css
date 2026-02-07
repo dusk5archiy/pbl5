@@ -3,7 +3,6 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  font-size: 200%;
 }
 
 @theme inline {
@@ -13,93 +12,23 @@
   --font-mono: var(--font-geist-mono);
 }
 
-/* @media (prefers-color-scheme: dark) { */
-/*   :root { */
-/*     --background: #0a0a0a; */
-/*     --foreground: #ededed; */
-/*   } */
-/* } */
-.bgred{
-  background-color: #FF8B8B !important;
-}
-.bgorange{
-  background-color: #FFC000 !important;
-}
-.bgyellow{
-  background-color: yellow !important;
-}
-.bggreen{
-  background-color: #B1FFAB !important;
-}
-.bgblue{
-  background-color: #B7F3FF !important;
-}
-.bgpurple{
-  background-color: #EEBBFF !important;
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Bahnschrift, Arial, Helvetica, sans-serif;
 }
 
-/* Hide scrollbars globally */
-* {
-  scrollbar-width: none !important; /* Firefox */
-  -ms-overflow-style: none !important; /* IE and Edge */
+::-webkit-scrollbar {
+  width: 0.5vw;
+  height: 0.5vw;
 }
 
-*::-webkit-scrollbar {
-  display: none !important; /* Chrome, Safari, and Opera */
-  width: 0 !important;
-  height: 0 !important;
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 0.5vw;
 }
 
-*::-webkit-scrollbar-track {
-  display: none !important;
-}
-
-*::-webkit-scrollbar-thumb {
-  display: none !important;
-}
-
-.left-sidebar{
-  width: 300px;
-}
-.b-col{
-  width: 16px !important;
-}
-.money-wrapper{
-  background-color: #446655 !important;
-  height: 290px !important;
-}
-.bds-wrapper,.func-btn{
-  background-color: #446655 !important;
-}
-.xx-popup{
-  height: 900px !important;
-  position: relative;
-  top:150px;
-}
-.camera{
-  width: 400px !important;
-  height: 300px !important;
-}
-.txx-button{
-  position: absolute;
-  top:25%;
-  left: 49%;
-  height: 300px !important;
-  width: 200px !important;
-}
-.close-popup{
-  position: absolute;
-  top:10px;
-  right:11px;
-}
-.bds-node{
-  background-color: gray ;
-  width: 18px !important;
-  height: 24px !important;
+::-webkit-scrollbar-thumb {
+  background: white;
+  border-radius: 0.5vw;
 }

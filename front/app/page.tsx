@@ -1,72 +1,80 @@
-'use client';
+'use client'
 
+import ChooseColorScreen from "./screen/choose-color-screen/ChooseColorScreen";
+import { GameScreen } from "@/app/screen/game-screen/GameScreen";
+import HomeScreen from "./screen/home-screen/HomeScreen";
 import { useState } from 'react';
-import WelcomeScreen from '@/app/screen/WelcomeScreen';
-import ChooseColorScreen from '@/app/screen/ChooseColorScreen';
-import CheckCameraScreen from '@/app/screen/CheckCameraScreen';
-import GameDataLoadingScreen from '@/app/screen/GameDataLoadingScreen';
-import GameScreen from '@/app/screen/GameScreen';
-import { ColorType } from '@/app/utils/ColorType';
-import { GameData, GameState } from '@/app/game/model';
-
-type Screen = 'welcome' | 'chooseColors' | 'checkCamera' | 'gameDataLoading' | 'game';
+import LoadingGameScreen from "./screen/loading-screen/LoadingGameScreen";
+import FailureScreen from "./screen/failure-screen/FailureScreen";
+import { GameData, GameState } from "./model/game";
+import CheckCameraScreen from "./screen/check-camera-screen/CheckCameraScreen";
 
 export default function Home() {
-  const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
-  const [selectedColors, setSelectedColors] = useState<ColorType[]>([]);
-  const [selectedCamera, setSelectedCamera] = useState<string>('');
-  const [gameState, setGameState] = useState<GameState | null>(null);
+  const [getCurrentScreen, setCurrentScreen] = useState<string>("home-screen");
+  const [getSelectedColors, setSelectedColors] = useState<string[]>([]);
   const [gameData, setGameData] = useState<GameData | null>(null);
+  const [gameState, setGameState] = useState<GameState | null>(null);
+  const [updating, setUpdating] = useState<boolean>(false);
+  const [version, setVersion] = useState<string>("1");
+  const [diceDetection, setDiceDetection] = useState<boolean>(false);
+  const [selectedCamera, setSelectedCamera] = useState<string>("");
 
-  const handleGameDataLoaded = (loadedGameData: GameData, loadedGameState: GameState) => {
-    setGameData(loadedGameData);
-    setGameState(loadedGameState);
-    setCurrentScreen('game');
-  };
-
-  switch (currentScreen) {
-    case 'welcome':
-      return <WelcomeScreen onStart={() => setCurrentScreen('chooseColors')} />;
-    case 'chooseColors':
+  switch (getCurrentScreen) {
+    case 'home-screen':
+      return (<HomeScreen onStart={() => setCurrentScreen('choose-color-screen')} />);
+    case 'choose-color-screen':
+      return (<ChooseColorScreen {...{
+        onBack: () => setCurrentScreen('home-screen'),
+        onNext: () => {
+          if (diceDetection) {
+            setCurrentScreen('check-camera-screen');
+          } else {
+            setCurrentScreen('loading-game-screen');
+          }
+        },
+        getSelectedColors,
+        setSelectedColors,
+        version, setVersion,
+        diceDetection, setDiceDetection
+      }} />);
+    case 'loading-game-screen':
+      return (<LoadingGameScreen
+        onSuccess={() => setCurrentScreen('game-screen')}
+        onFailure={() => setCurrentScreen('failure-screen')}
+        setGameState={setGameState}
+        setGameData={setGameData}
+        version={version}
+        players={getSelectedColors}
+      />);
+    case 'check-camera-screen':
       return (
-        <ChooseColorScreen
-          selectedColors={selectedColors}
-          setSelectedColors={setSelectedColors}
-          onContinue={(colors) => {
-            setSelectedColors(colors);
-            setCurrentScreen('checkCamera');
-          }}
-          onBack={() => setCurrentScreen('welcome')}
-        />
+        <CheckCameraScreen {
+          ...{
+            onBack: () => setCurrentScreen('choose-color-screen'),
+            onNext: () => setCurrentScreen('loading-game-screen'),
+            selectedCamera, setSelectedCamera
+          }
+        } />
       );
-    case 'checkCamera':
-      return (
-        <CheckCameraScreen
-          selectedCamera={selectedCamera}
-          setSelectedCamera={setSelectedCamera}
-          onContinue={() => setCurrentScreen('gameDataLoading')}
-          onBack={() => setCurrentScreen('chooseColors')}
-        />
-      );
-    case 'gameDataLoading':
-      return (
-        <GameDataLoadingScreen
-          selectedColors={selectedColors}
-          onSuccess={handleGameDataLoaded}
-          onBack={() => setCurrentScreen('checkCamera')}
-        />
-      );
-    case 'game':
-      return gameData && gameState && (
+    case 'game-screen':
+      return (gameData !== null && gameState !== null &&
         <GameScreen
-          selectedCamera={selectedCamera}
-          gameState={gameState}
           gameData={gameData}
-          onBack={() => setCurrentScreen('checkCamera')}
-          onGameStateUpdate={setGameState}
+          gameState={gameState}
+          setGameState={setGameState}
+          onBack={() => setCurrentScreen('home-screen')}
+          onError={() => setCurrentScreen("failure-screen")}
+          updating={updating}
+          setUpdating={setUpdating}
+          selectedCamera={selectedCamera}
+          diceDetection={diceDetection}
         />
       );
+
+    case 'failure-screen':
+      return (<FailureScreen />)
+
     default:
-      return <WelcomeScreen onStart={() => setCurrentScreen('chooseColors')} />;
+      return undefined;
   }
 }

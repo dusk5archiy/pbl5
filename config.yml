@@ -1,0 +1,5 @@
+front:
+  port: 3000
+
+back:
+  port: 37001
