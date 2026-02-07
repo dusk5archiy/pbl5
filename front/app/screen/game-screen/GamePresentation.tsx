@@ -247,13 +247,13 @@ export function GamePresentation(props: GameScreenProps) {
   };
 
   return (
-    <div className="w-screen h-screen px-[2vw] py-[2vh] flex gap-[2vh] bg-[#2E6C3D] overflow-hidden">
+    <div className="@container w-screen h-screen px-[2vw] py-[2vh] flex gap-[2vh] bg-[#2E6C3D] overflow-hidden">
       {
         diceDetectionResult != null ?
           <DiceConfirmTab {...game_board_props} /> :
           bdsShown == 0 ?
             <>
-              <div className={`flex-1 h-full flex flex-col gap-[2vh]`}>
+              <div className={`w-[calc(100%-95cqh)] h-full flex flex-col gap-[2vh]`}>
                 <div className="w-full h-full flex flex-col gap-[1vh] overflow-y-scroll">
                   {
                     boardShown && <div className="w-full min-h-[50%] flex">
@@ -289,7 +289,7 @@ export function GamePresentation(props: GameScreenProps) {
                   </div>
                 </div>
               </div>
-              <div className="h-[95%] aspect-square">
+              <div className="w-[95cqh] h-[95cqh]">
                 {
                   boardShown ? <div style={{
                     width: "100%",
