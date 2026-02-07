@@ -17,5 +17,5 @@ fi
 (
   . var/env.sh
   cd front
-  PORT=$FRONTEND_PORT BACKEND_PORT=$BACKEND_PORT npm run dev
+  PORT=$FRONTEND_PORT BACKEND_PORT=$BACKEND_PORT npm run start
 )
