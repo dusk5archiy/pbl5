@@ -14,16 +14,16 @@ export async function fetchBackend(request: any, at: string) {
 
 // ----------------------------------------------------------------------------
 
-export function getApi(onError: () => void, at: string, request: Object) {
+export function getApi(onError: (_?: any) => void, at: string, request: Object) {
   return async () => {
     try {
-      console.log("Sending:");
-      console.log(request);
       const response = await fetchBackend(request, at);
       if (!response.ok) onError();
       return await response.json();
     }
-    catch (error) { onError(); }
+    catch (error) {
+      onError(error);
+    }
   };
 }
 

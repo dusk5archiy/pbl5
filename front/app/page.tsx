@@ -18,6 +18,7 @@ export default function Home() {
   const [version, setVersion] = useState<string>("1");
   const [diceDetection, setDiceDetection] = useState<boolean>(false);
   const [selectedCamera, setSelectedCamera] = useState<string>("");
+  const [error, setError] = useState<any | null>(null);
 
   switch (getCurrentScreen) {
     case 'home-screen':
@@ -63,7 +64,7 @@ export default function Home() {
           gameState={gameState}
           setGameState={setGameState}
           onBack={() => setCurrentScreen('home-screen')}
-          onError={() => setCurrentScreen("failure-screen")}
+          onError={(error?: any) => { setError(error); setCurrentScreen("failure-screen"); }}
           updating={updating}
           setUpdating={setUpdating}
           selectedCamera={selectedCamera}
@@ -72,7 +73,7 @@ export default function Home() {
       );
 
     case 'failure-screen':
-      return (<FailureScreen />)
+      return (<FailureScreen {...{ error }} />)
 
     default:
       return undefined;

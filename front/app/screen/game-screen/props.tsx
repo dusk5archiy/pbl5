@@ -5,7 +5,7 @@ import { TradeCard } from "@/app/model/chore";
 
 export interface GameScreenProps {
   onBack: () => void;
-  onError: () => void;
+  onError: (_?: any) => void;
   gameData: GameData;
   gameState: GameState;
   setGameState: (gameState: GameState) => void;
