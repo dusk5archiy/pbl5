@@ -1,8 +1,8 @@
 import { COLOR_UI_INFO } from "@/app/utils/pallete";
-import { PropertyPanelProps } from "./props";
 import { CSSProperties } from "react";
+import { GameBoardProps } from "./props";
 
-export function ActionCardPanel(props: PropertyPanelProps) {
+export function ActionCardPanel(props: GameBoardProps) {
   const { gameState, selectedActionGroup, selectedActionCard, useActionCardFunc, tradeFunc, setPropertyTab } = props;
   const owner = gameState.logic.action[selectedActionGroup][selectedActionCard].owner;
   const text_color = owner == null ? "text-gray-100" : "text-black";
