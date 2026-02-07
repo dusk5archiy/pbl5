@@ -33,8 +33,6 @@ import { DiceConfirmTab } from "@/app/ui/game-board/DiceConfirmTab";
 
 // ----------------------------------------------------------------------------
 
-// ----------------------------------------------------------------------------
-
 export function GamePresentation(props: GameScreenProps) {
   const { onBack, gameData, gameState, selectedCamera, diceDetection } = props;
   const [bdsShown, setBdsShown] = useState<number>(0);
@@ -249,7 +247,7 @@ export function GamePresentation(props: GameScreenProps) {
   };
 
   return (
-    <div className="w-screen h-screen px-[2vw] py-[2vh] flex gap-[2vh] bg-[#2E6C3D]">
+    <div className="w-screen h-screen px-[2vw] py-[2vh] flex gap-[2vh] bg-[#2E6C3D] overflow-hidden">
       {
         diceDetectionResult != null ?
           <DiceConfirmTab {...game_board_props} /> :
