@@ -1,3 +1,5 @@
+#!/bin/bash
+
 if [ -d ".venv/bin" ]; then
   . .venv/bin/activate
 else
@@ -17,5 +19,5 @@ fi
 (
   . var/env.sh
   cd front
-  PORT=$FRONTEND_PORT BACKEND_PORT=$BACKEND_PORT npm run start
+  PORT=$FRONTEND_PORT npm run start
 )
