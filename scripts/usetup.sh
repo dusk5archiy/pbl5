@@ -39,7 +39,7 @@ sudo snap install chromium
 sudo snap connect chromium:wayland
 sudo snap connect chromium:camera :camera
 sudo snap enable chromium
-sudo snap set chromium url=http://localhost:3000 --remote-debugging-port=9222
+sudo snap set chromium url=http://localhost:3000
 sudo snap set chromium daemon=true
 sudo snap start chromium
 
