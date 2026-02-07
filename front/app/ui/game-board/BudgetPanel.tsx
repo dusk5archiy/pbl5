@@ -28,7 +28,7 @@ export function BudgetPanel(props: GameBoardProps) {
                 style={{
                   "--text-color": gameState.logic.player[playerId].alive ? "#F3F4F6" : "#99a1af",
                 } as CSSProperties}
-                className="w-[50%] h-full flex items-center font-bold text-(--text-color) text-[15cqw] overflow-hidden"
+                className="flex-1 h-full flex items-center font-bold text-(--text-color) text-[15cqw] overflow-hidden"
               >{formatBudget(playerData.budget)}
               </div> :
               gameState.logic.player[playerId].alive ?
@@ -36,7 +36,7 @@ export function BudgetPanel(props: GameBoardProps) {
                   style={{
                     "--text-color": "#d1d5db",
                   } as CSSProperties}
-                  className="w-[50%] h-full flex items-center font-bold text-(--text-color) text-[15cqw] overflow-hidden"
+                  className="flex-1 h-full flex items-center font-bold text-(--text-color) text-[15cqw] overflow-hidden"
                 >
                   {`• ${formatBudget(gameState.ui.player[playerId].total)}`}
                 </div>
