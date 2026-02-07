@@ -7,7 +7,7 @@ export default function FailureScreen(error?: any) {
       {
         error != null &&
         <div className="w-full text-center text-[5vh] mt-[5vh] mb-[5vh]">
-          {String(error)}
+          {JSON.stringify(error)}
         </div>
       }
     </div>
