@@ -1,3 +1,5 @@
+import os
+
 if __name__ == "__main__":
     from colorama import Fore, init
 
@@ -20,6 +22,7 @@ if __name__ == "__main__":
 export FRONTEND_PORT={config.front.port}
 export NEXT_PUBLIC_BACKEND_PORT={config.back.port}
     """
+        os.makedirs("../var", exist_ok=True)
         with open("../var/env.sh", "w") as g:
             g.write(env_file_content)
 
