@@ -5,3 +5,4 @@ ultralytics
 fastapi
 uvicorn
 python-multipart
+colorama
