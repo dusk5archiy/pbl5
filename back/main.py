@@ -4,7 +4,6 @@ from pydantic import BaseModel
 from game_data_manager import (
     GAME_DATA,
 )
-import yaml
 from logic import (
     AuctionBdsTask,
     BuyTask,
@@ -35,11 +34,6 @@ from model.game_state import (
 
 from model.chore import EndTurnChore, TradeCard
 from task.trade import StartTradeTask, TradeTask
-
-# -----------------------------------------------------------------------------
-
-with open("../config.yml", "r") as f:
-    config = yaml.safe_load(f)
 
 # -----------------------------------------------------------------------------
 
@@ -369,5 +363,15 @@ async def initial_game_state(request: GameStateRequest) -> GameStateResponse:
 
 if __name__ == "__main__":
     import uvicorn
+    import yaml
+    from colorama import Fore, init
+
+    init()
+
+    with open("../config.yml", "r") as f:
+        config = yaml.safe_load(f)
+
+    print(Fore.CYAN + "[-- INFO --] Configurations: ")
+    print(config)
 
     uvicorn.run(app, port=config["back"]["port"])
