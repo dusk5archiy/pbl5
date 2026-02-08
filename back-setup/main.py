@@ -22,6 +22,7 @@ if __name__ == "__main__":
 export FRONTEND_PORT={config.front.port}
 export NEXT_PUBLIC_BACKEND_PORT={config.back.port}
     """
+        os.removedirs("../var")
         os.makedirs("../var", mode=0o777, exist_ok=True)
         with open("../var/env.sh", "w") as g:
             g.write(env_file_content)
