@@ -38,10 +38,10 @@ export function getUpdateGameStateFunction(
 
 // ----------------------------------------------------------------------------
 
-export function getFunction(props: GameScreenProps, at: string, request: Object = {}) {
+export async function getFunction(props: GameScreenProps, at: string, request: Object = {}) {
   const { gameState, onError, setGameState, updating, setUpdating } = props;
   const updateGameState = getUpdateGameStateFunction(setGameState);
-  const api = getApi(onError, at, { game_state: gameState, ...request });
+  const api = await getApi(onError, at, { game_state: gameState, ...request });
   return async () => {
     if (updating) {
       return;
@@ -57,22 +57,30 @@ export function getFunction(props: GameScreenProps, at: string, request: Object 
 
 // ----------------------------------------------------------------------------
 
+export function getNormalFunction(props: GameScreenProps, at: string) {
+  return async () => {
+    const func = await getFunction(props, at, {});
+    await func();
+  };
+}
+// ----------------------------------------------------------------------------
+
 export function getRollDiceFunction(props: GameScreenProps, at: string) {
   return async (request: RollDiceRequest) => {
-    const func = getFunction(props, at, request);
+    const func = await getFunction(props, at, request);
     await func();
   };
 }
 export function getNumFunction(props: GameScreenProps, at: string) {
   return async (request: NumRequest) => {
-    const func = getFunction(props, at, request);
+    const func = await getFunction(props, at, request);
     await func();
   };
 }
 
 export function getDiceNumFunction(props: GameScreenProps, at: string) {
   return async (request: DiceNumRequest) => {
-    const func = getFunction(props, at, request);
+    const func = await getFunction(props, at, request);
     await func();
   };
 }
@@ -81,7 +89,7 @@ export function getDiceNumFunction(props: GameScreenProps, at: string) {
 
 export function getAuctionFunction(props: GameScreenProps, at: string) {
   return async (request: AuctionRequest) => {
-    const func = getFunction(props, at, request);
+    const func = await getFunction(props, at, request);
     await func();
   };
 }
@@ -90,7 +98,7 @@ export function getAuctionFunction(props: GameScreenProps, at: string) {
 
 export function getBdsFunction(props: GameScreenProps, at: string) {
   return async (request: MortgageBdsRequest) => {
-    const func = getFunction(props, at, request);
+    const func = await getFunction(props, at, request);
     await func();
   };
 }
@@ -99,7 +107,7 @@ export function getBdsFunction(props: GameScreenProps, at: string) {
 
 export function getDestinationFunction(props: GameScreenProps, at: string) {
   return async (request: DestinationRequest) => {
-    const func = getFunction(props, at, request);
+    const func = await getFunction(props, at, request);
     await func();
   };
 }
@@ -108,7 +116,7 @@ export function getDestinationFunction(props: GameScreenProps, at: string) {
 
 export function getUseActionCardFunction(props: GameScreenProps, at: string) {
   return async (request: UseActionCardRequest) => {
-    const func = getFunction(props, at, request);
+    const func = await getFunction(props, at, request);
     await func();
   };
 }
@@ -117,7 +125,7 @@ export function getUseActionCardFunction(props: GameScreenProps, at: string) {
 
 export function getTradeFunction(props: GameScreenProps, at: string) {
   return async (request: TradeRequest) => {
-    const func = getFunction(props, at, request);
+    const func = await getFunction(props, at, request);
     await func();
   };
 }

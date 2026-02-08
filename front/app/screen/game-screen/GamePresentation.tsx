@@ -17,7 +17,6 @@ import {
 } from "@/app/ui/game-board/props";
 import { HandPanel } from "@/app/ui/game-board/HandPanel";
 import {
-  getFunction,
   getNumFunction,
   getAuctionFunction,
   getBdsFunction,
@@ -26,6 +25,7 @@ import {
   getTradeFunction,
   getDiceNumFunction,
   getRollDiceFunction,
+  getNormalFunction,
 } from "./funcs";
 import { LeftPanel } from "@/app/ui/game-board/LeftPanel";
 import { PromptModal } from "@/app/ui/game-board/PromptModal";
@@ -111,7 +111,7 @@ export function GamePresentation(props: GameScreenProps) {
 
   // Api's
   const rollDiceFunc = getRollDiceFunction(props, "/roll_dice");
-  const endTurnFunc = getFunction(props, "/end_turn");
+  const endTurnFunc = getNormalFunction(props, "/end_turn");
   const buyFunc = getNumFunction(props, "/buy");
   const payFunc = getNumFunction(props, "/pay");
   const receiveMortgageFunc = getNumFunction(props, "/receive_mortgage");
@@ -120,14 +120,14 @@ export function GamePresentation(props: GameScreenProps) {
   const downgradeBdsFunc = getBdsFunction(props, "/downgrade_bds");
   const mortgageBdsFunc = getBdsFunction(props, "/mortgage_bds");
   const unmortgageBdsFunc = getBdsFunction(props, "/unmortgage_bds");
-  const diceCFunc = getFunction(props, "/dice_c");
-  const diceXbFunc = getFunction(props, "/dice_xb");
-  const actionCardFunc = getFunction(props, "/action_card");
+  const diceCFunc = getNormalFunction(props, "/dice_c");
+  const diceXbFunc = getNormalFunction(props, "/dice_xb");
+  const actionCardFunc = getNormalFunction(props, "/action_card");
   const tripleDiceFunc = getDestinationFunction(props, "/triple_dice");
   const jailFunc = getDiceNumFunction(props, "/jail");
   const twoDiceRentUFunc = getRollDiceFunction(props, "/two_dice_rent_u");
   const useActionCardFunc = getUseActionCardFunction(props, "/use_action_card");
-  const startTradeFunc = getFunction(props, "/start_trade");
+  const startTradeFunc = getNormalFunction(props, "/start_trade");
   const tradeFunc = getTradeFunction(props, "/trade");
 
   // Video refs

@@ -1,3 +1,5 @@
+'use server'
+
 import { BACKEND_PREFIX } from "@/app/utils/env";
 
 // ----------------------------------------------------------------------------
@@ -14,7 +16,7 @@ export async function fetchBackend(request: any, at: string) {
 
 // ----------------------------------------------------------------------------
 
-export function getApi(onError: (_?: any) => void, at: string, request: Object) {
+export async function getApi(onError: (_?: any) => void, at: string, request: Object) {
   return async () => {
     try {
       const response = await fetchBackend(request, at);
@@ -22,7 +24,9 @@ export function getApi(onError: (_?: any) => void, at: string, request: Object) 
       return await response.json();
     }
     catch (error) {
+      console.log(error);
       onError(error);
+      throw error;
     }
   };
 }
