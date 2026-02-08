@@ -13,7 +13,7 @@ import { GameCamera } from "./GameCamera";
 export function PromptModal(props: GameBoardProps) {
   const {
     gameState, buyFunc, auctionFunc, payFunc,
-    receiveMortgageFunc, tradeFunc, diceDetection
+    receiveMortgageFunc, tradeFunc, diceDetection, diceDetectionResult
   } = props;
 
   const roll_dice_chore = gameState.current_chore.roll_dice;
@@ -28,7 +28,7 @@ export function PromptModal(props: GameBoardProps) {
         <DiceDock {...props} />
       </div>
       <div className="@container w-full h-[calc(100%-18cqw)] flex rounded bg-emerald-200">
-        {(roll_dice_chore != null || jail_chore != null || two_dice_rent_u != null) && diceDetection && <GameCamera {...props} />}
+        {(roll_dice_chore != null || jail_chore != null || two_dice_rent_u != null) && diceDetection && diceDetectionResult == null && <GameCamera {...props} />}
         {buy_chore != null && <BuyModal {...{ ...props, func: buyFunc, chore: buy_chore }} />}
         {gameState.current_chore.auction_bds != null && <AuctionModal {...{ ...props, func: auctionFunc, chore: gameState.current_chore.auction_bds }} />}
         {gameState.current_chore.pay != null && <PayModal {...{ ...props, func: payFunc, chore: gameState.current_chore.pay }} />}
