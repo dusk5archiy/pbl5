@@ -26,6 +26,8 @@ export NEXT_PUBLIC_BACKEND_PORT={config.back.port}
         with open("../var/env.sh", "w") as g:
             g.write(env_file_content)
 
+        os.chmod("../var/env.sh", mode=0o755)
+
         print(Fore.GREEN + "[-- DONE --] Created startup env successfully.")
 
     except Exception as e:
