@@ -32,3 +32,4 @@ export NEXT_PUBLIC_BACKEND_PORT={config.back.port}
 
     except Exception as e:
         print(Fore.RED + f"[-- FAIL --] Fail to validate configuration: {e}")
+        exit(1)
