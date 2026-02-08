@@ -16,17 +16,15 @@ export async function fetchBackend(request: any, at: string) {
 
 // ----------------------------------------------------------------------------
 
-export async function getApi(onError: () => void, at: string, request: Object) {
+export async function getApi(at: string, request: Object) {
   return async () => {
     try {
       const response = await fetchBackend(request, at);
-      if (!response.ok) onError();
-      return await response.json();
+      return response;
     }
     catch (error) {
       console.log("[-- ERROR --] Error:")
       console.log(error);
-      onError();
       throw error;
     }
   };
