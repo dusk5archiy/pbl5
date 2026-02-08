@@ -107,6 +107,13 @@ export function GamePresentation(props: GameScreenProps) {
       focusBds(select_bds);
     }
 
+    if (diceDetection) {
+      if (diceDetectionResult != null) {
+        setEncodedImage(null);
+        setDiceDetectionResult(null);
+      }
+    }
+
   }, [gameState]);
 
   // Api's
@@ -159,7 +166,6 @@ export function GamePresentation(props: GameScreenProps) {
         const formData = new FormData();
         formData.append("file", blob, "capture.jpg");
         try {
-          console.log(formData);
           const response = await fetch("http://192.168.137.1:8000/detect", { method: 'POST', body: formData });
           const data = await response.json();
           setDiceDetectionResult(data);

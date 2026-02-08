@@ -48,8 +48,6 @@ export function DiceConfirmTab(props: GameBoardProps) {
               if (diceDetectionResult?.scores.length != 2) {
                 return;
               }
-              setEncodedImage(null);
-              setDiceDetectionResult(null);
               const dice_1 = `${diceDetectionResult.scores[0]}`;
               const dice_2 = `${diceDetectionResult.scores[1]}`;
               sendRollDice({ dice_1: dice_1, dice_2: dice_2 });

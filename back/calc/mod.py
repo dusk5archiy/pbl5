@@ -282,7 +282,7 @@ def mod_receive_mortgage(game_state: GameState, player: str, bds: str):
 def mod_move(game_state: GameState):
     game_state.effect.can_trade = False
     game_state.effect.bds_enabled = False
-    game_state.effect.wait_ms = 100
+    game_state.effect.wait_ms = 0
     return game_state
 
 

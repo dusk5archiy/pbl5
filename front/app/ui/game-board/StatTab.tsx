@@ -25,7 +25,6 @@ export function StatTab(props: GameBoardProps) {
   };
 
   const selectTrack = (track: number) => {
-    console.log(gameData.bds_selector);
     const group = Object.keys(gameData.bds_selector[selectedBoard][track])[0];
     const bds = gameData.bds_selector[selectedBoard][track][group][0];
     focusBds(bds);
