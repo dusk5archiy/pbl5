@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { fetchBackend } from "@/app/utils/api";
 import { GameState, GameData } from "@/app/model/game";
+import { callApi } from "@/app/utils/api";
 
 // ----------------------------------------------------------------------------
 
@@ -26,9 +26,7 @@ function getApiFunction(props: LoadingGameScreenProps) {
       const request = {
         players: players, version: version
       };
-      const response = await fetchBackend(request, '/initial_game_state');
-      if (!response.ok) onFailure();
-      const data: InitGameResponse = await response.json();
+      const data: InitGameResponse = await callApi('/initial_game_state', request);
       setGameState(data.game_state);
       setGameData(data.game_data);
       onSuccess();

@@ -1,5 +1,5 @@
 import { GameState } from "@/app/model/game";
-import { getApi } from '@/app/utils/api';
+import { callApi } from '@/app/utils/api';
 import {
   AuctionRequest,
   DestinationRequest,
@@ -41,17 +41,13 @@ export function getUpdateGameStateFunction(
 export async function getFunction(props: GameScreenProps, at: string, request: Object = {}) {
   const { gameState, onError, setGameState, updating, setUpdating } = props;
   const updateGameState = getUpdateGameStateFunction(setGameState);
-  const api = await getApi(at, { game_state: gameState, ...request });
   return async () => {
     if (updating) {
       return;
     }
     setUpdating(true);
     try {
-      const response = await api()
-      if (!response.ok) onError();
-      const data = await response.json();
-      if (data == null) return;
+      const data = await callApi(at, { game_state: gameState, ...request });
       const game_states = data.game_states as GameState[];
       updateGameState(game_states);
     } catch {
