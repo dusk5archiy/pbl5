@@ -56,7 +56,21 @@ def mod_release(
 ) -> TaskResult:
     new_task = None
     game_state.current_chore = CurrentChore()
+    game_state.logic.viewing_player = None
+    game_state.effect.select_bds = None
+    game_state.effect.board = None
+    game_data = GAME_DATA[game_state.version]
+    FRONTEND_GAME_DATA = game_data.frontend_game_data
+    player = game_state.logic.current_player
     while True:
+        at = game_state.logic.player[player].at
+        space = (
+            FRONTEND_GAME_DATA.space[at]
+            if at in FRONTEND_GAME_DATA.space
+            else FRONTEND_GAME_DATA.special_space[at]
+        )
+
+        board = space.board
         if then is None:
             then = game_state.chore
         if len(chores := then.move_steps) > 0:
@@ -66,6 +80,12 @@ def mod_release(
             game_state = MoveStepsTask.prepare(game_state)
             new_task = MoveStepsTask.from_steps(player=chore.player, steps=chore.steps)
             break
+
+        if len(chores := then.goto_jail) > 0:
+            chore = chores.pop(0)
+            then = chore.then
+            game_state = mod_goto_jail(game_state, player=chore.player)
+            continue
 
         if len(chores := then.get_out_of_jail) > 0:
             chore = chores.pop(0)
@@ -181,9 +201,6 @@ def mod_release(
             break
 
         game_state = mod_reset_card_effects(game_state)
-        game_state.logic.viewing_player = None
-        game_state.effect.select_bds = None
-        player = game_state.logic.current_player
         if game_state.logic.player[player].alive:
             game_state.effect.bds_enabled = True
             game_state.effect.can_trade = True
@@ -193,14 +210,15 @@ def mod_release(
 
         if len(chores := then.jail) > 0:
             game_state.current_chore.jail = chores[0]
+            game_state.effect.board = board
         elif len(chores := then.roll_dice) > 0:
             game_state.current_chore.roll_dice = chores[0]
+            game_state.effect.board = board
         elif len(chores := then.dice_c) > 0:
             game_state.current_chore.dice_c = chores[0]
         elif len(chores := then.dice_xb) > 0:
             game_state.current_chore.dice_xb = chores[0]
         else:
-            game_state.effect.board = None
             game_state.current_chore.end_turn = EndTurnChore(
                 player=player,
                 next_player=(game_state.logic.player[player].double_stack in [0, 3]),
@@ -360,12 +378,18 @@ def mod_pay(
 def mod_goto_jail(game_state: GameState, player: str):
     if game_state.logic.current_player == player:
         game_state = mod_reset(game_state)
+
+    game_data = GAME_DATA[game_state.version]
+    FRONTEND_GAME_DATA = game_data.frontend_game_data
+
     game_state.chore.roll_dice.clear()
     player_state = game_state.logic.player[player]
     player_state.double_stack = 0
     player_state.jail_stack = 1
     player_state.at = "OT"
     game_state.logic.player[player] = player_state
+    if player == game_state.logic.current_player:
+        game_state.effect.board = FRONTEND_GAME_DATA.special_space["OT"].board
     return game_state
 
 

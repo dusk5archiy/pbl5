@@ -44,10 +44,9 @@ class DiceCTask(Task):
             return criteria(game_state, space)
 
         assert (steps := game_state.logic.steps) is not None
-        task = MoveNearestTask(
+        task = MoveNearestTask.create(
             original_space=original_space,
-            change_track_on_cau=change_track_on_cau_condition(steps),
-            change_track_on_r=change_track_on_r_condition(steps),
+            steps=steps,
             player=game_state.logic.current_player,
             check_last_space=check_last_space,
         )

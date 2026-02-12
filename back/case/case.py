@@ -2,11 +2,10 @@ from calc.calc import update_total_ui
 from game_data_manager import GAME_DATA
 from model.game_state import GameState, Task
 from model.game_data import FrontendGameData
-from model.chore import PayChore
+from model.chore import PayChore, GotoJailChore
 from calc.mod import (
     mod_action_card,
     mod_release,
-    mod_goto_jail,
     mod_buy,
     mod_rent,
 )
@@ -84,7 +83,7 @@ def case_land_on_RA(cw: CaseWrapper) -> CaseResult:
 def case_land_VT(cw: CaseWrapper) -> CaseResult:
     if cw.new_space != "VT":
         return cw.default
-    cw.game_state = mod_goto_jail(cw.game_state, cw.player)
+    cw.game_state.chore.goto_jail.append(GotoJailChore(player=cw.cplayer))
     cw.game_state, _ = mod_release(cw.game_state)
     return cw.game_state, None, True
 

@@ -43,6 +43,7 @@ export interface Action {
 export interface ActionCard {
   name: string;
   content: string;
+  foot: string;
 }
 
 // ----------------------------------------------------------------------------

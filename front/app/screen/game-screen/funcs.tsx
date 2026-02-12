@@ -22,6 +22,7 @@ export function getUpdateGameStateFunction(
     const len = game_states.length;
     const iter = () => {
       const game_state = game_states[idx];
+      console.log(game_state);
       setGameState(game_state);
       const delay = game_states[idx].effect.wait_ms;
       idx++;

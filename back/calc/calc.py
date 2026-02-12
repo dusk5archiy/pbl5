@@ -25,9 +25,9 @@ def calc_new_space(
     cau_s = ["CAU-1", "CAU-2"]
     path = BACKEND_GAME_DATA.path_r if reversed else BACKEND_GAME_DATA.path
     new_space = path[current_space]
-    if (change_track_on_cau) and current_space in cau_s:
+    if change_track_on_cau and current_space in cau_s:
         idx = cau_s.index(current_space)
-        new_space = cau_s[(idx + 1) % len(cau_s)]
+        new_space = path[cau_s[(idx + 1) % len(cau_s)]]
     elif change_track_on_r:
         for this in BACKEND_GAME_DATA.bds_group["R"].bds:
             if (that := this + "A") in FRONTEND_GAME_DATA.space:
@@ -100,7 +100,14 @@ def update_bds_ui(
             ui_bds.level = level + len(owner_owned_bds)
         else:
             ui_bds.level = level
-        if owner == viewing_player:
+
+        if not game_state.effect.bds_enabled:
+            ui_bds.can_upgrade = False
+            ui_bds.can_downgrade = False
+            ui_bds.can_mortgage = False
+            ui_bds.can_unmortgage = False
+
+        elif owner == viewing_player:
             ui_bds.upgrade_amount = bds.upgrade
             ui_bds.downgrade_amount = bds.downgrade
             ui_bds.mortgage_amount = bds.mortgage
@@ -150,12 +157,6 @@ def update_bds_ui(
                     or (level == 6 and game_state.logic.build.hotel >= 1)
                 ) and all(n in [level - 1, level] for n in owned_bds_level):
                     ui_bds.can_downgrade = True
-
-        if not game_state.effect.bds_enabled:
-            ui_bds.can_upgrade = False
-            ui_bds.can_downgrade = False
-            ui_bds.can_mortgage = False
-            ui_bds.can_unmortgage = False
 
         if trade_chore is not None:
             player_1, player_2 = trade_chore.player_1, trade_chore.player_2

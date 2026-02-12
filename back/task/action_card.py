@@ -104,6 +104,13 @@ class ActionCardTask(Task):
             )
             return game_state, task
 
+        if card == "#SNTC":
+            game_state = MoveStepsTask.prepare(game_state)
+            task = MoveStepsTask.from_steps(
+                player=player, steps=3, change_track=False, reversed=False
+            )
+            return game_state, task
+
         if card == "#U" and info.values is not None:
             game_state.logic.u_multiplier = int(info.values["times"])
 

@@ -182,20 +182,274 @@
     },
     "group": {
       "KV": {
-        "name": "Khí vận",
-        "cards": {}
+        "name": "Khí Vận",
+        "cards": {
+          "-GDCP": {
+            "name": "Đến ô Giao Dịch Cổ Phần",
+            "content": "Nếu bạn băng qua ô Góc Trả Tiền, lãnh lương từ Ngân Hàng.",
+            "move": "GDCP",
+            "foot": "Dùng thẻ ngay lập tức.",
+            "copies": 6
+          },
+          "#VT": {
+            "name": "Vào Tù",
+            "content": "Đi thẳng vào tù\nKhông đi ngang ô Góc Trả Tiền.\nKhông được nhận tiền.",
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "TDRT": {
+            "name": "Tự Do Ra Tù",
+            "foot": "Giữ lại đến khi cần.\nDùng bất kì lúc nào trong lượt.\nThẻ này có thể được đem bán.",
+            "keep": true
+          }
+        }
       },
       "CH": {
-        "name": "Cơ hội",
-        "cards": {}
+        "name": "Cơ Hội",
+        "cards": {
+          "-GDCP": {
+            "move": "GDCP",
+            "name": "Đến ô Giao Dịch Cổ Phần",
+            "content": "Nếu bạn băng qua ô Góc Trả Tiền, lãnh lương từ Ngân Hàng.",
+            "foot": "Dùng thẻ ngay lập tức.",
+            "copies": 6
+          },
+          "#VT": {
+            "name": "Vào Tù",
+            "content": "Đi thẳng vào tù\nKhông đi ngang ô Góc Trả Tiền.\nKhông được nhận tiền.",
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "TDRT": {
+            "name": "Tự Do Ra Tù",
+            "foot": "Giữ lại đến khi cần.\nDùng bất kì lúc nào trong lượt.\nThẻ này có thể được đem bán.",
+            "keep": true
+          },
+          "+ThuongKiNghi": {
+            "name": "Thưởng Kì Nghỉ",
+            "content": "Lãnh {$amount} từ Ngân Hàng.",
+            "collect": 300,
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "+DaoHanChoVay": {
+            "name": "Đáo Hạn Cho Vay",
+            "content": "Lãnh {$amount} từ Ngân Hàng.",
+            "collect": 300,
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "+NhaDauTuMoi": {
+            "name": "Nhà Đầu Tư Mới",
+            "content": "Lãnh {$amount} từ Ngân Hàng.",
+            "collect": 400,
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "+NhaDauTuRutVon": {
+            "name": "Nhà Đầu Tư Rút Vốn",
+            "content": "Trả {$amount} cho Ngân Hàng.",
+            "pay": 250,
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "#DBLGD": {
+            "name": "Được Bầu Làm Giám Đốc",
+            "content": "Trả mỗi người {$price}",
+            "values": {
+              "$price": 100
+            },
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "#DL3B": {
+            "name": "Đi lùi 3 bước",
+            "content": "Không chuyển tầng.",
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "#SNTC": {
+            "name": "Suy nghĩ tích cực",
+            "content": "Tiến lên 3 bước.\nKhông chuyển tầng.",
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "-3C2": {
+            "name": "Đến ô {name} ({id})",
+            "move": "3C2",
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "-3B1": {
+            "name": "Đến ô {name} ({id})",
+            "move": "3B1",
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "-7B3": {
+            "name": "Đến ô {name} ({id})",
+            "move": "7B3",
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "-7A4": {
+            "name": "Đến ô {name} ({id})",
+            "move": "7A4",
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "-1E2": {
+            "name": "Đến ô {name} ({id})",
+            "move": "1E2",
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "-1C1": {
+            "name": "Đến ô {name} ({id})",
+            "move": "1C1",
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "-1F3": {
+            "name": "Đến ô {name} ({id})",
+            "move": "1F3",
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "-1D2": {
+            "name": "Đến ô {name} ({id})",
+            "move": "1D2",
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "-1G2": {
+            "name": "Đến ô {name} ({id})",
+            "move": "1G2",
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "-3D4": {
+            "name": "Đến ô {name} ({id})",
+            "move": "3D4",
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "-1B5": {
+            "name": "Đến ô {name} ({id})",
+            "move": "1B5",
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "-2H3": {
+            "name": "Đến ô {name} ({id})",
+            "move": "2H3",
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "-1R1": {
+            "name": "Đến ô {name} ({id})",
+            "move": "1R1",
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "-2E3": {
+            "name": "Đến ô {name} ({id})",
+            "move": "2E3",
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "-2C1": {
+            "name": "Đến ô {name} ({id})",
+            "move": "2C1",
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "-4B4": {
+            "name": "Đến ô {name} ({id})",
+            "move": "4B4",
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "-5E3": {
+            "name": "Đến ô {name} ({id})",
+            "move": "5E3",
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "-6D5": {
+            "name": "Đến ô {name} ({id})",
+            "move": "6D5",
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "-6E1": {
+            "name": "Đến ô {name} ({id})",
+            "move": "6E1",
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "-6F1": {
+            "name": "Đến ô {name} ({id})",
+            "move": "6F1",
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "-6R2": {
+            "name": "Đến ô {name} ({id})",
+            "move": "6R2",
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "-5A4": {
+            "name": "Đến ô {name} ({id})",
+            "move": "5A4",
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "-5C4": {
+            "name": "Đến ô {name} ({id})",
+            "move": "5C4",
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "-5F2": {
+            "name": "Đến ô {name} ({id})",
+            "move": "5F2",
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "-5J4": {
+            "name": "Đến ô {name} ({id})",
+            "move": "5J4",
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "-2B2": {
+            "name": "Đến ô {name} ({id})",
+            "move": "2B2",
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "-2F4": {
+            "name": "Đến ô {name} ({id})",
+            "move": "2F4",
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "-5MT2": {
+            "name": "Đến ô {name} ({id})",
+            "move": "5MT2",
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "#R": {
+            "name": "Đến ô Đường Sắt gần nhất",
+            "content": "Trả tiền thuê gấp đôi\ncho người sở hữu,\nhoặc mua nếu còn trống",
+            "foot": "Dùng thẻ ngay lập tức.",
+            "copies": 2
+          },
+          "#U": {
+            "name": "Đến ô CÔNG TY gần nhất",
+            "content": "Có thể mua nếu chưa ai sở hữu.\nNếu đã có người sở hữu thì thảy\nhai xúc xắc và trả chờ người đó số tiền\n{times} lần số điểm thảy được.",
+            "values": {
+              "times": 80
+            },
+            "foot": "Dùng thẻ ngay lập tức."
+          }
+        }
       },
       "BC": {
-        "name": "Bất chính",
-        "cards": {}
+        "name": "Bất Chính",
+        "cards": {
+          "#VT": {
+            "name": "Vào Tù",
+            "content": "Đi thẳng vào tù\nKhông đi ngang ô Góc Trả Tiền.\nKhông được nhận tiền.",
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "TDRT": {
+            "name": "Tự Do Ra Tù",
+            "foot": "Giữ lại đến khi cần.\nDùng bất kì lúc nào trong lượt.\nThẻ này có thể được đem bán.",
+            "keep": true
+          }
+        }
       },
       "TX": {
-        "name": "Tiểu xảo",
-        "cards": {}
+        "name": "Tiểu Xảo",
+        "cards": {
+          "#VT": {
+            "name": "Vào Tù",
+            "content": "Đi thẳng vào tù\nKhông đi ngang ô Góc Trả Tiền.\nKhông được nhận tiền.",
+            "foot": "Dùng thẻ ngay lập tức."
+          },
+          "TDRT": {
+            "name": "Tự Do Ra Tù",
+            "foot": "Giữ lại đến khi cần.\nDùng bất kì lúc nào trong lượt.\nThẻ này có thể được đem bán.",
+            "keep": true
+          }
+        }
       }
     },
     "label": {
@@ -204,7 +458,8 @@
       "CAU-2": "Cầu Vượt",
       "VT": "Vào Tù",
       "TTN": "Thuế\nThu\nNhập",
-      "TXX": "Thuế\nXa Xỉ"
+      "TXX": "Thuế\nXa Xỉ",
+      "GDCP": "Giao Dịch\nCổ Phần"
     },
     "special_label": {
       "OT": "Ở tù"

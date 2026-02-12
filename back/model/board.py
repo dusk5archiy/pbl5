@@ -253,6 +253,7 @@ class ActionSpaceInputModel(BaseModel):
 class ActionCardInputModel(BaseModel):
     name: str
     content: str = ""
+    foot: str = ""
     values: dict[str, str | int] | None = None
     collect: int | None = None
     pay: int | None = None
@@ -264,6 +265,7 @@ class ActionCardInputModel(BaseModel):
 class ActionCard(BaseModel):
     name: str
     content: str
+    foot: str
 
 
 class ActionGroupInput(BaseModel):

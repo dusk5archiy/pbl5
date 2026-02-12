@@ -103,10 +103,12 @@ def fetch_game_data(version: str = "1"):
 
             name = info.name.format(**vals_for_name)
             content = info.content.format(**vals_for_name)
+            foot = info.foot
 
             game_data_action_card[group][card_id] = ActionCard(
                 name=name,
                 content=content,
+                foot=foot,
             )
 
     frontend_game_data = FrontendGameData(

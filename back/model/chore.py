@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 class Chore(BaseModel):
     get_out_of_jail: list["GetOutOfJailChore"] = []
+    goto_jail: list["GotoJailChore"] = []
     move_steps: list["MoveStepsChore"] = []
 
     buy: list["BuyChore"] = []
@@ -133,6 +134,10 @@ class MoveStepsChore(BaseChore):
 
 
 # -----------------------------------------------------------------------------
+
+
+class GotoJailChore(BaseChore):
+    player: str
 
 
 class GetOutOfJailChore(BaseChore):

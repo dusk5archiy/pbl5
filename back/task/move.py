@@ -125,7 +125,7 @@ class MoveStepsTask(Task):
                 player=self.player,
                 reversed=self.reversed,
             )
-            game_state.effect.wait_ms = 100
+            game_state.effect.wait_ms = 50
             return game_state, task
 
         task = LandTask(
@@ -227,6 +227,10 @@ class MoveNearestTask(Task):
             if out:
                 return game_state, task
 
+        if new_space == self.original_space:
+            game_state, task = mod_release(game_state)
+            return game_state, task
+
         if not self.check_last_space(new_space):
             task = MoveNearestTask(
                 original_space=self.original_space,
@@ -236,11 +240,7 @@ class MoveNearestTask(Task):
                 check_last_space=self.check_last_space,
                 reversed=self.reversed,
             )
-            game_state.effect.wait_ms = 100
-            return game_state, task
-
-        elif new_space == self.original_space:
-            game_state, task = mod_release(game_state)
+            game_state.effect.wait_ms = 50
             return game_state, task
 
         task = LandTask(
@@ -339,7 +339,7 @@ class MoveToSpaceTask(Task):
                 destination=self.destination,
                 player=self.player,
             )
-            game_state.effect.wait_ms = 100
+            game_state.effect.wait_ms = 50
             return game_state, task
 
         task = LandTask(

@@ -121,6 +121,7 @@ class BuyTask(Task):
     def __call__(self, game_state: GameState) -> TaskResult:
         assert (chore := game_state.current_chore.buy) is not None
         game_state.chore.buy.pop(0)
+        game_state.effect.board = None
         bds_id = chore.bds
         price = chore.price
         player = chore.player
@@ -308,6 +309,7 @@ class PayTask(Task):
     def __call__(self, game_state: GameState) -> TaskResult:
         assert (chore := game_state.current_chore.pay) is not None
         game_state.chore.pay.pop(0)
+        game_state.effect.board = None
         assert (player := chore.player) is not None
         then = chore.then
         amount = chore.amount

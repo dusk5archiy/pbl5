@@ -141,8 +141,7 @@
             "pay": 15
           },
           "#DL3B": {
-            "name": "Đi lùi 3 bước",
-            "content": ""
+            "name": "Đi lùi 3 bước"
           },
           "-E3": {
             "name": "Đến ô {name} ({id})",
