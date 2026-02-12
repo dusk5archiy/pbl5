@@ -14,7 +14,7 @@ export function BuyModal(props: BuyModalProps) {
   const { gameState, func: buyFunc, chore } = props;
   const { bds, price, player } = chore;
   const can_buy = gameState.logic.player[player].budget >= price;
-  const buttonClassName = "p-[7cqw] rounded disabled:text-white disabled:bg-gray-300 border-2 border-white";
+  const buttonClassName = "px-[7cqw] py-[5cqw] rounded disabled:text-white disabled:bg-gray-300 border-2 border-white";
   return (
     <div className="w-full h-full flex flex-col gap-[1.5vw] justify-center">
       <div className="w-full flex justify-center font-bold whitespace-nowrap text-[4cqw]">Bạn có muốn mua BĐS {bds} với giá {formatBudget(price)}?</div>

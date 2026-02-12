@@ -27,7 +27,7 @@ export function PromptModal(props: GameBoardProps) {
       <div className="w-full h-[18cqw] flex">
         <DiceDock {...props} />
       </div>
-      <div className="@container w-full h-[calc(100%-18cqw)] flex rounded bg-emerald-200">
+      <div className="@container w-full h-[calc(100%-18cqw)] flex rounded bg-emerald-200 overflow-auto">
         {(roll_dice_chore != null || jail_chore != null || two_dice_rent_u != null) && diceDetection && <GameCamera {...props} />}
         {buy_chore != null && <BuyModal {...{ ...props, func: buyFunc, chore: buy_chore }} />}
         {gameState.current_chore.auction_bds != null && <AuctionModal {...{ ...props, func: auctionFunc, chore: gameState.current_chore.auction_bds }} />}

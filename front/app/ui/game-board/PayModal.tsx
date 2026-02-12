@@ -16,7 +16,7 @@ export function PayModal(props: PayModalProps) {
   const { gameState, func, chore } = props;
   const { amount, player, receiver } = chore;
   const player_budget = gameState.logic.player[player].budget;
-  const buttonClassName = "p-[7cqw] rounded disabled:text-white disabled:bg-gray-300 border-2 border-white";
+  const buttonClassName = "px-[7cqw] py-[3cqw] rounded disabled:text-white disabled:bg-gray-300 border-2 border-white";
   let text = `Trả ${formatBudget(amount)}`;
 
   if (chore.bds != null) {

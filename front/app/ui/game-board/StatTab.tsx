@@ -1,5 +1,6 @@
 import { GameBoardProps } from "./props";
 import { COLOR_UI_INFO } from "@/app/utils/pallete";
+import { formatBudget } from "@/app/utils/format";
 
 export function StatTab(props: GameBoardProps) {
   const {
@@ -13,7 +14,7 @@ export function StatTab(props: GameBoardProps) {
 
   const selector_class_name = "flex-1 max-h-full flex flex-col overflow-auto gap-[0.5vw] pr-[0.25vw]";
   const selector_class_name_2 = "flex-1 flex w-full h-[5vh] gap-[0.5vw] pr-[0.25vw]";
-  const option_class_name = "w-full flex justify-center rounded whitespace-nowrap text-[5cqh] active:bg-gray-400 py-[2vw]";
+  const option_class_name = "w-full flex flex-col justify-center rounded text-[5cqh] active:bg-gray-400 py-[2vw]";
   const active_color = COLOR_UI_INFO[gameState.logic.viewing_player || gameState.logic.current_player].lightColorCode;
   const inactive_color = "lightgray";
 
@@ -40,21 +41,33 @@ export function StatTab(props: GameBoardProps) {
                 <div key={group} className={selector_class_name_2}>
                   {
                     gameData.bds_selector[selectedBoard][selectedTrack][group].map(
-                      (bds) => (
-                        <button key={bds}
-                          style={
-                            {
-                              "--bg-color": gameState.logic.bds[bds].owner != null ? COLOR_UI_INFO[gameState.logic.bds[bds].owner].lightColorCode : inactive_color
-                            } as React.CSSProperties
-                          }
-                          className={option_class_name + " bg-(--bg-color)"}
-                          onClick={() => {
-                            focusBds(bds);
-                            setPropertyTab(0);
-                          }}
-                        >{bds}
-                        </button>
-                      )
+                      (bds) => {
+
+                        const price = gameData.bds[bds].price;
+                        let text = `${bds}\n${formatBudget(price)}`;
+                        const owner = gameState.logic.bds[bds].owner;
+                        const level = gameState.ui.bds[bds].level;
+                        if (level != null && owner != null) {
+                          text = `${bds}\nLv.${level >= 0 ? level : "-"}`;
+                        }
+                        return (
+                          <button key={bds}
+                            style={
+                              {
+                                "--bg-color": gameState.logic.bds[bds].owner != null ? COLOR_UI_INFO[gameState.logic.bds[bds].owner].lightColorCode : inactive_color
+                              } as React.CSSProperties
+                            }
+                            className={option_class_name + " bg-(--bg-color)"}
+                            onClick={() => {
+                              focusBds(bds);
+                              setPropertyTab(0);
+                            }}
+                          >{text.split("\n").map(
+                            (line, i) => <span key={i}>{line}</span>
+                          )}
+                          </button>
+                        )
+                      }
                     )
                   }
                 </div>
