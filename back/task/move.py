@@ -41,6 +41,7 @@ class MoveStepsTask(Task):
     change_track_on_r: bool
     steps_left: int
     reversed: bool = False
+    highest_salary: bool = False
 
     @classmethod
     def from_steps(
@@ -51,6 +52,7 @@ class MoveStepsTask(Task):
         change_track_on_cau: bool | None = None,
         change_track_on_r: bool | None = None,
         reversed: bool = False,
+        highest_salary: bool = False,
     ):
         task = MoveStepsTask(
             steps_left=steps,
@@ -66,6 +68,7 @@ class MoveStepsTask(Task):
             if change_track_on_r is not None
             else change_track_on_r_condition(steps),
             reversed=reversed,
+            highest_salary=highest_salary,
         )
 
         return task
@@ -104,12 +107,15 @@ class MoveStepsTask(Task):
         game_state.logic.player[self.player].at = new_space
         game_state.effect.board = new_board
 
+        is_last_space = check_last_space()
+
         cw = CaseWrapper(
             game_state=game_state,
             new_space=new_space,
             player=self.player,
             steps=game_state.logic.steps,
             FRONTEND_GAME_DATA=FRONTEND_GAME_DATA,
+            is_last_space=is_last_space,
         )
 
         for c in CASE_PASS:
@@ -117,13 +123,14 @@ class MoveStepsTask(Task):
             if out:
                 return game_state, task
 
-        if not check_last_space():
+        if not is_last_space:
             task = MoveStepsTask(
                 steps_left=steps_left_next,
                 change_track_on_cau=self.change_track_on_cau,
                 change_track_on_r=self.change_track_on_r,
                 player=self.player,
                 reversed=self.reversed,
+                highest_salary=self.highest_salary,
             )
             game_state.effect.wait_ms = 50
             return game_state, task
@@ -147,6 +154,7 @@ class MoveNearestTask(Task):
     player: str
     check_last_space: Callable[[str], bool]
     reversed: bool = False
+    highest_salary: bool = False
 
     @classmethod
     def create(
@@ -159,6 +167,7 @@ class MoveNearestTask(Task):
         change_track_on_cau: bool | None = None,
         change_track_on_r: bool | None = None,
         reversed: bool = False,
+        highest_salary: bool = False,
     ):
         task = MoveNearestTask(
             player=player,
@@ -179,6 +188,7 @@ class MoveNearestTask(Task):
             if steps is not None
             else False,
             reversed=reversed,
+            highest_salary=highest_salary,
         )
 
         return task
@@ -215,11 +225,15 @@ class MoveNearestTask(Task):
         game_state.logic.player[self.player].at = new_space
         game_state.effect.board = new_board
 
+        is_last_space = self.check_last_space(new_space)
+
         cw = CaseWrapper(
             FRONTEND_GAME_DATA=FRONTEND_GAME_DATA,
             game_state=game_state,
             new_space=new_space,
             player=self.player,
+            is_last_space=is_last_space,
+            highest_salary=self.highest_salary,
         )
 
         for c in CASE_PASS:
@@ -231,7 +245,7 @@ class MoveNearestTask(Task):
             game_state, task = mod_release(game_state)
             return game_state, task
 
-        if not self.check_last_space(new_space):
+        if not is_last_space:
             task = MoveNearestTask(
                 original_space=self.original_space,
                 change_track_on_cau=self.change_track_on_cau,
@@ -257,6 +271,7 @@ class MoveNearestTask(Task):
 
 class MoveToSpaceTask(Task):
     destination: str
+    highest_salary: bool = False
     player: str
 
     @classmethod
@@ -322,11 +337,15 @@ class MoveToSpaceTask(Task):
         new_board = FRONTEND_GAME_DATA.space[new_space].board
         game_state.effect.board = new_board
 
+        is_last_space = check_last_space(new_space)
+
         cw = CaseWrapper(
             FRONTEND_GAME_DATA=FRONTEND_GAME_DATA,
             game_state=game_state,
             new_space=new_space,
             player=self.player,
+            is_last_space=is_last_space,
+            highest_salary=self.highest_salary,
         )
 
         for c in CASE_PASS:
@@ -334,7 +353,7 @@ class MoveToSpaceTask(Task):
             if out:
                 return game_state, task
 
-        if not check_last_space(new_space):
+        if not is_last_space:
             task = MoveToSpaceTask(
                 destination=self.destination,
                 player=self.player,

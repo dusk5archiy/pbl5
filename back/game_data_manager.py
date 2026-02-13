@@ -69,15 +69,16 @@ def fetch_game_data(version: str = "1"):
     backend_action_cards = action_validated.export_action_cards()
     backend_logic = BackendLogic(**game_json["logic"])
     constants = backend_logic.constants
+    constants = {
+        key: format_budget(value) if key.startswith("$") else value
+        for key, value in constants.items()
+    }
 
     game_data_action_card = {group: {} for group in backend_action_cards}
     for group in backend_action_cards:
         for card_id in backend_action_cards[group]:
             info = backend_action_cards[group][card_id]
-            values = info.values
-
-            if values is not None:
-                constants = values | constants
+            values = info.values or {}
 
             if info.move is not None:
                 vals = {}
@@ -86,20 +87,22 @@ def fetch_game_data(version: str = "1"):
                     vals["name"] = game_data_bds[info.move].name
                 elif info.move in action_validated.label:
                     vals["name"] = action_validated.label[info.move]
-                constants = constants | vals
+                values = values | vals
 
             if info.collect is not None:
                 vals = {"$amount": info.collect}
-                constants = constants | vals
+                values = values | vals
 
             if info.pay is not None:
                 vals = {"$amount": info.pay}
-                constants = constants | vals
+                values = values | vals
 
-            vals_for_name = {
+            values = {
                 key: format_budget(value) if key.startswith("$") else value
-                for key, value in constants.items()
+                for key, value in values.items()
             }
+
+            vals_for_name = constants | values
 
             name = info.name.format(**vals_for_name)
             content = info.content.format(**vals_for_name)
@@ -110,6 +113,10 @@ def fetch_game_data(version: str = "1"):
                 content=content,
                 foot=foot,
             )
+
+    front_rule = (
+        "\n".join(game_json["rule"]).format(**constants) if "rule" in game_json else ""
+    )
 
     frontend_game_data = FrontendGameData(
         space=game_data_space,
@@ -128,6 +135,7 @@ def fetch_game_data(version: str = "1"):
             group: action_validated.group[group].name
             for group in action_validated.group
         },
+        rule=front_rule,
     )
     backend_game_data = BackendGameData(
         path=path,

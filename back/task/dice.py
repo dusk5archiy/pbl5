@@ -49,6 +49,7 @@ class DiceCTask(Task):
             steps=steps,
             player=game_state.logic.current_player,
             check_last_space=check_last_space,
+            highest_salary=True,
         )
         game_state = mod_intermediate(game_state)
         return game_state, task
@@ -77,6 +78,7 @@ class DiceXbTask(Task):
             change_track_on_r=change_track_on_r_condition(steps),
             player=game_state.logic.current_player,
             check_last_space=check_last_space,
+            highest_salary=True,
         )
         game_state = mod_intermediate(game_state)
         return game_state, task
@@ -95,6 +97,7 @@ class TripleDiceTask(Task):
         task = MoveToSpaceTask(
             destination=self.destination,
             player=game_state.logic.current_player,
+            highest_salary=True,
         )
         game_state = mod_intermediate(game_state)
         return game_state, task

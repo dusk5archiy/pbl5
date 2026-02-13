@@ -46,7 +46,9 @@ class ActionCardTask(Task):
 
         if (destination := info.move) is not None:
             game_state = MoveToSpaceTask.prepare(game_state)
-            task = MoveToSpaceTask(destination=destination, player=player)
+            task = MoveToSpaceTask(
+                destination=destination, player=player, highest_salary=True
+            )
             return game_state, task
 
         if card == "#VT":
@@ -93,20 +95,29 @@ class ActionCardTask(Task):
                 original_space=original_space,
                 player=game_state.logic.current_player,
                 check_last_space=check_last_space,
+                highest_salary=True,
             )
             return game_state, task
 
         if card == "#DL3B":
             game_state = MoveStepsTask.prepare(game_state)
             task = MoveStepsTask.from_steps(
-                player=player, steps=3, change_track=False, reversed=True
+                player=player,
+                steps=3,
+                change_track=False,
+                reversed=True,
+                highest_salary=True,
             )
             return game_state, task
 
         if card == "#SNTC":
             game_state = MoveStepsTask.prepare(game_state)
             task = MoveStepsTask.from_steps(
-                player=player, steps=3, change_track=False, reversed=False
+                player=player,
+                steps=3,
+                change_track=False,
+                reversed=False,
+                highest_salary=True,
             )
             return game_state, task
 
@@ -121,6 +132,7 @@ class ActionCardTask(Task):
                 original_space=original_space,
                 player=player,
                 check_last_space=check_last_space,
+                highest_salary=True,
             )
             return game_state, task
 

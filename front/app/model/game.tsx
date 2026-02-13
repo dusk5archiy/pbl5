@@ -62,6 +62,7 @@ export interface GameData {
   bds_selector: Array<Array<Record<string, Array<string>>>>;
   action_card: Record<string, Record<string, ActionCard>>;
   action_name: Record<string, string>;
+  rule: string;
 }
 
 // ----------------------------------------------------------------------------

@@ -14,6 +14,8 @@ class CaseWrapper(BaseModel):
     new_space: str
     player: str
     steps: int | None = None
+    is_last_space: bool = True
+    highest_salary: bool = False
     FRONTEND_GAME_DATA: FrontendGameData
 
     @property
@@ -26,6 +28,9 @@ def case_default(cw: CaseWrapper) -> CaseResult:
     return game_state, task, True
 
 
+# -----------------------------------------------------------------------------
+
+
 def case_pass_BDAU(cw: CaseWrapper) -> CaseResult:
     if cw.new_space != "BDAU":
         return cw.game_state, None, False
@@ -33,6 +38,69 @@ def case_pass_BDAU(cw: CaseWrapper) -> CaseResult:
     player = cw.player
     game_state = mod_pay(game_state, None, player, 200)
     return game_state, None, False
+
+
+def case_pass_NTT(cw: CaseWrapper) -> CaseResult:
+    if cw.new_space != "NTT":
+        return cw.game_state, None, False
+
+    amount = 400
+    if not cw.highest_salary and cw.steps is not None and cw.steps % 2 == 1:
+        amount = 300
+
+    game_state = mod_pay(cw.game_state, None, cw.player, amount)
+    return game_state, None, False
+
+
+def case_pass_THUONG(cw: CaseWrapper) -> CaseResult:
+    if cw.new_space != "THUONG":
+        return cw.game_state, None, False
+
+    amount = 300
+    if not cw.highest_salary and cw.steps is not None and not cw.is_last_space:
+        amount = 250
+
+    game_state = mod_pay(cw.game_state, None, cw.player, amount)
+    return game_state, None, False
+
+
+def case_pass_DN(cw: CaseWrapper) -> CaseResult:
+    if cw.new_space != "DN":
+        return cw.game_state, None, False
+
+    amount = 300
+    if cw.highest_salary or cw.steps is None or cw.steps <= 5:
+        pass
+
+    elif cw.steps >= 10:
+        amount = 100
+
+    else:
+        amount = 200
+
+    game_state = mod_pay(cw.game_state, None, cw.player, amount)
+    return game_state, None, False
+
+
+def case_pass_GKT(cw: CaseWrapper) -> CaseResult:
+    if cw.new_space not in ["GKT-1", "GKT-2"]:
+        return cw.game_state, None, False
+
+    amount = 500
+    if cw.highest_salary or cw.steps is None or cw.steps >= 10:
+        pass
+
+    elif cw.steps <= 5:
+        amount = 300
+
+    else:
+        amount = 400
+
+    game_state = mod_pay(cw.game_state, None, cw.player, amount)
+    return game_state, None, False
+
+
+# -----------------------------------------------------------------------------
 
 
 def case_land_on_bds(cw: CaseWrapper) -> CaseResult:
@@ -125,6 +193,10 @@ def case_land_on_action_card_space(cw: CaseWrapper) -> CaseResult:
 
 CASE_PASS = [
     case_pass_BDAU,
+    case_pass_NTT,
+    case_pass_THUONG,
+    case_pass_DN,
+    case_pass_GKT,
 ]
 
 CASE_LAND = [

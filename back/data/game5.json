@@ -7,7 +7,17 @@
     "init_skyscraper": 30,
     "constants": {
       "$BDAU_SALARY": 200,
-      "immediate": "Dùng thẻ ngay lập tức."
+      "immediate": "Dùng thẻ ngay lập tức.",
+      "$NTT_SALARY_2": 400,
+      "$NTT_SALARY_1": 300,
+      "$THUONG_SALARY_1": 250,
+      "$THUONG_SALARY_2": 300,
+      "$DN_SALARY_1": 300,
+      "$DN_SALARY_2": 200,
+      "$DN_SALARY_3": 100,
+      "$GKT_SALARY_1": 500,
+      "$GKT_SALARY_2": 400,
+      "$GKT_SALARY_3": 300
     }
   },
   "action": {
@@ -732,7 +742,12 @@
       "VT": "Vào Tù",
       "TTN": "Thuế\nThu\nNhập",
       "TXX": "Thuế\nXa Xỉ",
-      "GDCP": "Giao Dịch\nCổ Phần"
+      "GDCP": "Giao Dịch\nCổ Phần",
+      "NTT": "NGÀY\nTRẢ TIỀN",
+      "THUONG": "THƯỞNG",
+      "DN": "DU NGOẠN",
+      "GKT-1": "GÓI KÍCH\nTHÍCH",
+      "GKT-2": "GÓI KÍCH\nTHÍCH"
     },
     "special_label": {
       "OT": "Ở tù"
@@ -3931,7 +3946,7 @@
         ],
         "NW": "CPB",
         "NE": "GKT-2",
-        "SW": "GKT",
+        "SW": "GKT-1",
         "SE": "CAU-2"
       },
       {
@@ -4082,7 +4097,7 @@
         "NW": "LAC3-2",
         "NE": "TCT",
         "SW": "DH-2",
-        "SE": "DN-2"
+        "SE": "DN"
       }
     ]
   ],
@@ -4147,5 +4162,30 @@
     "MT": "lightpink",
     "BDAU": "#FA0000",
     "OT": "orange"
-  }
+  },
+  "rule": [
+    "= Ô \"BẮT ĐẦU\"",
+    "Khi qua ô, lãnh {$BDAU_SALARY} từ Ngân Hàng.",
+    ".",
+    "= Ô \"NGÀY TRẢ TIỀN\"",
+    "Khi qua ô:",
+    "+ Nếu số bước di chuyển là chẵn, lãnh {$NTT_SALARY_2} từ Ngân Hàng.",
+    "+ Nếu số bước di chuyển là lẻ, lãnh {$NTT_SALARY_1} từ Ngân Hàng.",
+    ".",
+    "= Ô \"THƯỞNG\"",
+    "Khi dừng lại, lãnh {$THUONG_SALARY_2} từ Ngân Hàng.",
+    "Trường hợp còn lại, khi qua ô, lãnh {$THUONG_SALARY_1} từ Ngân Hàng.",
+    ".",
+    "= Ô \"DU NGOẠN\"",
+    "Khi qua ô:",
+    "+ Nếu số bước di chuyển từ 5 trở xuống, lãnh {$DN_SALARY_1} từ Ngân Hàng.",
+    "+ Nếu số bước di chuyển từ 10 trở lên, lãnh {$DN_SALARY_3} từ Ngân Hàng.",
+    "+ Trường hợp còn lại, lãnh {$DN_SALARY_2} từ Ngân Hàng.",
+    ".",
+    "= Ô \"GÓI KÍCH THÍCH\"",
+    "Khi qua ô:",
+    "+ Nếu số bước di chuyển từ 10 trở lên, lãnh {$GKT_SALARY_1} từ Ngân Hàng.",
+    "+ Nếu số bước di chuyển từ 5 trở xuống, lãnh {$GKT_SALARY_3} từ Ngân Hàng.",
+    "+ Trường hợp còn lại, lãnh {$GKT_SALARY_2} từ Ngân Hàng."
+  ]
 }

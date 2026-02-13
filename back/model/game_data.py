@@ -17,6 +17,7 @@ class FrontendGameData(BaseModel):
     bds_selector: list[list[dict[str, list[str]]]]
     action_card: dict[str, dict[str, ActionCard]]
     action_name: dict[str, str]
+    rule: str = ""
 
 
 class BackendLogic(BaseModel):
