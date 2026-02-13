@@ -20,7 +20,13 @@ from model.chore import (
 )
 from model.game_state import GameState, TaskResult
 from game_data_manager import GAME_DATA
-from calc.calc import get_rent
+from calc.calc import (
+    get_rent,
+    update_total_ui,
+    update_bds_level,
+    update_action_cards_trade,
+    update_bds_trade,
+)
 
 # -----------------------------------------------------------------------------
 
@@ -60,7 +66,10 @@ def mod_release(
     game_state.effect.select_bds = None
     game_state.effect.board = None
     game_data = GAME_DATA[game_state.version]
-    FRONTEND_GAME_DATA = game_data.frontend_game_data
+    FRONTEND_GAME_DATA, BACKEND_GAME_DATA = (
+        game_data.frontend_game_data,
+        game_data.backend_game_data,
+    )
     player = game_state.logic.current_player
     while True:
         at = game_state.logic.player[player].at
@@ -198,9 +207,10 @@ def mod_release(
             game_state.effect.bds_enabled = False
             game_state.effect.can_trade = False
             game_state.effect.board = None
+            update_bds_trade(game_state, FRONTEND_GAME_DATA, BACKEND_GAME_DATA)
+            update_action_cards_trade(game_state)
             break
 
-        game_state = mod_reset_card_effects(game_state)
         if game_state.logic.player[player].alive:
             game_state.effect.bds_enabled = True
             game_state.effect.can_trade = True
@@ -232,7 +242,10 @@ def mod_release(
 
 def mod_new_turn(game_state: GameState, next_player: str):
     game_data = GAME_DATA[game_state.version]
-    FRONTEND_GAME_DATA = game_data.frontend_game_data
+    FRONTEND_GAME_DATA, BACKEND_GAME_DATA = (
+        game_data.frontend_game_data,
+        game_data.backend_game_data,
+    )
     next_at = game_state.logic.player[next_player].at
     next_player_board = (
         FRONTEND_GAME_DATA.space[next_at].board
@@ -255,6 +268,9 @@ def mod_new_turn(game_state: GameState, next_player: str):
     if game_state.logic.player[next_player].jail_stack > 0:
         game_state = prepare_jail_prompt(game_state)
         game_state.chore.jail.append(JailChore(amount=50))
+    game_state = mod_reset_card_effects(game_state)
+    game_state = update_bds_level(game_state, FRONTEND_GAME_DATA, BACKEND_GAME_DATA)
+    game_state = update_total_ui(game_state, FRONTEND_GAME_DATA)
     game_state, _ = mod_release(game_state)
     return game_state
 
@@ -369,6 +385,14 @@ def mod_pay(
         game_state.logic.player[sender].budget -= amount
     if receiver is not None:
         game_state.logic.player[receiver].budget += amount
+
+    game_data = GAME_DATA[game_state.version]
+    FRONTEND_GAME_DATA, BACKEND_GAME_DATA = (
+        game_data.frontend_game_data,
+        game_data.backend_game_data,
+    )
+    game_state = update_bds_level(game_state, FRONTEND_GAME_DATA, BACKEND_GAME_DATA)
+    game_state = update_total_ui(game_state, FRONTEND_GAME_DATA)
     return game_state
 
 
@@ -390,6 +414,7 @@ def mod_goto_jail(game_state: GameState, player: str):
     game_state.logic.player[player] = player_state
     if player == game_state.logic.current_player:
         game_state.effect.board = FRONTEND_GAME_DATA.special_space["OT"].board
+
     return game_state
 
 

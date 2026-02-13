@@ -10,10 +10,11 @@ from model.chore import (
 )
 from model.game_state import GameState, Task, TaskResult
 from calc.calc import (
-    update_action_cards,
-    update_bds_ui,
     get_double_mode,
-    update_total_ui,
+    update_action_cards_trade,
+    update_action_cards_can,
+    update_bds_can,
+    update_bds_trade,
 )
 from calc.prepare_prompt import prepare_pay_prompt
 from calc.mod import (
@@ -36,12 +37,17 @@ def generate_states(game_state: GameState, task: Task | None = None):
         game_data.frontend_game_data,
         game_data.backend_game_data,
     )
+    update_bds_can(game_state, FRONTEND_GAME_DATA, BACKEND_GAME_DATA, enable=False)
+    update_action_cards_can(game_state, enable=False)
+    update_bds_trade(game_state, FRONTEND_GAME_DATA, BACKEND_GAME_DATA, enable=False)
+    update_action_cards_trade(game_state, enable=False)
     while task is not None:
         game_state = game_state.__deepcopy__()
         game_state, task = task(game_state)
-        game_state = update_bds_ui(game_state, FRONTEND_GAME_DATA, BACKEND_GAME_DATA)
-        game_state = update_total_ui(game_state, FRONTEND_GAME_DATA)
-        game_state = update_action_cards(game_state)
+        if game_state.effect.bds_enabled:
+            update_bds_can(game_state, FRONTEND_GAME_DATA, BACKEND_GAME_DATA)
+            update_action_cards_can(game_state)
+
         yield game_state
 
 
@@ -111,7 +117,7 @@ class RollDiceTask(Task):
 
 def mod_buy_bds(game_state: GameState, bds_id: str, player: str, price: int):
     game_state.logic.bds[bds_id].owner = player
-    game_state.logic.player[player].budget -= price
+    mod_pay(game_state, player, None, price)
     return game_state
 
 

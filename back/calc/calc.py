@@ -1,7 +1,5 @@
 from model.game_state import (
     GameState,
-    UiStateAction,
-    UiStateBDS,
     UiStatePlayer,
     MovementLine,
 )
@@ -71,19 +69,60 @@ def get_double_mode(dice_1: str, dice_2: str, dice_3: str | None):
 # -----------------------------------------------------------------------------
 
 
-def update_bds_ui(
+def update_bds_level(
     game_state: GameState,
     FRONTEND_GAME_DATA: FrontendGameData,
     BACKEND_GAME_DATA: BackendGameData,
 ):
-    trade_chore = game_state.current_chore.trade
+    viewing_player = game_state.logic.viewing_player or game_state.logic.current_player
     for bds_id in FRONTEND_GAME_DATA.bds:
         owner = game_state.logic.bds[bds_id].owner
 
-        viewing_player = (
-            game_state.logic.viewing_player or game_state.logic.current_player
-        )
-        ui_bds = UiStateBDS()
+        ui_bds = game_state.ui.bds[bds_id]
+
+        bds = FRONTEND_GAME_DATA.bds[bds_id]
+        bds_state = game_state.logic.bds[bds_id]
+        level = bds_state.level
+        group_id = bds.group
+        group = BACKEND_GAME_DATA.bds_group[group_id]
+
+        owner_owned_bds = [
+            b for b in group.bds if game_state.logic.bds[b].owner == owner
+        ]
+
+        if group.type == 1 and bds_state.level >= 0 and owner is not None:
+            ui_bds.level = level + len(owner_owned_bds)
+        else:
+            ui_bds.level = level
+
+        if owner == viewing_player:
+            ui_bds.upgrade_amount = bds.upgrade
+            ui_bds.downgrade_amount = bds.downgrade
+            ui_bds.mortgage_amount = bds.mortgage
+            ui_bds.unmortgage_amount = bds.unmortgage
+
+        game_state.ui.bds[bds_id] = ui_bds
+    return game_state
+
+
+def update_bds_can(
+    game_state: GameState,
+    FRONTEND_GAME_DATA: FrontendGameData,
+    BACKEND_GAME_DATA: BackendGameData,
+    enable: bool = True,
+):
+    viewing_player = game_state.logic.viewing_player or game_state.logic.current_player
+    for bds_id in FRONTEND_GAME_DATA.bds:
+        ui_bds = game_state.ui.bds[bds_id]
+        if not enable:
+            ui_bds.can_upgrade = False
+            ui_bds.can_downgrade = False
+            ui_bds.can_mortgage = False
+            ui_bds.can_unmortgage = False
+            game_state.ui.bds[bds_id] = ui_bds
+            continue
+
+        owner = game_state.logic.bds[bds_id].owner
 
         bds = FRONTEND_GAME_DATA.bds[bds_id]
         bds_state = game_state.logic.bds[bds_id]
@@ -96,29 +135,13 @@ def update_bds_ui(
         ]
         owned_bds_level = [game_state.logic.bds[b].level for b in owner_owned_bds]
 
-        if group.type == 1 and bds_state.level >= 0 and owner is not None:
-            ui_bds.level = level + len(owner_owned_bds)
-        else:
-            ui_bds.level = level
-
-        if not game_state.effect.bds_enabled:
-            ui_bds.can_upgrade = False
-            ui_bds.can_downgrade = False
-            ui_bds.can_mortgage = False
-            ui_bds.can_unmortgage = False
-
-        elif owner == viewing_player:
-            ui_bds.upgrade_amount = bds.upgrade
-            ui_bds.downgrade_amount = bds.downgrade
-            ui_bds.mortgage_amount = bds.mortgage
-            unmortgage_amount = ui_bds.unmortgage_amount = bds.unmortgage
+        if owner == viewing_player:
+            unmortgage_amount = bds.unmortgage
             ui_bds.can_unmortgage = (
                 level == -1
                 and game_state.logic.player[viewing_player].budget >= unmortgage_amount
             )
             if group.type == 1:
-                ui_bds.upgrade_amount = bds.upgrade
-                ui_bds.downgrade_amount = bds.downgrade
                 ui_bds.can_mortgage = bds_state.level == 0
                 ui_bds.can_upgrade = bds.upgrade is not None and bds_state.level == 0
                 ui_bds.can_downgrade = bds_state.level > 0 and bds.downgrade is not None
@@ -158,17 +181,41 @@ def update_bds_ui(
                 ) and all(n in [level - 1, level] for n in owned_bds_level):
                     ui_bds.can_downgrade = True
 
-        if trade_chore is not None:
-            player_1, player_2 = trade_chore.player_1, trade_chore.player_2
-            ui_bds.can_choose = (
-                not trade_chore.confirm_mode
-                and owner in [player_1, player_2]
-                and (
-                    group.type == 1
-                    or (group.type == 0 and all(n in [0, -1] for n in owned_bds_level))
-                )
-            )
         game_state.ui.bds[bds_id] = ui_bds
+    return game_state
+
+
+def update_bds_trade(
+    game_state: GameState,
+    FRONTEND_GAME_DATA: FrontendGameData,
+    BACKEND_GAME_DATA: BackendGameData,
+    enable: bool = True,
+):
+    trade_chore = game_state.current_chore.trade
+    for bds_id in FRONTEND_GAME_DATA.bds:
+        if trade_chore is None or not enable:
+            game_state.ui.bds[bds_id].can_choose = False
+            continue
+
+        owner = game_state.logic.bds[bds_id].owner
+
+        bds = FRONTEND_GAME_DATA.bds[bds_id]
+        group_id = bds.group
+        group = BACKEND_GAME_DATA.bds_group[group_id]
+
+        owner_owned_bds = [
+            b for b in group.bds if game_state.logic.bds[b].owner == owner
+        ]
+        owned_bds_level = [game_state.logic.bds[b].level for b in owner_owned_bds]
+        player_1, player_2 = trade_chore.player_1, trade_chore.player_2
+        game_state.ui.bds[bds_id].can_choose = (
+            not trade_chore.confirm_mode
+            and owner in [player_1, player_2]
+            and (
+                group.type == 1
+                or (group.type == 0 and all(n in [0, -1] for n in owned_bds_level))
+            )
+        )
     return game_state
 
 
@@ -223,35 +270,45 @@ def update_total_ui(
 # -----------------------------------------------------------------------------
 
 
-def update_action_cards(game_state: GameState):
-    trade_chore = game_state.current_chore.trade
+def update_action_cards_can(game_state: GameState, enable: bool = True):
     for group in game_state.logic.action:
         for card_id in game_state.logic.action[group]:
-            game_state.ui.action[group][card_id] = UiStateAction()
+            if not enable:
+                game_state.ui.action[group][card_id].can_use = False
+                continue
             state = game_state.logic.action[group][card_id]
             owner = state.owner
             if owner is None:
                 continue
-            if trade_chore is not None:
-                player_1 = trade_chore.player_1
-                player_2 = trade_chore.player_2
-                game_state.ui.action[group][card_id].can_choose = (
-                    not trade_chore.confirm_mode
-                    and owner
-                    in [
-                        player_1,
-                        player_2,
-                    ]
-                )
-                continue
             player = game_state.logic.current_player
-            game_state.ui.action[group][card_id].can_use = (
-                game_state.effect.bds_enabled
-                and (
-                    card_id == "TDRT"
-                    and player == owner
-                    and game_state.current_chore.jail is not None
-                )
+            game_state.ui.action[group][card_id].can_use = enable and (
+                card_id == "TDRT"
+                and player == owner
+                and game_state.current_chore.jail is not None
+            )
+    return game_state
+
+
+def update_action_cards_trade(game_state: GameState, enable: bool = True):
+    trade_chore = game_state.current_chore.trade
+    for group in game_state.logic.action:
+        for card_id in game_state.logic.action[group]:
+            if trade_chore is None or not enable:
+                game_state.ui.action[group][card_id].can_choose = False
+                continue
+            state = game_state.logic.action[group][card_id]
+            owner = state.owner
+            if owner is None:
+                continue
+            player_1 = trade_chore.player_1
+            player_2 = trade_chore.player_2
+            game_state.ui.action[group][card_id].can_choose = (
+                not trade_chore.confirm_mode
+                and owner
+                in [
+                    player_1,
+                    player_2,
+                ]
             )
     return game_state
 

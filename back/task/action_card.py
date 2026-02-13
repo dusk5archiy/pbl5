@@ -1,10 +1,9 @@
 from calc.prepare_prompt import prepare_pay_prompt, prepare_roll_dice_prompt
-from model.chore import RollDiceChore, PayChore
+from model.chore import RollDiceChore, PayChore, GotoJailChore
 from model.game_state import GameState, Task, TaskResult
 from game_data_manager import GAME_DATA
 from calc.mod import (
     mod_get_outof_jail,
-    mod_goto_jail,
     mod_pay,
     mod_release,
 )
@@ -50,12 +49,12 @@ class ActionCardTask(Task):
             task = MoveToSpaceTask(destination=destination, player=player)
             return game_state, task
 
-        if (card) == "#VT":
-            game_state = mod_goto_jail(game_state, player=player)
+        if card == "#VT":
+            game_state.chore.goto_jail.append(GotoJailChore(player=player))
             game_state, task = mod_release(game_state)
             return game_state, task
 
-        if ((card) in ["#TTSD", "#SCN"]) and info.values is not None:
+        if (card in ["#TTSD", "#SCN"]) and info.values is not None:
             bds_state = game_state.logic.bds
             house = int(info.values["$house"])
             hotel = int(info.values["$hotel"])

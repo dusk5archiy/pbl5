@@ -3,12 +3,7 @@ from game_data_manager import GAME_DATA
 from model.game_state import GameState, Task
 from model.game_data import FrontendGameData
 from model.chore import PayChore, GotoJailChore
-from calc.mod import (
-    mod_action_card,
-    mod_release,
-    mod_buy,
-    mod_rent,
-)
+from calc.mod import mod_action_card, mod_release, mod_buy, mod_rent, mod_pay
 from pydantic import BaseModel
 
 CaseResult = tuple[GameState, Task | None, bool]
@@ -36,7 +31,7 @@ def case_pass_BDAU(cw: CaseWrapper) -> CaseResult:
         return cw.game_state, None, False
     game_state = cw.game_state
     player = cw.player
-    game_state.logic.player[player].budget += 200
+    game_state = mod_pay(game_state, None, player, 200)
     return game_state, None, False
 
 
@@ -83,9 +78,9 @@ def case_land_on_RA(cw: CaseWrapper) -> CaseResult:
 def case_land_VT(cw: CaseWrapper) -> CaseResult:
     if cw.new_space != "VT":
         return cw.default
-    cw.game_state.chore.goto_jail.append(GotoJailChore(player=cw.cplayer))
-    cw.game_state, _ = mod_release(cw.game_state)
-    return cw.game_state, None, True
+    cw.game_state.chore.goto_jail.append(GotoJailChore(player=cw.player))
+    cw.game_state, task = mod_release(cw.game_state)
+    return cw.game_state, task, True
 
 
 def case_land_TTN(cw: CaseWrapper) -> CaseResult:
