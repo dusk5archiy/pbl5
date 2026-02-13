@@ -2,7 +2,7 @@ import { RefObject } from 'react';
 import { GameData, GameState } from "@/app/model/game";
 import {
   AuctionRequest,
-  MortgageBdsRequest as BdsRequest,
+  BdsRequest as BdsRequest,
   DestinationRequest,
   NumRequest,
   RollDiceRequest,

@@ -6,7 +6,8 @@
     "init_hotel": 50,
     "init_skyscraper": 30,
     "constants": {
-      "$BDAU_SALARY": 200
+      "$BDAU_SALARY": 200,
+      "immediate": "Dùng thẻ ngay lập tức."
     }
   },
   "action": {
@@ -188,35 +189,179 @@
             "name": "Đến ô Giao Dịch Cổ Phần",
             "content": "Nếu bạn băng qua ô Góc Trả Tiền, lãnh lương từ Ngân Hàng.",
             "move": "GDCP",
-            "foot": "Dùng thẻ ngay lập tức.",
+            "foot": "{immediate}",
             "copies": 6
           },
           "#VT": {
             "name": "Vào Tù",
             "content": "Đi thẳng vào tù\nKhông đi ngang ô Góc Trả Tiền.\nKhông được nhận tiền.",
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
           "TDRT": {
             "name": "Tự Do Ra Tù",
             "foot": "Giữ lại đến khi cần.\nDùng bất kì lúc nào trong lượt.\nThẻ này có thể được đem bán.",
             "keep": true
+          },
+          "+TraTienKhamBenh": {
+            "name": "Trả Tiền Khám Bệnh",
+            "content": "Trả {$amount} cho Ngân Hàng.",
+            "pay": 100,
+            "foot": "{immediate}"
+          },
+          "+TraTienBenhVien": {
+            "name": "Trả Tiền Bệnh Viện",
+            "content": "Trả {$amount} cho Ngân Hàng.",
+            "pay": 250,
+            "foot": "{immediate}"
+          },
+          "+NhaBankLonTien": {
+            "name": "Nhà Bank Lộn Tiền",
+            "content": "Lãnh {$amount} từ Ngân Hàng.",
+            "collect": 600
+          },
+          "+DaoHanChoVay": {
+            "name": "Đáo Hạn Cho Vay",
+            "content": "Lãnh {$amount} từ Ngân Hàng.",
+            "collect": 150,
+            "foot": "{immediate}"
+          },
+          "+NhanPhiTuVan": {
+            "name": "Nhận Phí Tư Vấn",
+            "content": "Lãnh {$amount} từ Ngân Hàng.",
+            "collect": 125,
+            "foot": "{immediate}"
+          },
+          "+ThangCuocThiOChu": {
+            "name": "Thắng Cuộc Thi Ô Chữ",
+            "content": "Lãnh {$amount} từ Ngân Hàng.",
+            "collect": 100,
+            "foot": "{immediate}"
+          },
+          "+ThuCungDatGiaiNhat": {
+            "name": "Thú Cưng Đạt Giải Nhất",
+            "content": "Lãnh {$amount} từ Ngân Hàng.",
+            "collect": 250,
+            "foot": "{immediate}"
+          },
+          "+IPO": {
+            "name": "IPO",
+            "content": "Công ty của bạn ra mắt trước công chúng.\nLãnh {$amount} từ Ngân Hàng.",
+            "collect": 500,
+            "foot": "{immediate}"
+          },
+          "+NhanTienThuaKe": {
+            "name": "Nhận Tiền Thừa Kế",
+            "content": "Lãnh {$amount} từ Ngân Hàng.",
+            "collect": 100,
+            "foot": "{immediate}"
+          },
+          "+BayChuotTotHon": {
+            "name": "Bẫy Chuột Tốt Hơn",
+            "content": "Lãnh {$amount} từ Ngân Hàng.",
+            "collect": 350,
+            "foot": "{immediate}"
+          },
+          "1E3": {
+            "name": "Đến ô {name} ({id})",
+            "move": "1E3",
+            "foot": "{immediate}"
+          },
+          "1C2": {
+            "name": "Đến ô {name} ({id})",
+            "move": "1C2",
+            "foot": "{immediate}"
+          },
+          "1F1": {
+            "name": "Đến ô {name} ({id})",
+            "move": "1F1",
+            "foot": "{immediate}"
+          },
+          "1D3": {
+            "name": "Đến ô {name} ({id})",
+            "move": "1D3",
+            "foot": "{immediate}"
+          },
+          "1G1": {
+            "name": "Đến ô {name} ({id})",
+            "move": "1G1",
+            "foot": "{immediate}"
+          },
+          "5CB1": {
+            "name": "Đến ô {name} ({id})",
+            "move": "5CB1",
+            "foot": "{immediate}"
+          },
+          "7SB2": {
+            "name": "Đến ô {name} ({id})",
+            "move": "7SB2",
+            "foot": "{immediate}"
+          },
+          "5B3": {
+            "name": "Đến ô {name} ({id})",
+            "move": "5B3",
+            "foot": "{immediate}"
+          },
+          "5D3": {
+            "name": "Đến ô {name} ({id})",
+            "move": "5D3",
+            "foot": "{immediate}"
+          },
+          "5G2": {
+            "name": "Đến ô {name} ({id})",
+            "move": "5G2",
+            "foot": "{immediate}"
+          },
+          "5I3": {
+            "name": "Đến ô {name} ({id})",
+            "move": "5I3",
+            "foot": "{immediate}"
+          },
+          "2D4": {
+            "name": "Đến ô {name} ({id})",
+            "move": "2D4",
+            "foot": "{immediate}"
+          },
+          "6G5": {
+            "name": "Đến ô {name} ({id})",
+            "move": "6G5",
+            "foot": "{immediate}"
+          },
+          "6B1": {
+            "name": "Đến ô {name} ({id})",
+            "move": "6B1",
+            "foot": "{immediate}"
+          },
+          "6A4": {
+            "name": "Đến ô {name} ({id})",
+            "move": "6A4",
+            "foot": "{immediate}"
+          },
+          "7E1": {
+            "name": "Đến ô {name} ({id})",
+            "move": "7E1",
+            "foot": "{immediate}"
+          },
+          "6C3": {
+            "name": "Đến ô {name} ({id})",
+            "move": "6C3",
+            "foot": "{immediate}"
           }
         }
       },
       "CH": {
         "name": "Cơ Hội",
         "cards": {
-          "-GDCP": {
+          "GDCP": {
             "move": "GDCP",
             "name": "Đến ô Giao Dịch Cổ Phần",
             "content": "Nếu bạn băng qua ô Góc Trả Tiền, lãnh lương từ Ngân Hàng.",
-            "foot": "Dùng thẻ ngay lập tức.",
+            "foot": "{immediate}",
             "copies": 6
           },
           "#VT": {
             "name": "Vào Tù",
             "content": "Đi thẳng vào tù\nKhông đi ngang ô Góc Trả Tiền.\nKhông được nhận tiền.",
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
           "TDRT": {
             "name": "Tự Do Ra Tù",
@@ -227,25 +372,25 @@
             "name": "Thưởng Kì Nghỉ",
             "content": "Lãnh {$amount} từ Ngân Hàng.",
             "collect": 300,
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
           "+DaoHanChoVay": {
             "name": "Đáo Hạn Cho Vay",
             "content": "Lãnh {$amount} từ Ngân Hàng.",
             "collect": 300,
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
           "+NhaDauTuMoi": {
             "name": "Nhà Đầu Tư Mới",
             "content": "Lãnh {$amount} từ Ngân Hàng.",
             "collect": 400,
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
           "+NhaDauTuRutVon": {
             "name": "Nhà Đầu Tư Rút Vốn",
             "content": "Trả {$amount} cho Ngân Hàng.",
             "pay": 250,
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
           "#DBLGD": {
             "name": "Được Bầu Làm Giám Đốc",
@@ -253,162 +398,162 @@
             "values": {
               "$price": 100
             },
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
           "#DL3B": {
             "name": "Đi lùi 3 bước",
             "content": "Không chuyển tầng.",
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
           "#SNTC": {
             "name": "Suy nghĩ tích cực",
             "content": "Tiến lên 3 bước.\nKhông chuyển tầng.",
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
-          "-3C2": {
+          "3C2": {
             "name": "Đến ô {name} ({id})",
             "move": "3C2",
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
-          "-3B1": {
+          "3B1": {
             "name": "Đến ô {name} ({id})",
             "move": "3B1",
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
-          "-7B3": {
+          "7B3": {
             "name": "Đến ô {name} ({id})",
             "move": "7B3",
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
-          "-7A4": {
+          "7A4": {
             "name": "Đến ô {name} ({id})",
             "move": "7A4",
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
-          "-1E2": {
+          "1E2": {
             "name": "Đến ô {name} ({id})",
             "move": "1E2",
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
-          "-1C1": {
+          "1C1": {
             "name": "Đến ô {name} ({id})",
             "move": "1C1",
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
-          "-1F3": {
+          "1F3": {
             "name": "Đến ô {name} ({id})",
             "move": "1F3",
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
-          "-1D2": {
+          "1D2": {
             "name": "Đến ô {name} ({id})",
             "move": "1D2",
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
-          "-1G2": {
+          "1G2": {
             "name": "Đến ô {name} ({id})",
             "move": "1G2",
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
-          "-3D4": {
+          "3D4": {
             "name": "Đến ô {name} ({id})",
             "move": "3D4",
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
-          "-1B5": {
+          "1B5": {
             "name": "Đến ô {name} ({id})",
             "move": "1B5",
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
-          "-2H3": {
+          "2H3": {
             "name": "Đến ô {name} ({id})",
             "move": "2H3",
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
-          "-1R1": {
+          "1R1": {
             "name": "Đến ô {name} ({id})",
             "move": "1R1",
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
-          "-2E3": {
+          "2E3": {
             "name": "Đến ô {name} ({id})",
             "move": "2E3",
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
-          "-2C1": {
+          "2C1": {
             "name": "Đến ô {name} ({id})",
             "move": "2C1",
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
-          "-4B4": {
+          "4B4": {
             "name": "Đến ô {name} ({id})",
             "move": "4B4",
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
-          "-5E3": {
+          "5E3": {
             "name": "Đến ô {name} ({id})",
             "move": "5E3",
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
-          "-6D5": {
+          "6D5": {
             "name": "Đến ô {name} ({id})",
             "move": "6D5",
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
-          "-6E1": {
+          "6E1": {
             "name": "Đến ô {name} ({id})",
             "move": "6E1",
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
-          "-6F1": {
+          "6F1": {
             "name": "Đến ô {name} ({id})",
             "move": "6F1",
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
-          "-6R2": {
+          "6R2": {
             "name": "Đến ô {name} ({id})",
             "move": "6R2",
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
-          "-5A4": {
+          "5A4": {
             "name": "Đến ô {name} ({id})",
             "move": "5A4",
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
-          "-5C4": {
+          "5C4": {
             "name": "Đến ô {name} ({id})",
             "move": "5C4",
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
-          "-5F2": {
+          "5F2": {
             "name": "Đến ô {name} ({id})",
             "move": "5F2",
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
-          "-5J4": {
+          "5J4": {
             "name": "Đến ô {name} ({id})",
             "move": "5J4",
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
-          "-2B2": {
+          "2B2": {
             "name": "Đến ô {name} ({id})",
             "move": "2B2",
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
-          "-2F4": {
+          "2F4": {
             "name": "Đến ô {name} ({id})",
             "move": "2F4",
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
-          "-5MT2": {
+          "5MT2": {
             "name": "Đến ô {name} ({id})",
             "move": "5MT2",
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
           "#R": {
             "name": "Đến ô Đường Sắt gần nhất",
             "content": "Trả tiền thuê gấp đôi\ncho người sở hữu,\nhoặc mua nếu còn trống",
-            "foot": "Dùng thẻ ngay lập tức.",
+            "foot": "{immediate}",
             "copies": 2
           },
           "#U": {
@@ -417,37 +562,165 @@
             "values": {
               "times": 80
             },
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           }
         }
       },
       "BC": {
         "name": "Bất Chính",
         "cards": {
+          "GDCP": {
+            "move": "GDCP",
+            "name": "Đến ô Giao Dịch Cổ Phần",
+            "content": "Nếu bạn băng qua ô Góc Trả Tiền, lãnh lương từ Ngân Hàng.",
+            "foot": "{immediate}",
+            "copies": 4
+          },
           "#VT": {
             "name": "Vào Tù",
             "content": "Đi thẳng vào tù\nKhông đi ngang ô Góc Trả Tiền.\nKhông được nhận tiền.",
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
           "TDRT": {
             "name": "Tự Do Ra Tù",
             "foot": "Giữ lại đến khi cần.\nDùng bất kì lúc nào trong lượt.\nThẻ này có thể được đem bán.",
             "keep": true
+          },
+          "+CoTucDauTu": {
+            "name": "Cổ Tức Đầu Tư",
+            "content": "Lãnh {$amount} từ Ngân Hàng.",
+            "collect": 200,
+            "foot": "{immediate}"
+          },
+          "8B4": {
+            "name": "Đến ô {name} ({id})",
+            "move": "8B4",
+            "foot": "{immediate}"
+          },
+          "7E4": {
+            "name": "Đến ô {name} ({id})",
+            "move": "7E4",
+            "foot": "{immediate}"
+          },
+          "1A3": {
+            "name": "Đến ô {name} ({id})",
+            "move": "1A3",
+            "foot": "{immediate}"
+          },
+          "7SB1": {
+            "name": "Đến ô {name} ({id})",
+            "move": "7SB1",
+            "foot": "{immediate}"
+          },
+          "1CB2": {
+            "name": "Đến ô {name} ({id})",
+            "move": "1CB2",
+            "foot": "{immediate}"
+          },
+          "6F3": {
+            "name": "Đến ô {name} ({id})",
+            "move": "6F3",
+            "foot": "{immediate}"
+          },
+          "6G4": {
+            "name": "Đến ô {name} ({id})",
+            "move": "6G4",
+            "foot": "{immediate}"
+          },
+          "5H1": {
+            "name": "Đến ô {name} ({id})",
+            "move": "5H1",
+            "foot": "{immediate}"
+          },
+          "5E2": {
+            "name": "Đến ô {name} ({id})",
+            "move": "5E2",
+            "foot": "{immediate}"
           }
         }
       },
       "TX": {
         "name": "Tiểu Xảo",
         "cards": {
+          "GDCP": {
+            "move": "GDCP",
+            "name": "Đến ô Giao Dịch Cổ Phần",
+            "content": "Nếu bạn băng qua ô Góc Trả Tiền, lãnh lương từ Ngân Hàng.",
+            "foot": "{immediate}",
+            "copies": 5
+          },
           "#VT": {
             "name": "Vào Tù",
             "content": "Đi thẳng vào tù\nKhông đi ngang ô Góc Trả Tiền.\nKhông được nhận tiền.",
-            "foot": "Dùng thẻ ngay lập tức."
+            "foot": "{immediate}"
           },
           "TDRT": {
             "name": "Tự Do Ra Tù",
             "foot": "Giữ lại đến khi cần.\nDùng bất kì lúc nào trong lượt.\nThẻ này có thể được đem bán.",
             "keep": true
+          },
+          "+MuaMayBanDat": {
+            "name": "Mua May Bán Đắt",
+            "content": "Lãnh {$amount} từ Ngân Hàng.",
+            "collect": 300,
+            "foot": "{immediate}"
+          },
+          "+ChinhPhuCanThiep": {
+            "name": "Chính Phủ Can Thiệp",
+            "content": "Lãnh {$amount} từ Ngân Hàng.",
+            "collect": 500,
+            "foot": "{immediate}"
+          },
+          "+CapCuuYTe": {
+            "name": "Cấp Cứu Y Tế",
+            "content": "Trả {$amount} cho Ngân Hàng.",
+            "pay": 500,
+            "foot": "{immediate}"
+          },
+          "8C4": {
+            "name": "Đến ô {name} ({id})",
+            "move": "8C4",
+            "foot": "{immediate}"
+          },
+          "7C4": {
+            "name": "Đến ô {name} ({id})",
+            "move": "7C4",
+            "foot": "{immediate}"
+          },
+          "2G4": {
+            "name": "Đến ô {name} ({id})",
+            "move": "2G4",
+            "foot": "{immediate}"
+          },
+          "2A3": {
+            "name": "Đến ô {name} ({id})",
+            "move": "2A3",
+            "foot": "{immediate}"
+          },
+          "3A3": {
+            "name": "Đến ô {name} ({id})",
+            "move": "3A3",
+            "foot": "{immediate}"
+          },
+          "8A1": {
+            "name": "Đến ô {name} ({id})",
+            "move": "8A1",
+            "foot": "{immediate}"
+          },
+          "7D2": {
+            "name": "Đến ô {name} ({id})",
+            "move": "7D2",
+            "foot": "{immediate}"
+          },
+          "6C1": {
+            "name": "Đến ô {name} ({id})",
+            "move": "6C1",
+            "foot": "{immediate}"
+          },
+          "6E2": {
+            "name": "Đến ô {name} ({id})",
+            "move": "6E2",
+            "foot": "{immediate}"
           }
         }
       }

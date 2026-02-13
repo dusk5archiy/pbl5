@@ -220,46 +220,57 @@ async def websocket_game_states(websocket: WebSocket):
 
                 task = None
                 game_state = None
+
                 if action == "roll_dice":
                     request = RollDiceRequest(**params)
                     game_state = request.game_state
                     task = RollDiceTask(dice_1=request.dice_1, dice_2=request.dice_2)
+
                 elif action == "end_turn":
                     request = StateRequest(**params)
                     game_state = request.game_state
                     task = EndTurnTask()
+
                 elif action == "buy":
                     request = NumRequest(**params)
                     game_state = request.game_state
                     task = BuyTask(response=request.response)
+
                 elif action == "auction":
                     request = AuctionRequest(**params)
                     game_state = request.game_state
                     task = AuctionBdsTask(amount=request.amount)
+
                 elif action == "upgrade_bds":
                     request = BdsRequest(**params)
                     game_state = request.game_state
                     task = UpgradeTask(bds=request.bds)
+
                 elif action == "downgrade_bds":
                     request = BdsRequest(**params)
                     game_state = request.game_state
                     task = DowngradeTask(bds=request.bds)
+
                 elif action == "mortgage_bds":
                     request = BdsRequest(**params)
                     game_state = request.game_state
                     task = MortgageTask(bds=request.bds)
+
                 elif action == "unmortgage_bds":
                     request = BdsRequest(**params)
                     game_state = request.game_state
                     task = UnmortgageTask(bds=request.bds)
+
                 elif action == "pay":
                     request = NumRequest(**params)
                     game_state = request.game_state
                     task = PayTask(response=request.response)
+
                 elif action == "receive_mortgage":
                     request = NumRequest(**params)
                     game_state = request.game_state
                     task = ReceiveMortgageTask(response=request.response)
+
                 elif action == "jail":
                     request = DiceNumRequest(**params)
                     game_state = request.game_state
@@ -268,36 +279,44 @@ async def websocket_game_states(websocket: WebSocket):
                         dice_1=request.dice_1,
                         dice_2=request.dice_2,
                     )
+
                 elif action == "dice_c":
                     request = StateRequest(**params)
                     game_state = request.game_state
                     task = DiceCTask()
+
                 elif action == "dice_xb":
                     request = StateRequest(**params)
                     game_state = request.game_state
                     task = DiceXbTask()
+
                 elif action == "triple_dice":
                     request = DestinationRequest(**params)
                     game_state = request.game_state
                     task = TripleDiceTask(destination=request.destination)
+
                 elif action == "action_card":
                     request = StateRequest(**params)
                     game_state = request.game_state
                     task = ActionCardTask()
+
                 elif action == "two_dice_rent_u":
                     request = RollDiceRequest(**params)
                     game_state = request.game_state
                     task = TwoDiceRentUTask(
                         dice_1=request.dice_1, dice_2=request.dice_2
                     )
+
                 elif action == "use_action_card":
                     request = UseActionCardRequest(**params)
                     game_state = request.game_state
                     task = UseActionCardTask(group=request.group, card=request.card)
+
                 elif action == "start_trade":
                     request = StateRequest(**params)
                     game_state = request.game_state
                     task = StartTradeTask()
+
                 elif action == "trade":
                     request = TradeRequest(**params)
                     game_state = request.game_state
@@ -309,6 +328,9 @@ async def websocket_game_states(websocket: WebSocket):
                         delay = state.effect.wait_ms
                         await asyncio.sleep(delay / 1000.0)
             except Exception as e:
+                import traceback
+
+                traceback.print_exc()
                 print(f"WebSocket processing error: {e}")
                 break
     except Exception as e:

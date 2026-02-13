@@ -39,7 +39,7 @@ export interface AuctionRequest {
 
 // ----------------------------------------------------------------------------
 
-export interface MortgageBdsRequest {
+export interface BdsRequest {
   bds: string;
 }
 

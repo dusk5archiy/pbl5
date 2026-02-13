@@ -49,19 +49,21 @@ export function PropertySelector(props: GameBoardProps) {
       <div className={selector_class_name}>
         {
           gameData.bds_selector[selectedBoard][selectedTrack][selectedGroup].map(
-            (idx) => (
-              <button key={idx}
-                style={
-                  {
-                    "--bg-color": selectedBds == idx ? active_color : inactive_color,
-                  } as React.CSSProperties
-                }
-                className={option_class_name + " bg-(--bg-color)"}
-                onClick={() => setSelectedBds(idx)}
-              >{idx}
-              </button>
-            )
-          )
+            (bds) => {
+              const owner = gameState.logic.bds[bds].owner;
+              return (
+                <button key={bds}
+                  style={
+                    {
+                      "--bg-color": owner == null ? inactive_color : COLOR_UI_INFO[owner].lightColorCode,
+                    } as React.CSSProperties
+                  }
+                  className={option_class_name + " bg-(--bg-color)" + (bds == selectedBds ? " underline font-bold" : "")}
+                  onClick={() => setSelectedBds(bds)}
+                >{bds}
+                </button>
+              );
+            })
         }
       </div>
       <div className={selector_class_name}>

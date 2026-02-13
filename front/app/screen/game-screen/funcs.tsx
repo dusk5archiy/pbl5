@@ -1,25 +1,14 @@
-import { GameState } from "@/app/model/game";
 import {
   AuctionRequest,
   DestinationRequest,
   GameScreenProps,
-  MortgageBdsRequest,
+  BdsRequest,
   TradeRequest,
   UseActionCardRequest,
   NumRequest,
   DiceNumRequest,
   RollDiceRequest
 } from "./props";
-
-// ----------------------------------------------------------------------------
-
-export function getUpdateGameStateFunction(
-  setGameState: (gameState: GameState) => void,
-) {
-  return (game_state: GameState) => {
-    setGameState(game_state);
-  };
-}
 
 // ----------------------------------------------------------------------------
 
@@ -86,7 +75,7 @@ export function getAuctionFunction(props: GameScreenProps, at: string, ws: WebSo
 // ----------------------------------------------------------------------------
 
 export function getBdsFunction(props: GameScreenProps, at: string, ws: WebSocket) {
-  return async (request: MortgageBdsRequest) => {
+  return async (request: BdsRequest) => {
     const func = await getFunction(props, at, request, ws);
     await func();
   };

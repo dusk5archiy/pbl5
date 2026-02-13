@@ -134,6 +134,7 @@ export function GamePresentation(props: GameScreenProps) {
     };
     websocket.onmessage = (event) => {
       const game_state = JSON.parse(event.data);
+      console.log(game_state);
       setGameState(game_state);
     };
     websocket.onclose = () => { };

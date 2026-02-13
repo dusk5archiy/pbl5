@@ -185,7 +185,6 @@ class UpgradeTask(Task):
     bds: str
 
     def __call__(self, game_state: GameState) -> TaskResult:
-        assert game_state.ui.bds[self.bds].can_upgrade
         bds_state = game_state.logic.bds[self.bds]
         owner = bds_state.owner
         assert owner is not None
@@ -196,10 +195,11 @@ class UpgradeTask(Task):
             game_data.frontend_game_data,
             game_data.backend_game_data,
         )
-        game_state = mod_pay(game_state, owner, None, amount)
 
         game_state.logic.bds[self.bds].level += 1
         level = game_state.logic.bds[self.bds].level
+
+        game_state = mod_pay(game_state, owner, None, amount)
 
         group_id = FRONTEND_GAME_DATA.bds[self.bds].group
         group = BACKEND_GAME_DATA.bds_group[group_id]
@@ -226,7 +226,6 @@ class DowngradeTask(Task):
     bds: str
 
     def __call__(self, game_state: GameState) -> TaskResult:
-        assert game_state.ui.bds[self.bds].can_downgrade
         bds_state = game_state.logic.bds[self.bds]
         owner = bds_state.owner
         assert owner is not None
@@ -237,10 +236,11 @@ class DowngradeTask(Task):
             game_data.frontend_game_data,
             game_data.backend_game_data,
         )
-        game_state = mod_pay(game_state, None, owner, amount)
 
         level = game_state.logic.bds[self.bds].level
         game_state.logic.bds[self.bds].level -= 1
+
+        game_state = mod_pay(game_state, None, owner, amount)
 
         group_id = FRONTEND_GAME_DATA.bds[self.bds].group
         group = BACKEND_GAME_DATA.bds_group[group_id]
@@ -267,14 +267,13 @@ class MortgageTask(Task):
     bds: str
 
     def __call__(self, game_state: GameState) -> TaskResult:
-        assert game_state.ui.bds[self.bds].can_mortgage
         bds_state = game_state.logic.bds[self.bds]
         owner = bds_state.owner
         assert owner is not None
         amount = game_state.ui.bds[self.bds].mortgage_amount
         assert amount is not None
-        game_state = mod_pay(game_state, None, owner, amount)
         game_state.logic.bds[self.bds].level = -1
+        game_state = mod_pay(game_state, None, owner, amount)
         game_state.effect.select_bds = None
         game_state.effect.board = None
         return game_state, None
@@ -293,14 +292,13 @@ class UnmortgageTask(Task):
             new_task = ReceiveMortgageTask(response=1)
             return game_state, new_task
 
-        assert game_state.ui.bds[self.bds].can_unmortgage
         bds_state = game_state.logic.bds[self.bds]
         owner = bds_state.owner
         assert owner is not None
         amount = game_state.ui.bds[self.bds].unmortgage_amount
         assert amount is not None
-        game_state = mod_pay(game_state, owner, None, amount)
         game_state.logic.bds[self.bds].level = 0
+        game_state = mod_pay(game_state, owner, None, amount)
         game_state.effect.select_bds = None
         game_state.effect.board = None
         return game_state, None
