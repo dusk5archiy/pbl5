@@ -30,14 +30,17 @@ import {
 import { LeftPanel } from "@/app/ui/game-board/LeftPanel";
 import { PromptModal } from "@/app/ui/game-board/PromptModal";
 import { DiceConfirmTab } from "@/app/ui/game-board/DiceConfirmTab";
+import { WS_BACKEND_PREFIX } from "@/app/utils/env";
 
 // ----------------------------------------------------------------------------
 
 export function GamePresentation(props: GameScreenProps) {
-  const { onBack, gameData, gameState, selectedCamera, diceDetection } = props;
+  const { onBack, gameData, gameState, setGameState, selectedCamera, diceDetection } = props;
+
   const [bdsShown, setBdsShown] = useState<number>(0);
   const [propertyTab, setPropertyTab] = useState<number>(0);
-  const [boardShown, setBoardShown] = useState<boolean>(false);
+  const [boardShown, setBoardShown] = useState<boolean>(true);
+
 
   // Default values for selectors
   function getDefault() {
@@ -116,30 +119,53 @@ export function GamePresentation(props: GameScreenProps) {
 
   }, [gameState]);
 
-  // Api's
-  const rollDiceFunc = getRollDiceFunction(props, "/roll_dice");
-  const endTurnFunc = getNormalFunction(props, "/end_turn");
-  const buyFunc = getNumFunction(props, "/buy");
-  const payFunc = getNumFunction(props, "/pay");
-  const receiveMortgageFunc = getNumFunction(props, "/receive_mortgage");
-  const auctionFunc = getAuctionFunction(props, "/auction");
-  const upgradeBdsFunc = getBdsFunction(props, "/upgrade_bds");
-  const downgradeBdsFunc = getBdsFunction(props, "/downgrade_bds");
-  const mortgageBdsFunc = getBdsFunction(props, "/mortgage_bds");
-  const unmortgageBdsFunc = getBdsFunction(props, "/unmortgage_bds");
-  const diceCFunc = getNormalFunction(props, "/dice_c");
-  const diceXbFunc = getNormalFunction(props, "/dice_xb");
-  const actionCardFunc = getNormalFunction(props, "/action_card");
-  const tripleDiceFunc = getDestinationFunction(props, "/triple_dice");
-  const jailFunc = getDiceNumFunction(props, "/jail");
-  const twoDiceRentUFunc = getRollDiceFunction(props, "/two_dice_rent_u");
-  const useActionCardFunc = getUseActionCardFunction(props, "/use_action_card");
-  const startTradeFunc = getNormalFunction(props, "/start_trade");
-  const tradeFunc = getTradeFunction(props, "/trade");
-
-  // Video refs
+  // Video refs states
   const videoRef = useRef<HTMLVideoElement>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
+
+  // WebSocket connection
+  const [ws, setWs] = useState<WebSocket | null>(null);
+
+  // WebSocket connection
+  useEffect(() => {
+    const websocket = new WebSocket(WS_BACKEND_PREFIX + '/ws/game_states');
+    websocket.onopen = () => {
+      setWs(websocket);
+    };
+    websocket.onmessage = (event) => {
+      const game_state = JSON.parse(event.data);
+      setGameState(game_state);
+    };
+    websocket.onclose = () => { };
+    return () => {
+      websocket.close();
+    };
+  }, []);
+
+  if (ws == null) {
+    return null;
+  }
+
+  // Api's
+  const rollDiceFunc = getRollDiceFunction(props, "roll_dice", ws);
+  const endTurnFunc = getNormalFunction(props, "end_turn", ws);
+  const buyFunc = getNumFunction(props, "buy", ws);
+  const payFunc = getNumFunction(props, "pay", ws);
+  const receiveMortgageFunc = getNumFunction(props, "receive_mortgage", ws);
+  const auctionFunc = getAuctionFunction(props, "auction", ws);
+  const upgradeBdsFunc = getBdsFunction(props, "upgrade_bds", ws);
+  const downgradeBdsFunc = getBdsFunction(props, "downgrade_bds", ws);
+  const mortgageBdsFunc = getBdsFunction(props, "mortgage_bds", ws);
+  const unmortgageBdsFunc = getBdsFunction(props, "unmortgage_bds", ws);
+  const diceCFunc = getNormalFunction(props, "dice_c", ws);
+  const diceXbFunc = getNormalFunction(props, "dice_xb", ws);
+  const actionCardFunc = getNormalFunction(props, "action_card", ws);
+  const tripleDiceFunc = getDestinationFunction(props, "triple_dice", ws);
+  const jailFunc = getDiceNumFunction(props, "jail", ws);
+  const twoDiceRentUFunc = getRollDiceFunction(props, "two_dice_rent_u", ws);
+  const useActionCardFunc = getUseActionCardFunction(props, "use_action_card", ws);
+  const startTradeFunc = getNormalFunction(props, "start_trade", ws);
+  const tradeFunc = getTradeFunction(props, "trade", ws);
 
   // Send roll dice data
   const sendRollDice = ({ dice_1, dice_2 }: IDice) => {

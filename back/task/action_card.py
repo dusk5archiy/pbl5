@@ -185,11 +185,13 @@ class UseActionCardTask(Task):
     card: str
 
     def __call__(self, game_state: GameState) -> TaskResult:
+        group = self.group
         card = self.card
         player = game_state.logic.action[self.group][card].owner
         assert player is not None
 
         game_state.logic.action_card[self.group].append(card)
+        game_state.logic.action[group][card].owner = None
 
         task = None
         if card == "TDRT":

@@ -21,9 +21,9 @@ export function ActionCardModal(props: ActionCardModalProps) {
   }
 
   return (
-    <div className="w-full h-full flex flex-col gap-[1.5vw]">
+    <div className="w-full h-full flex flex-col gap-[1.5vw] p-[1vw]">
       <div className="w-full flex justify-center font-bold text-[4cqw]">{name}</div>
-      <div className="w-full flex flex-col px-[1vw]">
+      <div className="w-full flex flex-col">
         {
           content.split("\n").map(
             (line, idx) =>

@@ -1,6 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+import asyncio
+import json
 from game_data_manager import (
     GAME_DATA,
 )
@@ -62,28 +64,10 @@ class StateRequest(BaseModel):
     game_state: GameState
 
 
-class StateResponse(BaseModel):
-    game_states: list[GameState]
-
-
 class RollDiceRequest(BaseModel):
     game_state: GameState
     dice_1: str | None = None
     dice_2: str | None = None
-
-
-@app.post("/roll_dice", response_model=StateResponse)
-async def roll_dice(request: RollDiceRequest) -> StateResponse:
-    game_state = request.game_state
-    task = RollDiceTask(dice_1=request.dice_1, dice_2=request.dice_2)
-    return StateResponse(game_states=list(generate_states(game_state, task)))
-
-
-@app.post("/end_turn", response_model=StateResponse)
-async def end_turn(request: StateRequest) -> StateResponse:
-    game_state = request.game_state
-    task = EndTurnTask()
-    return StateResponse(game_states=list(generate_states(game_state, task)))
 
 
 # -----------------------------------------------------------------------------
@@ -99,26 +83,12 @@ class DiceNumRequest(NumRequest):
     dice_2: str | None = None
 
 
-@app.post("/buy", response_model=StateResponse)
-async def buy(request: NumRequest) -> StateResponse:
-    game_state = request.game_state
-    task = BuyTask(response=request.response)
-    return StateResponse(game_states=list(generate_states(game_state, task)))
-
-
 # -----------------------------------------------------------------------------
 
 
 class AuctionRequest(BaseModel):
     game_state: GameState
     amount: int
-
-
-@app.post("/auction", response_model=StateResponse)
-async def auction(request: AuctionRequest) -> StateResponse:
-    game_state = request.game_state
-    task = AuctionBdsTask(amount=request.amount)
-    return StateResponse(game_states=list(generate_states(game_state, task)))
 
 
 # -----------------------------------------------------------------------------
@@ -129,110 +99,12 @@ class BdsRequest(BaseModel):
     bds: str
 
 
-@app.post("/upgrade_bds", response_model=StateResponse)
-async def upgrade_bds(request: BdsRequest) -> StateResponse:
-    game_state = request.game_state
-    task = UpgradeTask(bds=request.bds)
-    return StateResponse(game_states=list(generate_states(game_state, task)))
-
-
-@app.post("/downgrade_bds", response_model=StateResponse)
-async def downgrade_bds(request: BdsRequest) -> StateResponse:
-    game_state = request.game_state
-    task = DowngradeTask(bds=request.bds)
-    return StateResponse(game_states=list(generate_states(game_state, task)))
-
-
-@app.post("/mortgage_bds", response_model=StateResponse)
-async def mortgage_bds(request: BdsRequest) -> StateResponse:
-    game_state = request.game_state
-    task = MortgageTask(bds=request.bds)
-    return StateResponse(game_states=list(generate_states(game_state, task)))
-
-
-@app.post("/unmortgage_bds", response_model=StateResponse)
-async def unmortgage_bds(request: BdsRequest) -> StateResponse:
-    game_state = request.game_state
-    task = UnmortgageTask(bds=request.bds)
-    return StateResponse(game_states=list(generate_states(game_state, task)))
-
-
 # -----------------------------------------------------------------------------
-
-
-@app.post("/pay", response_model=StateResponse)
-async def pay(request: NumRequest) -> StateResponse:
-    game_state = request.game_state
-    task = PayTask(response=request.response)
-    return StateResponse(game_states=list(generate_states(game_state, task)))
-
-
-# -----------------------------------------------------------------------------
-
-
-@app.post("/receive_mortgage", response_model=StateResponse)
-async def receive_mortgage(request: NumRequest) -> StateResponse:
-    game_state = request.game_state
-    task = ReceiveMortgageTask(response=request.response)
-    return StateResponse(game_states=list(generate_states(game_state, task)))
-
-
-# -----------------------------------------------------------------------------
-
-
-@app.post("/jail", response_model=StateResponse)
-async def jail(request: DiceNumRequest) -> StateResponse:
-    game_state = request.game_state
-    task = JailTask(
-        response=request.response, dice_1=request.dice_1, dice_2=request.dice_2
-    )
-    return StateResponse(game_states=list(generate_states(game_state, task)))
-
-
-# -----------------------------------------------------------------------------
-
-
-@app.post("/dice_c", response_model=StateResponse)
-async def dice_c(request: StateRequest) -> StateResponse:
-    game_state = request.game_state
-    task = DiceCTask()
-    return StateResponse(game_states=list(generate_states(game_state, task)))
-
-
-@app.post("/dice_xb", response_model=StateResponse)
-async def dice_xb(request: StateRequest) -> StateResponse:
-    game_state = request.game_state
-    task = DiceXbTask()
-    return StateResponse(game_states=list(generate_states(game_state, task)))
 
 
 class DestinationRequest(BaseModel):
     game_state: GameState
     destination: str
-
-
-@app.post("/triple_dice", response_model=StateResponse)
-async def triple_dice(request: DestinationRequest) -> StateResponse:
-    game_state = request.game_state
-    task = TripleDiceTask(destination=request.destination)
-    return StateResponse(game_states=list(generate_states(game_state, task)))
-
-
-@app.post("/action_card", response_model=StateResponse)
-async def action_card(request: StateRequest) -> StateResponse:
-    game_state = request.game_state
-    task = ActionCardTask()
-    return StateResponse(game_states=list(generate_states(game_state, task)))
-
-
-@app.post("/two_dice_rent_u", response_model=StateResponse)
-async def two_dice_rent_u(request: RollDiceRequest) -> StateResponse:
-    game_state = request.game_state
-    task = TwoDiceRentUTask(dice_1=request.dice_1, dice_2=request.dice_2)
-    return StateResponse(game_states=list(generate_states(game_state, task)))
-
-
-# -----------------------------------------------------------------------------
 
 
 class UseActionCardRequest(BaseModel):
@@ -241,21 +113,7 @@ class UseActionCardRequest(BaseModel):
     card: str
 
 
-@app.post("/use_action_card", response_model=StateResponse)
-async def use_action_card(request: UseActionCardRequest) -> StateResponse:
-    game_state = request.game_state
-    task = UseActionCardTask(group=request.group, card=request.card)
-    return StateResponse(game_states=list(generate_states(game_state, task)))
-
-
 # -----------------------------------------------------------------------------
-
-
-@app.post("/start_trade", response_model=StateResponse)
-async def start_trade(request: StateRequest) -> StateResponse:
-    game_state = request.game_state
-    task = StartTradeTask()
-    return StateResponse(game_states=list(generate_states(game_state, task)))
 
 
 class TradeRequest(BaseModel):
@@ -266,20 +124,6 @@ class TradeRequest(BaseModel):
     money_1: int | None = None
     money_2: int | None = None
     response: int | None = None
-
-
-@app.post("/trade", response_model=StateResponse)
-async def trade(request: TradeRequest) -> StateResponse:
-    game_state = request.game_state
-    task = TradeTask(
-        player_2=request.player_2,
-        bds=request.bds,
-        card=request.card,
-        money_1=request.money_1,
-        money_2=request.money_2,
-        response=request.response,
-    )
-    return StateResponse(game_states=list(generate_states(game_state, task)))
 
 
 # -----------------------------------------------------------------------------
@@ -357,6 +201,120 @@ async def initial_game_state(request: GameStateRequest) -> GameStateResponse:
     gen = generate_states(game_state, EndTurnTask())
     game_state = next(gen)
     return GameStateResponse(game_state=game_state, game_data=FRONTEND_GAME_DATA)
+
+
+# -----------------------------------------------------------------------------
+
+
+@app.websocket("/ws/game_states")
+async def websocket_game_states(websocket: WebSocket):
+    await websocket.accept()
+    try:
+        while True:
+            try:
+                data = await websocket.receive_text()
+                msg = json.loads(data)
+                action = msg["action"]
+                params = msg.get("params", {})
+                params["game_state"] = msg["game_state"]
+
+                task = None
+                game_state = None
+                if action == "roll_dice":
+                    request = RollDiceRequest(**params)
+                    game_state = request.game_state
+                    task = RollDiceTask(dice_1=request.dice_1, dice_2=request.dice_2)
+                elif action == "end_turn":
+                    request = StateRequest(**params)
+                    game_state = request.game_state
+                    task = EndTurnTask()
+                elif action == "buy":
+                    request = NumRequest(**params)
+                    game_state = request.game_state
+                    task = BuyTask(response=request.response)
+                elif action == "auction":
+                    request = AuctionRequest(**params)
+                    game_state = request.game_state
+                    task = AuctionBdsTask(amount=request.amount)
+                elif action == "upgrade_bds":
+                    request = BdsRequest(**params)
+                    game_state = request.game_state
+                    task = UpgradeTask(bds=request.bds)
+                elif action == "downgrade_bds":
+                    request = BdsRequest(**params)
+                    game_state = request.game_state
+                    task = DowngradeTask(bds=request.bds)
+                elif action == "mortgage_bds":
+                    request = BdsRequest(**params)
+                    game_state = request.game_state
+                    task = MortgageTask(bds=request.bds)
+                elif action == "unmortgage_bds":
+                    request = BdsRequest(**params)
+                    game_state = request.game_state
+                    task = UnmortgageTask(bds=request.bds)
+                elif action == "pay":
+                    request = NumRequest(**params)
+                    game_state = request.game_state
+                    task = PayTask(response=request.response)
+                elif action == "receive_mortgage":
+                    request = NumRequest(**params)
+                    game_state = request.game_state
+                    task = ReceiveMortgageTask(response=request.response)
+                elif action == "jail":
+                    request = DiceNumRequest(**params)
+                    game_state = request.game_state
+                    task = JailTask(
+                        response=request.response,
+                        dice_1=request.dice_1,
+                        dice_2=request.dice_2,
+                    )
+                elif action == "dice_c":
+                    request = StateRequest(**params)
+                    game_state = request.game_state
+                    task = DiceCTask()
+                elif action == "dice_xb":
+                    request = StateRequest(**params)
+                    game_state = request.game_state
+                    task = DiceXbTask()
+                elif action == "triple_dice":
+                    request = DestinationRequest(**params)
+                    game_state = request.game_state
+                    task = TripleDiceTask(destination=request.destination)
+                elif action == "action_card":
+                    request = StateRequest(**params)
+                    game_state = request.game_state
+                    task = ActionCardTask()
+                elif action == "two_dice_rent_u":
+                    request = RollDiceRequest(**params)
+                    game_state = request.game_state
+                    task = TwoDiceRentUTask(
+                        dice_1=request.dice_1, dice_2=request.dice_2
+                    )
+                elif action == "use_action_card":
+                    request = UseActionCardRequest(**params)
+                    game_state = request.game_state
+                    task = UseActionCardTask(group=request.group, card=request.card)
+                elif action == "start_trade":
+                    request = StateRequest(**params)
+                    game_state = request.game_state
+                    task = StartTradeTask()
+                elif action == "trade":
+                    request = TradeRequest(**params)
+                    game_state = request.game_state
+                    task = TradeTask(**params)
+
+                if task is not None and game_state is not None:
+                    for state in generate_states(game_state, task):
+                        await websocket.send_text(state.model_dump_json())
+                        delay = state.effect.wait_ms
+                        await asyncio.sleep(delay / 1000.0)
+            except Exception as e:
+                print(f"WebSocket processing error: {e}")
+                break
+    except Exception as e:
+        print(f"WebSocket error: {e}")
+    finally:
+        await websocket.close()
 
 
 # -----------------------------------------------------------------------------

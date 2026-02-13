@@ -92,32 +92,34 @@ function EndTurnButton(props: GameBoardProps) {
       onClick={endTurnFunc}
       disabled={end_turn_chore == null}
       className={"w-full bg-(--bg-color) disabled:active:bg-(--bg-color)" + COMMON_BUTTON_STYLE}
-    >Kết thúc lượt
+    >Kết
     </button>
   );
 }
 
 export function LeftPanel(props: GameBoardProps) {
   return (
-    <div className="@container w-full h-full flex flex-col gap-[1vh]">
-      <div className="w-full h-[75%] flex gap-[2%]">
-        <div className="w-[50%] h-full flex">
-          <BudgetPanel {...props} />
-        </div>
-        <div className="w-[50%] h-full flex flex-col gap-[2%] justify-between">
+    <div className="@container w-full h-full flex gap-[1vh]">
+      <div className="w-[50%] h-full flex">
+        <BudgetPanel {...props} />
+      </div>
+      <div className="w-[50%] h-full flex flex-col gap-[0.5vw] justify-between">
+        <div className="flex-1 flex gap-[0.5vw]">
           <div className="flex flex-1">
             <RollDiceButton {...props} />
           </div>
           <div className="flex flex-1">
             <BDSButton {...props} />
           </div>
+        </div>
+        <div className="flex-1 flex gap-[0.5vw]">
           <div className="flex flex-1">
             <NextButton {...props} />
           </div>
+          <div className="flex flex-1">
+            <EndTurnButton {...props} />
+          </div>
         </div>
-      </div>
-      <div className="w-full h-[25%] flex">
-        <EndTurnButton {...props} />
       </div>
     </div>
   );

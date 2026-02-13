@@ -22,7 +22,7 @@ export function MortgagePanel(props: GameBoardProps) {
         onClick={() => upgradeBdsFunc({ bds: selectedBds })}
       >
         <div className="text-[3cqw]">Nâng cấp</div>
-        {upgrade_amount != null && <div className="text-[5cqw]">{`-${formatBudget(upgrade_amount)}`}</div>}
+        {upgrade_amount != null && <div className="text-[5cqh]">{`-${formatBudget(upgrade_amount)}`}</div>}
       </button>
       <button
         style={{ "--bg-color": "#FCA5A5" } as CSSProperties}
@@ -31,7 +31,7 @@ export function MortgagePanel(props: GameBoardProps) {
         onClick={() => downgradeBdsFunc({ bds: selectedBds })}
       >
         <div className="text-[3cqw]">Hạ cấp</div>
-        {downgrade_amount != null && <div className="text-[5cqw]">{`+${formatBudget(downgrade_amount)}`}</div>}
+        {downgrade_amount != null && <div className="text-[5cqh]">{`+${formatBudget(downgrade_amount)}`}</div>}
       </button>
       <button
         style={{ "--bg-color": "#D1D5DB" } as CSSProperties}
@@ -40,7 +40,7 @@ export function MortgagePanel(props: GameBoardProps) {
         onClick={() => mortgageBdsFunc({ bds: selectedBds })}
       >
         <div className="text-[3cqw]">Cầm cố</div>
-        {mortgage_amount != null && <div className="text-[5cqw]">{`+${formatBudget(mortgage_amount)}`}</div>}
+        {mortgage_amount != null && <div className="text-[5cqh]">{`+${formatBudget(mortgage_amount)}`}</div>}
       </button>
       <button
         style={{ "--bg-color": "#D1D5DB" } as CSSProperties}
@@ -49,7 +49,7 @@ export function MortgagePanel(props: GameBoardProps) {
         onClick={() => unmortgageBdsFunc({ bds: selectedBds })}
       >
         <div className="text-[3cqw]">Chuộc</div>
-        {unmortgage_amount != null && <div className="text-[5cqw]">{`-${formatBudget(unmortgage_amount)}`}</div>}
+        {unmortgage_amount != null && <div className="text-[5cqh]">{`-${formatBudget(unmortgage_amount)}`}</div>}
       </button>
       <button
         style={{ "--bg-color": "#D1D5DB" } as CSSProperties}

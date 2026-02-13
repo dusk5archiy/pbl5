@@ -14,7 +14,8 @@ export function StatTab(props: GameBoardProps) {
 
   const selector_class_name = "flex-1 max-h-full flex flex-col overflow-auto gap-[0.5vw] pr-[0.25vw]";
   const selector_class_name_2 = "flex-1 flex w-full h-[5vh] gap-[0.5vw] pr-[0.25vw]";
-  const option_class_name = "w-full flex flex-col justify-center rounded text-[5cqh] active:bg-gray-400 py-[2vw]";
+  const option_class_name = "w-full flex justify-evenly rounded text-[3cqh] active:bg-gray-400";
+  const option_class_name_2 = option_class_name + " py-[1vw] text-[3cqw]";
   const active_color = COLOR_UI_INFO[gameState.logic.viewing_player || gameState.logic.current_player].lightColorCode;
   const inactive_color = "lightgray";
 
@@ -86,7 +87,7 @@ export function StatTab(props: GameBoardProps) {
                     "--bg-color": selectedTrack == idx ? active_color : inactive_color,
                   } as React.CSSProperties
                 }
-                className={option_class_name + " bg-(--bg-color)"}
+                className={option_class_name_2 + " bg-(--bg-color)"}
                 onClick={() => selectTrack(idx)}
               >Tầng {idx + 1}
               </button>
@@ -104,7 +105,7 @@ export function StatTab(props: GameBoardProps) {
                     "--bg-color": selectedBoard == idx ? active_color : inactive_color,
                   } as React.CSSProperties
                 }
-                className={option_class_name + " bg-(--bg-color)"}
+                className={option_class_name_2 + " bg-(--bg-color)"}
                 onClick={() => selectBoard(idx)}
               >Bàn {idx + 1}
               </button>
