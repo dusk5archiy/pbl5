@@ -1,6 +1,7 @@
 import { BudgetPanel } from "@/app/ui/game-board/BudgetPanel";
 import { GameBoardProps } from "./props";
 import { COLOR_UI_INFO } from "@/app/utils/pallete";
+import { formatBudget } from "@/app/utils/format";
 
 const COMMON_BUTTON_STYLE = " h-full text-[6cqw] font-bold text-gray-800 rounded active:bg-gray-300 disabled:text-white whitespace-nowrap overflow-hidden";
 
@@ -37,7 +38,7 @@ function BDSButton(props: GameBoardProps) {
     <button
       className={"w-full bg-gray-100" + COMMON_BUTTON_STYLE}
       onClick={() => setBdsShown((bdsShown + 1) % 2)}
-    >BĐS
+    >Túi
     </button>
   );
 }
@@ -73,7 +74,7 @@ function NextButton(
       className={"w-full bg-(--bg-color) disabled:active:bg-(--bg-color)" + COMMON_BUTTON_STYLE}
     >
       {
-        jail_chore != null ? "Ra tù" : "Tiếp"
+        jail_chore != null ? `-${formatBudget(jail_chore.amount)}` : "Tiếp"
       }
     </button>
   );

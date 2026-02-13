@@ -149,7 +149,7 @@ def update_bds_can(
                 major = len(owner_owned_bds) == len(group.bds)
                 minor = (
                     len(owner_owned_bds) > len(group.bds) // 2
-                    if game_state.version not in ["1"]
+                    if game_state.version == "5"
                     else major
                 )
                 ui_bds.can_mortgage = bds_state.level == 0 and all(
@@ -171,14 +171,14 @@ def update_bds_can(
                         and level == 5
                         and game_state.logic.build.skyscraper >= 1
                     )
-                ) and all(n in [level, level + 1] for n in owned_bds_level):
+                ) and all(n >= level for n in owned_bds_level):
                     ui_bds.can_upgrade = True
 
                 if (
                     (1 <= level <= 4)
                     or (level == 5 and game_state.logic.build.house >= 4)
                     or (level == 6 and game_state.logic.build.hotel >= 1)
-                ) and all(n in [level - 1, level] for n in owned_bds_level):
+                ) and all(n <= level for n in owned_bds_level):
                     ui_bds.can_downgrade = True
 
         game_state.ui.bds[bds_id] = ui_bds

@@ -17,9 +17,14 @@ export function getVtFunction(props: GameBoardProps) {
 // ----------------------------------------------------------------------------
 
 export function getDrawSpaceFunction(props: GameBoardProps) {
-  const { gameData } = props;
+  const { gameData, gameState } = props;
   const vt = getVtFunction(props);
   return (spaceId: string) => {
+    let fill = "white";
+    let owner = gameState.logic.bds[spaceId]?.owner || null;
+    if (owner != null) {
+      fill = COLOR_UI_INFO[owner].lightColorCode;
+    }
     const space = gameData.space[spaceId];
     return (
       <rect
@@ -28,7 +33,7 @@ export function getDrawSpaceFunction(props: GameBoardProps) {
         y={vt(space.y)}
         width={vt(space.w)}
         height={vt(space.h)}
-        fill="white"
+        fill={fill}
         stroke={BORDER_COLOR}
         strokeWidth="1"
       />
@@ -192,7 +197,6 @@ export function getDrawBDSLabelFunction(props: GameBoardProps) {
       const level = gameState.ui.bds[spaceId].level;
       if (level != null && owner != null) {
         text = `${spaceId}\nLv.${level >= 0 ? level : "-"}`;
-        color = COLOR_UI_INFO[owner].darkColorCode;
         weight = "bold";
       }
       return drawLabel(`text-${spaceId}`, text, space, color, weight);
@@ -202,7 +206,7 @@ export function getDrawBDSLabelFunction(props: GameBoardProps) {
 // ----------------------------------------------------------------------------
 
 export function getDrawRDecoration(props: GameBoardProps) {
-  const { gameData, getBoardNum } = props;
+  const { gameData, gameState, getBoardNum } = props;
   const vt = getVtFunction(props);
   const drawLabel = getDrawLabelFunction(props);
   const orient_to_offset_label = (orient: string) => {
@@ -277,6 +281,11 @@ export function getDrawRDecoration(props: GameBoardProps) {
       const existA = Object.keys(gameData.space).includes(spaceId + "A");
       const { w, h } = existA ? orient_to_wh(space.orient) : orient_to_wh_2(space.orient);
       const { x1, y1, x2, y2 } = orient_to_line(space.orient);
+      let fill = "white";
+      let owner = gameState.logic.bds[spaceId]?.owner || null;
+      if (owner != null) {
+        fill = COLOR_UI_INFO[owner].lightColorCode;
+      }
       if (existA) {
         const { w: off_w, h: off_h } = orient_to_offset(space.orient);
         const { w: off_w_label, h: off_h_label } = orient_to_offset_label(space.orient);
@@ -292,7 +301,7 @@ export function getDrawRDecoration(props: GameBoardProps) {
         };
         return (
           <g key={`banner-${spaceId}`}>
-            <rect x={vt(space.x + off_w)} y={vt(space.y + off_h)} width={w} height={h} fill="white" stroke={BORDER_COLOR} strokeWidth="1" />
+            <rect x={vt(space.x + off_w)} y={vt(space.y + off_h)} width={w} height={h} fill={fill} stroke={BORDER_COLOR} strokeWidth="1" />
             <rect x={vt(space.x + off_w)} y={vt(space.y + off_h)} width={w} height={h} fill="url(#gray25)" stroke={BORDER_COLOR} strokeWidth="1" />
             <line x1={vt(space.x + x1)} y1={vt(space.y + y1)} x2={vt(space.x + x2)} y2={vt(space.y + y2)} stroke="grey" strokeWidth={TRACK_BORDER_WIDTH} />
             {drawLabel(`text-${spaceId}-R`, text, s)}
@@ -302,7 +311,7 @@ export function getDrawRDecoration(props: GameBoardProps) {
       else {
         return (
           <g key={`banner-${spaceId}`}>
-            <rect x={vt(space.x)} y={vt(space.y)} width={w} height={h} fill="white" stroke={BORDER_COLOR} strokeWidth="1" />
+            <rect x={vt(space.x)} y={vt(space.y)} width={w} height={h} fill={fill} stroke={BORDER_COLOR} strokeWidth="1" />
             <rect x={vt(space.x)} y={vt(space.y)} width={w} height={h} fill="url(#gray25)" stroke={BORDER_COLOR} strokeWidth="1" />
             <line x1={vt(space.x + x1)} y1={vt(space.y + y1)} x2={vt(space.x + x2)} y2={vt(space.y + y2)} stroke="grey" strokeWidth={TRACK_BORDER_WIDTH} />
           </g>
