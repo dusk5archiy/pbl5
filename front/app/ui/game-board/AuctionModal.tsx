@@ -15,7 +15,7 @@ interface AuctionModalProps extends GameBoardProps {
 export function AuctionModal(props: AuctionModalProps) {
   const { gameState, func, chore } = props;
   const { player, original_price, current_price } = chore;
-  const budget = gameState.logic.player[player].budget;
+  const budget = gameState.logic.budget[player];
 
   const buttonClassName = "px-[1cqw] py-[1cqh] text-[2.5cqh] rounded bg-(--bg-color) border-2 border-white disabled:text-white whitespace-nowrap";
   const bds_info = chore.bds;

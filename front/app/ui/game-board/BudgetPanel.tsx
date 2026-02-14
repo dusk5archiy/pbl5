@@ -11,7 +11,7 @@ export function BudgetPanel(props: GameBoardProps) {
       className="@container w-full h-full flex flex-col gap-[1vh] border-2 border-white p-[0.25vw] rounded bg-gray-700 justify-center"
       onClick={() => setBudgetMode(!budgetMode)}
     >
-      {Object.entries(gameState.logic.player).map(([playerId, playerData]: [string, any]) => (
+      {gameState.logic.player_order.map((playerId) => (
         <div
           key={playerId}
           className="w-full h-[14%] flex items-center pl-[0.25vw] gap-[1vw] overflow-hidden"
@@ -29,7 +29,7 @@ export function BudgetPanel(props: GameBoardProps) {
                   "--text-color": gameState.logic.player[playerId].alive ? "#F3F4F6" : "#99a1af",
                 } as CSSProperties}
                 className="flex-1 h-full flex items-center font-bold text-(--text-color) text-[15cqw] overflow-hidden"
-              >{formatBudget(playerData.budget)}
+              >{formatBudget(gameState.logic.budget[playerId])}
               </div> :
               gameState.logic.player[playerId].alive ?
                 <div

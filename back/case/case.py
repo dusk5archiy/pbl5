@@ -157,10 +157,15 @@ def case_land_TTN(cw: CaseWrapper) -> CaseResult:
 
     game_data = GAME_DATA[cw.game_state.version]
     FRONTEND_GAME_DATA = game_data.frontend_game_data
+    BACKEND_GAME_DATA = game_data.backend_game_data
     game_state = cw.game_state
     game_state = update_total_ui(game_state, FRONTEND_GAME_DATA)
-    amount = min(200, game_state.ui.player[game_state.logic.current_player].total // 10)
-    chore = PayChore(amount=amount, player=cw.player, receiver=None)
+    amount = int(BACKEND_GAME_DATA.logic.constants["$TTN_AMOUNT"])
+    amount = min(
+        amount, game_state.ui.player[game_state.logic.current_player].total // 10
+    )
+    receiver = None if not BACKEND_GAME_DATA.logic.use_pool else "pool"
+    chore = PayChore(amount=amount, player=cw.player, receiver=receiver)
     game_state.chore.pay.append(chore)
     game_state, task = mod_release(game_state)
     return game_state, task, True
@@ -172,9 +177,12 @@ def case_land_TXX(cw: CaseWrapper) -> CaseResult:
 
     game_data = GAME_DATA[cw.game_state.version]
     FRONTEND_GAME_DATA = game_data.frontend_game_data
+    BACKEND_GAME_DATA = game_data.backend_game_data
     game_state = cw.game_state
     game_state = update_total_ui(game_state, FRONTEND_GAME_DATA)
-    chore = PayChore(amount=75, player=cw.player, receiver=None)
+    amount = int(BACKEND_GAME_DATA.logic.constants["$TXX_AMOUNT"])
+    receiver = None if not BACKEND_GAME_DATA.logic.use_pool else "pool"
+    chore = PayChore(amount=amount, player=cw.player, receiver=receiver)
     game_state.chore.pay.append(chore)
     game_state, task = mod_release(game_state)
     return game_state, task, True

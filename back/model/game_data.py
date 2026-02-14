@@ -26,6 +26,7 @@ class BackendLogic(BaseModel):
     init_house: int = 0
     init_hotel: int = 0
     init_skyscraper: int = 0
+    use_pool: bool = False
     constants: dict[str, str | int]
 
 

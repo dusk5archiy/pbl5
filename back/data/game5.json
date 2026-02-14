@@ -5,19 +5,22 @@
     "init_house": 150,
     "init_hotel": 50,
     "init_skyscraper": 30,
+    "use_pool": true,
     "constants": {
       "$BDAU_SALARY": 200,
       "immediate": "Dùng thẻ ngay lập tức.",
       "$NTT_SALARY_2": 400,
       "$NTT_SALARY_1": 300,
-      "$THUONG_SALARY_1": 250,
-      "$THUONG_SALARY_2": 300,
+      "$THUONG_SALARY_1": 300,
+      "$THUONG_SALARY_2": 250,
       "$DN_SALARY_1": 300,
       "$DN_SALARY_2": 200,
       "$DN_SALARY_3": 100,
       "$GKT_SALARY_1": 500,
       "$GKT_SALARY_2": 400,
-      "$GKT_SALARY_3": 300
+      "$GKT_SALARY_3": 300,
+      "$TTN_AMOUNT": 200,
+      "$TXX_AMOUNT": 75
     }
   },
   "action": {
@@ -271,6 +274,20 @@
             "collect": 350,
             "foot": "{immediate}"
           },
+          "+ChoConDiHoc": {
+            "name": "Cho Con Đi Học",
+            "content": "Trả {$amount} vào Kho.",
+            "pay": 150,
+            "pool": true,
+            "foot": "{immediate}"
+          },
+          "+BongBongCongNghe": {
+            "name": "Bong Bóng Công Nghệ",
+            "content": "Trả {$amount} vào Kho.",
+            "pay": 150,
+            "pool": true,
+            "foot": "{immediate}"
+          },
           "1E3": {
             "name": "Đến ô {name} ({id})",
             "move": "1E3",
@@ -354,6 +371,12 @@
           "6C3": {
             "name": "Đến ô {name} ({id})",
             "move": "6C3",
+            "foot": "{immediate}"
+          },
+          "THUONG": {
+            "name": "Đến ô Thưởng",
+            "move": "THUONG",
+            "content": "Lãnh {$THUONG_SALARY_1} từ Ngân Hàng.",
             "foot": "{immediate}"
           }
         }
@@ -685,6 +708,12 @@
             "name": "Cấp Cứu Y Tế",
             "content": "Trả {$amount} cho Ngân Hàng.",
             "pay": 500,
+            "foot": "{immediate}"
+          },
+          "+ThueLienHiep": {
+            "name": "Thuế Liên Hiệp",
+            "content": "Trả {$amount} vào Kho.",
+            "pay": 200,
             "foot": "{immediate}"
           },
           "8C4": {
@@ -4166,26 +4195,32 @@
   "rule": [
     "= Ô \"BẮT ĐẦU\"",
     "Khi qua ô, lãnh {$BDAU_SALARY} từ Ngân Hàng.",
-    ".",
+    "|",
     "= Ô \"NGÀY TRẢ TIỀN\"",
     "Khi qua ô:",
     "+ Nếu số bước di chuyển là chẵn, lãnh {$NTT_SALARY_2} từ Ngân Hàng.",
     "+ Nếu số bước di chuyển là lẻ, lãnh {$NTT_SALARY_1} từ Ngân Hàng.",
-    ".",
+    "|",
     "= Ô \"THƯỞNG\"",
-    "Khi dừng lại, lãnh {$THUONG_SALARY_2} từ Ngân Hàng.",
-    "Trường hợp còn lại, khi qua ô, lãnh {$THUONG_SALARY_1} từ Ngân Hàng.",
-    ".",
+    "Khi dừng lại, lãnh {$THUONG_SALARY_1} từ Ngân Hàng.",
+    "Trường hợp còn lại, khi qua ô, lãnh {$THUONG_SALARY_2} từ Ngân Hàng.",
+    "|",
     "= Ô \"DU NGOẠN\"",
     "Khi qua ô:",
     "+ Nếu số bước di chuyển từ 5 trở xuống, lãnh {$DN_SALARY_1} từ Ngân Hàng.",
     "+ Nếu số bước di chuyển từ 10 trở lên, lãnh {$DN_SALARY_3} từ Ngân Hàng.",
     "+ Trường hợp còn lại, lãnh {$DN_SALARY_2} từ Ngân Hàng.",
-    ".",
+    "|",
     "= Ô \"GÓI KÍCH THÍCH\"",
     "Khi qua ô:",
     "+ Nếu số bước di chuyển từ 10 trở lên, lãnh {$GKT_SALARY_1} từ Ngân Hàng.",
     "+ Nếu số bước di chuyển từ 5 trở xuống, lãnh {$GKT_SALARY_3} từ Ngân Hàng.",
-    "+ Trường hợp còn lại, lãnh {$GKT_SALARY_2} từ Ngân Hàng."
+    "+ Trường hợp còn lại, lãnh {$GKT_SALARY_2} từ Ngân Hàng.",
+    "|",
+    "= Ô \"Thuế Thu Nhập\"",
+    "Khi dừng lại, trả 10% tổng giá trị tài sản, hoặc {$TTN_AMOUNT} vào Kho, chọn giá trị nhỏ nhất.",
+    "|",
+    "= Ô \"Thuế Xa xỉ\"",
+    "Khi dừng lại, trả {$TXX_AMOUNT} vào Kho."
   ]
 }

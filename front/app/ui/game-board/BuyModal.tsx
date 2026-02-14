@@ -13,7 +13,7 @@ interface BuyModalProps extends GameBoardProps {
 export function BuyModal(props: BuyModalProps) {
   const { gameState, func: buyFunc, chore } = props;
   const { bds, price, player } = chore;
-  const can_buy = gameState.logic.player[player].budget >= price;
+  const can_buy = gameState.logic.budget[player] >= price;
   const buttonClassName = "px-[7cqw] py-[5cqw] rounded disabled:text-white disabled:bg-gray-300 border-2 border-white";
   return (
     <div className="w-full h-full flex flex-col gap-[1.5vw] justify-center">

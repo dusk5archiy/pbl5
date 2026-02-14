@@ -57,7 +57,7 @@ export function MortgagePanel(props: GameBoardProps) {
         disabled={!gameState.ui.bds[selectedBds].can_choose}
         onClick={trade_chore != null ? () => {
           tradeFunc({ bds: selectedBds });
-          setPropertyTab(2);
+          setPropertyTab("trade");
         } : undefined}
       >
         <div className="text-[3cqw] font-bold">Chọn</div>

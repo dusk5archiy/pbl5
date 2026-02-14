@@ -257,6 +257,7 @@ class ActionCardInputModel(BaseModel):
     values: dict[str, str | int] | None = None
     collect: int | None = None
     pay: int | None = None
+    pool: bool = False
     move: str | None = None
     copies: int = 1
     keep: bool = False

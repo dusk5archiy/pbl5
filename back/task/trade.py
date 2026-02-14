@@ -112,7 +112,7 @@ class TradeTask(Task):
             elif (money_1 := self.money_1) is not None:
                 if money_1 > 0:
                     chore.player_1_item.money = min(
-                        game_state.logic.player[player_1].budget,
+                        game_state.logic.budget[player_1],
                         chore.player_1_item.money + money_1,
                     )
                 else:
@@ -122,7 +122,7 @@ class TradeTask(Task):
             elif (money_2 := self.money_2) is not None:
                 if money_2 > 0:
                     chore.player_2_item.money = min(
-                        game_state.logic.player[player_2].budget,
+                        game_state.logic.budget[player_2],
                         chore.player_2_item.money + money_2,
                     )
                 else:

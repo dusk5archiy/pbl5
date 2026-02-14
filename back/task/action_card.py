@@ -39,7 +39,8 @@ class ActionCardTask(Task):
 
         if (amount := info.pay) is not None:
             prepare_pay_prompt(game_state, player)
-            chore = PayChore(amount=amount, player=player, receiver=None)
+            receiver = "pool" if info.pool else None
+            chore = PayChore(amount=amount, player=player, receiver=receiver)
             game_state.chore.pay.append(chore)
             game_state, task = mod_release(game_state)
             return game_state, task

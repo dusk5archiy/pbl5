@@ -2,15 +2,18 @@ import { PropertyTab } from "./PropertyTab";
 import { GameBoardProps } from "./props";
 import { COLOR_UI_INFO } from "@/app/utils/pallete";
 import { ActionCardTab } from "./ActionCardTab";
-import { TradeTab } from "./TradeTab";
+import { OtherTab } from "./OtherTab";
 import { StatTab } from "./StatTab";
+import { RuleTab } from "./RuleTab";
+import { TradeTab } from "./TradeTab";
 
 export function HandPanel(props: GameBoardProps) {
   const { gameState, propertyTab, setPropertyTab, setBdsShown } = props;
   const BUTTON_CLASS = "w-max h-max px-[2vw] py-[2vh] text-[2vw] px-[3vw] font-bold disabled:bg-(--bg-color) rounded bg-[lightgray] disabled:active:bg-(--bg-color)";
+
   return (
     <div className="w-full h-full flex flex-col gap-[2%] overflow-hidden">
-      <div className="w-full h-[10%] flex justify-center gap-[0.5vw]">
+      <div className="w-full h-[10%] flex gap-[0.5vw] overflow-x-auto overflow-y-hidden">
         <button
           style={
             {
@@ -28,8 +31,8 @@ export function HandPanel(props: GameBoardProps) {
             } as React.CSSProperties
           }
           className={BUTTON_CLASS}
-          disabled={propertyTab == 0}
-          onClick={() => setPropertyTab(0)}
+          disabled={propertyTab == "bds"}
+          onClick={() => setPropertyTab("bds")}
         >BĐS
         </button>
         <button
@@ -39,8 +42,8 @@ export function HandPanel(props: GameBoardProps) {
             } as React.CSSProperties
           }
           className={BUTTON_CLASS}
-          disabled={propertyTab == 1}
-          onClick={() => setPropertyTab(1)}
+          disabled={propertyTab == "action_card"}
+          onClick={() => setPropertyTab("action_card")}
         >Thẻ
         </button>
         <button
@@ -50,9 +53,9 @@ export function HandPanel(props: GameBoardProps) {
             } as React.CSSProperties
           }
           className={BUTTON_CLASS}
-          disabled={propertyTab == 3}
-          onClick={() => setPropertyTab(3)}
-        >Thống kê
+          disabled={propertyTab == "bds_stats"}
+          onClick={() => setPropertyTab("bds_stats")}
+        >Thống kê BĐS
         </button>
         <button
           style={
@@ -61,22 +64,48 @@ export function HandPanel(props: GameBoardProps) {
             } as React.CSSProperties
           }
           className={BUTTON_CLASS}
-          disabled={propertyTab == 2}
-          onClick={() => setPropertyTab(2)}
+          disabled={propertyTab == "trade"}
+          onClick={() => setPropertyTab("trade")}
+        >Trao đổi
+        </button>
+        <button
+          style={
+            {
+              '--bg-color': COLOR_UI_INFO[gameState.logic.viewing_player || gameState.logic.current_player].lightColorCode
+            } as React.CSSProperties
+          }
+          className={BUTTON_CLASS}
+          disabled={propertyTab == "other"}
+          onClick={() => setPropertyTab("other")}
         >Khác
+        </button>
+        <button
+          style={
+            {
+              '--bg-color': COLOR_UI_INFO[gameState.logic.viewing_player || gameState.logic.current_player].lightColorCode
+            } as React.CSSProperties
+          }
+          className={BUTTON_CLASS}
+          disabled={propertyTab == "rule"}
+          onClick={() => setPropertyTab("rule")}
+        >Luật chơi
         </button>
       </div>
       <div className="w-full h-[90%] flex overflow-auto">
         {
-          propertyTab == 0 ?
+          propertyTab == "bds" ?
             <PropertyTab {...props} /> :
-            propertyTab == 1 ?
+            propertyTab == "action_card" ?
               <ActionCardTab {...props} /> :
-              propertyTab == 2 ?
-                <TradeTab {...props} /> :
-                propertyTab == 3 ?
-                  <StatTab {...props} /> :
-                  undefined
+              propertyTab == "bds_stats" ?
+                <StatTab {...props} /> :
+                propertyTab == "rule" ?
+                  <RuleTab {...props} /> :
+                  propertyTab == "trade" ?
+                    <TradeTab {...props} /> :
+                    propertyTab == "other" ?
+                      <OtherTab {...props} /> :
+                      null
         }
       </div>
     </div>

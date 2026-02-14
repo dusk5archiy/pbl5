@@ -68,7 +68,6 @@ export interface GameData {
 // ----------------------------------------------------------------------------
 
 export interface LogicStatePlayer {
-  budget: number;
   at: string;
   jail_stack: number;
   double_stack: number;
@@ -99,9 +98,10 @@ export interface DiceXbState { }
 
 export interface GameLogicState {
   classic: boolean;
-
   bds: Record<string, LogicStateBDS>;
   player: Record<string, LogicStatePlayer>;
+  budget: Record<string, number>;
+  player_order: string[];
   current_player: string;
   viewing_player?: string;
   build: LogicStateBuild;

@@ -41,7 +41,7 @@ export function ActionCardPanel(props: GameBoardProps) {
         disabled={!gameState.ui.action[selectedActionGroup][selectedActionCard].can_choose}
         onClick={
           trade_chore != null ? () => {
-            setPropertyTab(2);
+            setPropertyTab("trade");
             tradeFunc({ card: { group: selectedActionGroup, card: selectedActionCard } });
           } : undefined
         }

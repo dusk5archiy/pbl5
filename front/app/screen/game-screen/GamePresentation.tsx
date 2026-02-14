@@ -31,6 +31,7 @@ import { LeftPanel } from "@/app/ui/game-board/LeftPanel";
 import { PromptModal } from "@/app/ui/game-board/PromptModal";
 import { DiceConfirmTab } from "@/app/ui/game-board/DiceConfirmTab";
 import { WS_BACKEND_PREFIX } from "@/app/utils/env";
+import DashTab from "@/app/ui/game-board/DashTab";
 
 // ----------------------------------------------------------------------------
 
@@ -38,7 +39,7 @@ export function GamePresentation(props: GameScreenProps) {
   const { onBack, gameData, gameState, setGameState, selectedCamera, diceDetection } = props;
 
   const [bdsShown, setBdsShown] = useState<number>(0);
-  const [propertyTab, setPropertyTab] = useState<number>(0);
+  const [propertyTab, setPropertyTab] = useState<string>("bds");
   const [boardShown, setBoardShown] = useState<boolean>(true);
 
 
@@ -319,6 +320,9 @@ export function GamePresentation(props: GameScreenProps) {
                       >{gameState.turns}
                       </div>
                     }
+                  </div>
+                  <div className="w-full min-h-[30%] flex">
+                    <DashTab {...game_board_props} />
                   </div>
                 </div>
               </div>

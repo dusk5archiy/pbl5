@@ -108,8 +108,8 @@ export interface GameBoardProps extends
   getBoardNum: number;
   bdsShown: number
   setBdsShown: (_: number) => void;
-  propertyTab: number;
-  setPropertyTab: (_: number) => void;
+  propertyTab: string;
+  setPropertyTab: (_: string) => void;
 }
 
 // ----------------------------------------------------------------------------

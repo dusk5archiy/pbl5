@@ -5,7 +5,6 @@ from model.chore import Chore, CurrentChore
 
 
 class LogicStatePlayer(BaseModel):
-    budget: int
     at: str
     double_stack: int = 0
     jail_stack: int = 0
@@ -42,6 +41,7 @@ class GameLogicState(BaseModel):
     u_multiplier: int | None = None
     steps: int | None = None
     action: dict[str, dict[str, LogicStateAction]]
+    budget: dict[str, int]
 
 
 # -----------------------------------------------------------------------------

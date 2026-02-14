@@ -15,9 +15,9 @@ interface PayModalProps extends GameBoardProps {
 export function PayModal(props: PayModalProps) {
   const { gameState, func, chore } = props;
   const { amount, player, receiver } = chore;
-  const player_budget = gameState.logic.player[player].budget;
+  const player_budget = gameState.logic.budget[player];
   const buttonClassName = "px-[7cqw] py-[3cqw] rounded disabled:text-white disabled:bg-gray-300 border-2 border-white";
-  let text = `Trả ${formatBudget(amount)}`;
+  let text = `Trả ${formatBudget(amount)}` + (receiver == "pool" ? " vào Kho" : "");
 
   if (chore.bds != null) {
     const bds = chore.bds;
@@ -32,7 +32,7 @@ export function PayModal(props: PayModalProps) {
           className="w-[15%] h-full bg-(--bg-color) border-2 border-(--bd-color)">
         </div>
         {
-          receiver != null &&
+          receiver != null && receiver != "pool" &&
           <div
             style={{ "--bg-color": COLOR_UI_INFO[receiver].lightColorCode, "--bd-color": "black" } as CSSProperties}
             className="w-[15%] h-full bg-(--bg-color) border-2 border-(--bd-color)">

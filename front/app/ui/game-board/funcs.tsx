@@ -56,7 +56,7 @@ export function getDrawSpaceTouchFunction(props: GameBoardProps) {
 
     if (Object.keys(gameData.bds).includes(spaceId)) {
       setBdsShown(1);
-      setPropertyTab(0);
+      setPropertyTab("bds");
       focusBds(spaceId);
     }
   }

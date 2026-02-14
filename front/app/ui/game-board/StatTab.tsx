@@ -61,7 +61,7 @@ export function StatTab(props: GameBoardProps) {
                             className={option_class_name + " bg-(--bg-color)"}
                             onClick={() => {
                               focusBds(bds);
-                              setPropertyTab(0);
+                              setPropertyTab("bds");
                             }}
                           >{text.split("\n").map(
                             (line, i) => <span key={i}>{line}</span>

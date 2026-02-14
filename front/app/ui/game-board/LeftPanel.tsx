@@ -9,9 +9,7 @@ function RollDiceButton(
   props: GameBoardProps,
 ) {
   const { gameState, diceDetection, getDiceCaptureResults, sendRollDice } = props;
-  const jail_chore = gameState.current_chore.jail;
-  const roll_dice_chore = gameState.current_chore.roll_dice;
-  const two_dice_rent_u_chore = gameState.current_chore.two_dice_rent_u;
+  const { jail, roll_dice, two_dice_rent_u } = gameState.current_chore;
 
   return (
     <button
@@ -22,9 +20,9 @@ function RollDiceButton(
       }
       onClick={diceDetection ? () => getDiceCaptureResults() : () => sendRollDice({})}
       disabled={
-        jail_chore == null &&
-        roll_dice_chore == null &&
-        two_dice_rent_u_chore == null
+        jail == null &&
+        roll_dice == null &&
+        two_dice_rent_u == null
       }
       className={"w-full bg-(--bg-color) disabled:active:bg-(--bg-color)" + COMMON_BUTTON_STYLE}
     >Thảy
@@ -37,7 +35,7 @@ function BDSButton(props: GameBoardProps) {
   return (
     <button
       className={"w-full bg-gray-100" + COMMON_BUTTON_STYLE}
-      onClick={() => setBdsShown((bdsShown + 1) % 2)}
+      onClick={() => { setBdsShown((bdsShown + 1) % 2); }}
     >Túi
     </button>
   );

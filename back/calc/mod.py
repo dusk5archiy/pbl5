@@ -381,10 +381,10 @@ def mod_pay(
     game_state: GameState, sender: str | None, receiver: str | None, amount: int
 ):
     if sender is not None:
-        assert game_state.logic.player[sender].budget >= amount
-        game_state.logic.player[sender].budget -= amount
+        assert game_state.logic.budget[sender] >= amount
+        game_state.logic.budget[sender] -= amount
     if receiver is not None:
-        game_state.logic.player[receiver].budget += amount
+        game_state.logic.budget[receiver] += amount
 
     game_data = GAME_DATA[game_state.version]
     FRONTEND_GAME_DATA, BACKEND_GAME_DATA = (

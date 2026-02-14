@@ -380,6 +380,9 @@ class EndTurnTask(Task):
             game_state.logic.player[current_player].double_stack = 0
             idx = players.index(current_player)
             next_player = players[(idx + 1) % len(players)]
+            while game_state.logic.player_order[0] != next_player:
+                p = game_state.logic.player_order.pop(0)
+                game_state.logic.player_order.append(p)
         else:
             next_player = current_player
         game_state = mod_new_turn(game_state, next_player)
@@ -396,6 +399,9 @@ class JailTask(Task):
 
     def __call__(self, game_state: GameState) -> TaskResult:
         assert (chore := game_state.current_chore.jail) is not None
+        game_data = GAME_DATA[game_state.version]
+        BACKEND_GAME_DATA = game_data.backend_game_data
+        receiver = "pool" if BACKEND_GAME_DATA.logic.use_pool else None
         game_state.chore.jail.pop(0)
 
         player = game_state.logic.current_player
@@ -423,7 +429,7 @@ class JailTask(Task):
                 new_chore = PayChore(
                     amount=chore.amount,
                     player=player,
-                    receiver=None,
+                    receiver=receiver,
                     then=Chore(
                         get_out_of_jail=[
                             GetOutOfJailChore(
@@ -447,7 +453,7 @@ class JailTask(Task):
             new_chore = PayChore(
                 amount=chore.amount,
                 player=player,
-                receiver=None,
+                receiver=receiver,
                 then=Chore(get_out_of_jail=[GetOutOfJailChore(player=player)]),
             )
             game_state.chore.pay.append(new_chore)
@@ -476,8 +482,8 @@ class BankruptTask(Task):
         game_state.logic.player[loser].double_stack = 0
         game_state.chore.dice_c.clear()
         game_state.chore.dice_xb.clear()
-        loser_budget = game_state.logic.player[loser].budget
-        game_state.logic.player[loser].budget = 0
+        loser_budget = game_state.logic.budget[loser]
+        game_state.logic.budget[loser] = 0
         players_alive = [
             p for p in game_state.logic.player_order if game_state.logic.player[p].alive
         ]
@@ -508,7 +514,7 @@ class BankruptTask(Task):
             for bds_id in mortgaged_bds:
                 game_state.logic.bds[bds_id].owner = winner
 
-            game_state.logic.player[winner].budget += add_budget
+            game_state.logic.budget[winner] += add_budget
 
             bds_left = mortgaged_bds
             if len(bds_left) > 0:

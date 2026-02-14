@@ -1,6 +1,6 @@
 from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import VERSION, BaseModel
 import asyncio
 import json
 from game_data_manager import (
@@ -143,7 +143,8 @@ class GameStateResponse(BaseModel):
 async def initial_game_state(request: GameStateRequest) -> GameStateResponse:
     import random
 
-    game_data = GAME_DATA[request.version]
+    version = request.version
+    game_data = GAME_DATA[version]
     FRONTEND_GAME_DATA, BACKEND_GAME_DATA = (
         game_data.frontend_game_data,
         game_data.backend_game_data,
@@ -163,14 +164,18 @@ async def initial_game_state(request: GameStateRequest) -> GameStateResponse:
 
     backend_action_cards = BACKEND_GAME_DATA.action_cards
     player = players[0]
+
+    logic_budget = {player: backend_logic.init_budget for player in players}
+
+    if BACKEND_GAME_DATA.logic.use_pool:
+        logic_budget = logic_budget | {"pool": 0}
+
     logic = GameLogicState(
         bds={bds_id: LogicStateBDS() for bds_id in FRONTEND_GAME_DATA.bds.keys()},
         player={
-            player: LogicStatePlayer(
-                budget=backend_logic.init_budget, at=backend_logic.start_at
-            )
-            for player in players
+            player: LogicStatePlayer(at=backend_logic.start_at) for player in players
         },
+        budget=logic_budget,
         current_player=player,
         player_order=players,
         build=LogicStateBuild(

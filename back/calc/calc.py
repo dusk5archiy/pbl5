@@ -139,7 +139,7 @@ def update_bds_can(
             unmortgage_amount = bds.unmortgage
             ui_bds.can_unmortgage = (
                 level == -1
-                and game_state.logic.player[viewing_player].budget >= unmortgage_amount
+                and game_state.logic.budget[viewing_player] >= unmortgage_amount
             )
             if group.type == 1:
                 ui_bds.can_mortgage = bds_state.level == 0
@@ -252,7 +252,7 @@ def update_total_ui(
     FRONTEND_GAME_DATA: FrontendGameData,
 ):
     game_state.ui.player = {
-        p: UiStatePlayer(total=game_state.logic.player[p].budget)
+        p: UiStatePlayer(total=game_state.logic.budget[p])
         for p in game_state.logic.player
     }
     for bds_id in game_state.logic.bds:

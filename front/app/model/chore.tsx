@@ -86,7 +86,7 @@ export interface TradeCard {
   card: string;
 }
 
-interface TradeItem {
+export interface TradeItem {
   bds: string[];
   card: TradeCard[];
   money: number;
