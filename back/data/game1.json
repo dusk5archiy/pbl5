@@ -5,7 +5,9 @@
     "init_house": 32,
     "init_hotel": 12,
     "constants": {
-      "$BDAU_SALARY": 200
+      "$BDAU_SALARY": 200,
+      "$TTN_AMOUNT": 200,
+      "$TXX_AMOUNT": 75
     }
   },
   "action": {
