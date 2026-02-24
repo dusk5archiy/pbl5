@@ -1,27 +1,38 @@
 from dice_detection_task.inference import DiceDetectionInference
 from dice_score_task.inference import DiceScoreInference
 from PIL import Image
-from fastapi import FastAPI, File, UploadFile, WebSocket
+from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 import io
 import yaml
 import os
+import time
+import traceback
+from keras import backend
 
 
 # Load config
-config_path = os.path.join(os.path.dirname(__file__), '..', 'config.yml')
-with open(config_path, 'r') as f:
+config_path = os.path.join(os.path.dirname(__file__), "..", "config.yml")
+with open(config_path, "r") as f:
     config = yaml.safe_load(f)
 
-front_port = config['front']['port']
+front_port = config["front"]["port"]
 
 
 class Detector:
     def __init__(self, dice_detection_model_path: str, dice_score_model_path: str):
-        self.dice_detection_model = DiceDetectionInference(model_path=dice_detection_model_path)
+        start = time.time()
+        backend.clear_session()
+
+        self.dice_detection_model = DiceDetectionInference(
+            model_path=dice_detection_model_path
+        )
         self.dice_score_model = DiceScoreInference(model_path=dice_score_model_path)
+        end = time.time()
+        print(f"Time to initiate: {end - start:.4f}")
 
     def __call__(self, img):
+        start = time.time()
         bboxes = self.dice_detection_model(img=img)
         scores = []
         for bbox in bboxes:
@@ -29,6 +40,8 @@ class Detector:
             cropped = img.crop((x, y, x + w, y + h)).resize((32, 32))
             score = self.dice_score_model(img=cropped)
             scores.append(score)
+        end = time.time()
+        print(f"Time spent: {end - start:.4f}")
 
         return [[int(x) for x in bbox] for bbox in bboxes], scores
 
@@ -58,8 +71,9 @@ async def detect_image_ws(websocket: WebSocket):
             image = Image.open(io.BytesIO(data)).convert("RGB")
             bboxes, scores = detector(image)
             await websocket.send_json({"bboxes": bboxes, "scores": scores})
-    except Exception as e:
-        print(f"WebSocket error: {e}")
+    except Exception:
+        print("WebSocket error:")
+        traceback.print_exc()
         await websocket.close()
 
 
@@ -67,3 +81,4 @@ if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(app, host="0.0.0.0", port=8000)
+

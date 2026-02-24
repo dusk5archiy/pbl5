@@ -1,20 +1,12 @@
 import tensorflow as tf
 import numpy as np
-from PIL import Image
-import os
-from .model import get_dice_detection_model
 
 
 class DiceDetectionInference:
     def __init__(self, model_path: str):
-        if not os.path.exists(model_path):
-            raise FileNotFoundError(f"Model file not found: {model_path}")
+        self.model = tf.keras.models.load_model(model_path)
 
-        # Create the model and load weights
-        self.model = get_dice_detection_model()
-        self.model.load_weights(model_path)
-
-    def __call__(self, img, conf_threshold: float = 0.7, iou_threshold: float = 0.4):
+    def __call__(self, img, conf_threshold: float = 0.1, iou_threshold: float = 0.9):
         # img is expected to be a PIL Image
         # Resize using PIL to (width, height) = (640, 480)
         img_resized = img.resize((640, 480))
@@ -23,11 +15,11 @@ class DiceDetectionInference:
         img_batch = tf.expand_dims(img_array, axis=0)  # Add batch dimension
 
         # Perform inference
-        predictions = self.model.predict(img_batch, verbose=0)
+        predictions = self.model.predict(img_batch)
 
         # Extract predictions
-        pred_boxes = predictions['boxes'][0]  # xyxy format
-        confidences = predictions['confidence'][0]
+        pred_boxes = predictions["boxes"][0]  # xyxy format
+        confidences = predictions["confidence"][0]
 
         # Filter by confidence
         valid_mask = confidences > conf_threshold
@@ -43,9 +35,8 @@ class DiceDetectionInference:
             selected_boxes = tf.gather(valid_boxes, selected_indices)
 
             for box in selected_boxes:
-                x, y, x2, y2 = box.numpy()
-                w = x2 - x
-                h = y2 - y
+                x, y, w, h = box.numpy()
                 bboxes.append([x, y, w, h])
 
         return bboxes
+

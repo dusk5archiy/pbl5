@@ -116,7 +116,7 @@ export function GamePresentation(props: GameScreenProps) {
     return () => {
       websocket.close();
     };
-  }, [diceDetection]);
+  }, []);
 
   // Effects from the game state
   useEffect(() => {
