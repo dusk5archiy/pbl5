@@ -1,8 +1,14 @@
-torch
-torchvision
-pillow
-ultralytics
+# Config
+PyYAML
+colorama
+
+# API
 fastapi
 uvicorn
 python-multipart
-colorama
+websockets
+
+# AI
+pillow
+tensorflow
+keras_cv

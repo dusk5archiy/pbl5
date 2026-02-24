@@ -1,5 +1,0 @@
-/data/*
-/yolo-data/*
-/yolo-output/*
-/var/*
-!/**/.gitkeep

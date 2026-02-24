@@ -42,6 +42,8 @@ export function GamePresentation(props: GameScreenProps) {
   const [propertyTab, setPropertyTab] = useState<string>("bds");
   const [boardShown, setBoardShown] = useState<boolean>(true);
 
+  const [diceDetectWs, setDiceDetectWs] = useState<WebSocket | null>(null);
+
 
   // Default values for selectors
   function getDefault() {
@@ -97,6 +99,24 @@ export function GamePresentation(props: GameScreenProps) {
   // Dice detection results
   const [diceDetectionResult, setDiceDetectionResult] = useState<IDiceDetectionResult | null>(null);
   const [encodedImage, setEncodedImage] = useState<string | null>(null);
+
+  // WebSocket for dice detection
+  useEffect(() => {
+    const websocket = new WebSocket("ws://localhost:8000/detect");
+    websocket.onopen = () => {
+      setDiceDetectWs(websocket);
+    };
+    websocket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      setDiceDetectionResult(data);
+    };
+    websocket.onclose = () => {
+      setDiceDetectWs(null);
+    };
+    return () => {
+      websocket.close();
+    };
+  }, [diceDetection]);
 
   // Effects from the game state
   useEffect(() => {
@@ -181,7 +201,7 @@ export function GamePresentation(props: GameScreenProps) {
 
   // Dice detection
   const getDiceCaptureResults = async () => {
-    if (!videoRef?.current) return;
+    if (!videoRef?.current || !diceDetectWs || diceDetectWs.readyState !== WebSocket.OPEN) return;
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
     if (!context) return;
@@ -189,18 +209,10 @@ export function GamePresentation(props: GameScreenProps) {
     canvas.height = videoRef.current.videoHeight;
     context.drawImage(videoRef.current, 0, 0);
     canvas.toBlob(
-      async (blob) => {
-        if (!blob) return;
-        const formData = new FormData();
-        formData.append("file", blob, "capture.jpg");
-        try {
-          const response = await fetch("http://192.168.137.1:8000/detect", { method: 'POST', body: formData });
-          const data = await response.json();
-          setDiceDetectionResult(data);
-          setEncodedImage(canvas.toDataURL());
-        } catch (e) {
-          console.log(e);
-        }
+      (blob) => {
+        if (!blob || !diceDetectWs) return;
+        diceDetectWs.send(blob);
+        setEncodedImage(canvas.toDataURL());
       },
       'image/jpeg', 0.8);
   }

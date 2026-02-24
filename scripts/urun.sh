@@ -12,6 +12,11 @@ fi
 )
 
 (
+  cd ai
+  python3 main.py
+) &
+
+(
   cd back
   python3 main.py
 ) &
@@ -19,5 +24,7 @@ fi
 (
   . var/env.sh
   cd front
-  PORT=$FRONTEND_PORT npm run start
+  PORT=$FRONTEND_PORT
+  PATH=/snap/bin:$PATH
+  npm run start
 )

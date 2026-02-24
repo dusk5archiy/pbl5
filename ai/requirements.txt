@@ -1,4 +1,0 @@
-pillow
-scikit-learn
-tqdm
-ultralytics
