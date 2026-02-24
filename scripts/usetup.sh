@@ -56,6 +56,14 @@ fi
 TMPDIR=$HOME/tmp pip install --no-cache-dir -r requirements.txt
 
 (
+  cd back-setup
+  python3 main.py
+)
+
+(
+  . var/env.sh
+  PATH=/snap/bin:$PATH
+
   cd front
   npm install
   npm run build
