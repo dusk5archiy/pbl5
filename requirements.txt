@@ -10,6 +10,6 @@ websockets
 
 # AI
 pillow
-tensorflow-cpu
+tensorflow
 keras_cv
 ai-edge-litert
