@@ -9,6 +9,7 @@ import os
 import time
 import traceback
 from keras import backend
+from ults.time import MeasureTime
 
 
 # Load config
@@ -32,18 +33,28 @@ class Detector:
         print(f"Time to initiate: {end - start:.4f}")
 
     def __call__(self, img):
-        start = time.time()
-        bboxes = self.dice_detection_model(img=img)
-        scores = []
+        original_size = img.size  # (width, height)
+        img_resized = img.resize((640, 480))
+        with MeasureTime(message="Total time spent"):
+            with MeasureTime(message="Detection time"):
+                bboxes = self.dice_detection_model(img=img_resized)
+            scores = []
+            for bbox in bboxes:
+                x, y, w, h = bbox
+                cropped = img_resized.crop((x, y, x + w, y + h)).resize((32, 32))
+                with MeasureTime(message="Score time"):
+                    score = self.dice_score_model(img=cropped)
+                scores.append(score)
+
+        # Scale bboxes back to original size
+        scale_x = original_size[0] / 640
+        scale_y = original_size[1] / 480
+        scaled_bboxes = []
         for bbox in bboxes:
             x, y, w, h = bbox
-            cropped = img.crop((x, y, x + w, y + h)).resize((32, 32))
-            score = self.dice_score_model(img=cropped)
-            scores.append(score)
-        end = time.time()
-        print(f"Time spent: {end - start:.4f}")
+            scaled_bboxes.append([x * scale_x, y * scale_y, w * scale_x, h * scale_y])
 
-        return [[int(x) for x in bbox] for bbox in bboxes], scores
+        return [[int(x) for x in bbox] for bbox in scaled_bboxes], scores
 
 
 app = FastAPI()
@@ -81,4 +92,3 @@ if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(app, host="0.0.0.0", port=8000)
-

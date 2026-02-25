@@ -357,6 +357,7 @@ def mod_rent(
         game_state = prepare_two_dice_rent_u_prompt(game_state, player)
         chore = TwoDiceRentUChore(bds=bds, player=player)
         game_state.chore.two_dice_rent_u.append(chore)
+        game_state, _ = mod_release(game_state)
         return game_state
 
     amount = (

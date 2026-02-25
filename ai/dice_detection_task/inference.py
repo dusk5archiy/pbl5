@@ -21,7 +21,7 @@ class DiceDetectionInference:
         else:
             self.model = tf.saved_model.load(model_path)
 
-    def __call__(self, img, conf_threshold: float = 0.1, iou_threshold: float = 0.8):
+    def __call__(self, img, conf_threshold: float = 0.1, iou_threshold: float = 0.7):
         # img is expected to be a PIL Image
         # Resize using PIL to (width, height) = (640, 480)
         img_resized = img.resize((640, 480))
