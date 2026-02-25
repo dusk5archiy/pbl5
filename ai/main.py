@@ -57,8 +57,8 @@ app.add_middleware(
 )
 
 detector = Detector(
-    dice_detection_model_path="models/best_detection_model.keras",
-    dice_score_model_path="models/best_model.keras",
+    dice_detection_model_path="models/best_detection_model",
+    dice_score_model_path="models/best_score_model.tflite",
 )
 
 

@@ -1,12 +1,14 @@
 import tensorflow as tf
 import numpy as np
-from .model import get_dice_score_model
+from ai_edge_litert.interpreter import Interpreter
 
 
 class DiceScoreInference:
     def __init__(self, model_path: str):
-        self.model = get_dice_score_model()
-        self.model.load_weights(model_path)
+        self.interpreter = Interpreter(model_path=model_path)
+        self.interpreter.allocate_tensors()
+        self.input_details = self.interpreter.get_input_details()
+        self.output_details = self.interpreter.get_output_details()
 
     def __call__(self, img):
         # Preprocess the image
@@ -18,15 +20,17 @@ class DiceScoreInference:
             img_resized = img.resize((32, 32))
             img_array = np.array(img_resized).astype(np.float32) / 255.0
 
-        img_batch = tf.expand_dims(img_array, axis=0)  # Add batch dimension
+        img_tensor = tf.expand_dims(img_array, axis=0)  # Add batch dimension
 
         # Perform inference
-        predictions = self.model.predict(img_batch)
+        self.interpreter.set_tensor(self.input_details[0]["index"], img_tensor.numpy())
+        self.interpreter.invoke()
+        pred = self.interpreter.get_tensor(self.output_details[0]["index"])
+        pred = pred[0]
 
-        predicted_class = np.argmax(predictions, axis=1)[0]
+        predicted_class = np.argmax(pred)
 
         # Scores are 1-6
         score = predicted_class + 1
 
         return int(score)
-
