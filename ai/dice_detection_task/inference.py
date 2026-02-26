@@ -2,14 +2,19 @@ import tensorflow as tf
 import numpy as np
 from ai_edge_litert.interpreter import Interpreter
 from dice_detection_task.utils import decode_dfl
+import ctypes
 
 
 class DiceDetectionInference:
-    def __init__(self, model_path: str, use_litert: bool = False):
+    def __init__(self, model_path: str, use_litert: bool = True):
         # Load the flex delegate
         self.use_litert = use_litert
         if self.use_litert:
-            self.interpreter = Interpreter(model_path=model_path)
+            ctypes.CDLL("/usr/lib/libtensorflowlite_flex.so", mode=ctypes.RTLD_GLOBAL)
+            self.interpreter = Interpreter(
+                model_path=model_path,
+                # experimental_delegates=[delegate],
+            )
             input_details = self.interpreter.get_input_details()
             self.interpreter.resize_tensor_input(
                 input_details[0]["index"], [1, 480, 640, 3]
