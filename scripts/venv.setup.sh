@@ -9,4 +9,6 @@ $sudo apt update
 
 mkdir -p .venv
 
+chmod +x config/$task/setup.sh
 config/$task/setup.sh
+
