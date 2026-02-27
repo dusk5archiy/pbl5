@@ -43,6 +43,7 @@ sudo snap set chromium daemon=true
 sudo snap start chromium
 
 scripts/venv.setup.sh
+. scripts/venv.sh
 
 (
   cd back-setup
