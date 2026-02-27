@@ -2,7 +2,6 @@
 # Installed: OpenSSH
 
 sudo apt update
-sudo apt install --no-install-recommends --no-install-suggests -y python3 python3-venv libgl1
 sudo snap install node --classic
 sudo mkdir -p /etc/systemd/system/getty@tty1.service.d
 sudo touch /etc/systemd/system/getty@tty1.service.d/override.conf
@@ -43,17 +42,7 @@ sudo snap set chromium url=http://localhost:3000
 sudo snap set chromium daemon=true
 sudo snap start chromium
 
-if [[ ! -d ".venv" ]]; then
-  python3 -m venv .venv
-fi
-
-if [[ -d ".venv/bin" ]]; then
-  . .venv/bin/activate
-else
-  exit
-fi
-
-TMPDIR=$HOME/tmp pip install --no-cache-dir -r requirements.txt
+scripts/venv.setup.sh
 
 (
   cd back-setup

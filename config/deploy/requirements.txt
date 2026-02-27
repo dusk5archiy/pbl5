@@ -1,6 +1,7 @@
 # Config
 PyYAML
 colorama
+pydantic
 
 # API
 fastapi

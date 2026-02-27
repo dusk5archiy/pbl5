@@ -1,0 +1,2 @@
+dataset_path: ../datasets/s7dataset-2-dice-detection
+num_workers: 4

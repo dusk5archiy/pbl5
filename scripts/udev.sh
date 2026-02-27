@@ -1,7 +1,7 @@
 #!/bin/bash
 
-if [ -d ".venv/bin" ]; then
-  . .venv/bin/activate
+if [ -d ".venv/deploy/bin" ]; then
+  . .venv/deploy/bin/activate
 else
   exit
 fi

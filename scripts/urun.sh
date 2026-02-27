@@ -1,10 +1,6 @@
 #!/bin/bash
 
-if [ -d ".venv/bin" ]; then
-  . .venv/bin/activate
-else
-  exit
-fi
+. scripts/venv.sh
 
 (
   cd back-setup

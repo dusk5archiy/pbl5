@@ -30,7 +30,5 @@ class DiceScoreInference:
 
         predicted_class = np.argmax(pred)
 
-        # Scores are 1-6
-        score = predicted_class + 1
+        return int(predicted_class) + 1
 
-        return int(score)

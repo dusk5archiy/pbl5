@@ -353,7 +353,7 @@ if __name__ == "__main__":
 
     init()
 
-    with open("../config.yml", "r") as f:
+    with open("../config/config.yml", "r") as f:
         config = yaml.safe_load(f)
 
     print(Fore.CYAN + "[-- INFO --] Configurations: ")

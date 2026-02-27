@@ -1,0 +1,21 @@
+# Ubuntu
+
+# Configuration
+PyYAML
+pydantic
+
+# Image Manipulation
+opencv-python
+pillow
+
+# AI Training
+tqdm
+numpy==1.26.4
+scikit-learn
+keras_cv
+ai_edge_litert
+
+# Interactive Notebook
+ipykernel
+matplotlib
+pandas

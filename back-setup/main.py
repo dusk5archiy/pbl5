@@ -9,7 +9,7 @@ if __name__ == "__main__":
 
         init()
 
-        CONFIG_FILE_PATH = "../config.yml"
+        CONFIG_FILE_PATH = "../config/config.yml"
 
         with open(CONFIG_FILE_PATH, "r", encoding="utf-8") as f:
             config_content = yaml.safe_load(f)

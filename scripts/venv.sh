@@ -1,7 +1,7 @@
-if [[ -d ".venv/Scripts" ]]; then
-  . .venv/Scripts/activate
-elif [[ -d ".venv/bin" ]]; then
-  . .venv/bin/activate
+task="${1:-deploy}"
+
+if [[ -f ".venv/$task/bin/activate" ]]; then
+  . .venv/$task/bin/activate
 else
   exit
 fi
