@@ -1,4 +1,5 @@
 import os
+import traceback
 
 if __name__ == "__main__":
     from colorama import Fore, init
@@ -31,5 +32,6 @@ export NEXT_PUBLIC_BACKEND_PORT={config.back.port}
         print(Fore.GREEN + "[-- DONE --] Created startup env successfully.")
 
     except Exception as e:
+        traceback.print_exc()
         print(Fore.RED + f"[-- FAIL --] Fail to validate configuration: {e}")
         exit(1)
