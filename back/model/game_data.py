@@ -28,7 +28,7 @@ class BackendLogic(BaseModel):
     init_skyscraper: int = 0
     use_pool: bool = False
     use_minor_ownership: bool = False
-    use_speed_dice: bool = False
+    use_speed_die: bool = False
     constants: dict[str, str | int]
 
 
