@@ -149,7 +149,7 @@ def update_bds_can(
                 major = len(owner_owned_bds) == len(group.bds)
                 minor = (
                     len(owner_owned_bds) > len(group.bds) // 2
-                    if game_state.version == "5"
+                    if BACKEND_GAME_DATA.logic.use_minor_ownership
                     else major
                 )
                 ui_bds.can_mortgage = bds_state.level == 0 and all(
@@ -336,6 +336,13 @@ def get_rent(
     num_owned = len(owned_group_bds)
     num_in_group = len(group_bds)
 
+    major = num_owned == num_in_group
+    minor = (
+        num_owned > num_in_group // 2
+        if BACKEND_GAME_DATA.logic.use_minor_ownership
+        else major
+    )
+
     rent = 0
     if group_id == "U" and steps is not None:
         level = bds_state.level - 1 + num_owned
@@ -347,9 +354,9 @@ def get_rent(
         level = bds_state.level
         rent = FRONTEND_GAME_DATA.bds[bds_id].rent[level]
         if level == 0:
-            if num_owned == num_in_group:
+            if major and BACKEND_GAME_DATA.logic.use_minor_ownership:
                 rent *= 3
-            elif num_owned > num_in_group // 2:
+            elif minor or (major and not BACKEND_GAME_DATA.logic.use_minor_ownership):
                 rent *= 2
 
     return rent

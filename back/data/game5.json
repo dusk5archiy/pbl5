@@ -6,6 +6,8 @@
     "init_hotel": 50,
     "init_skyscraper": 30,
     "use_pool": true,
+    "use_speed_die": true,
+    "use_minor_ownership": true,
     "constants": {
       "$BDAU_SALARY": 200,
       "immediate": "Dùng thẻ ngay lập tức.",

@@ -4,6 +4,7 @@
     "start_at": "BDAU",
     "init_house": 32,
     "init_hotel": 12,
+    "use_speed_die": true,
     "constants": {
       "$BDAU_SALARY": 200,
       "$TTN_AMOUNT": 200,

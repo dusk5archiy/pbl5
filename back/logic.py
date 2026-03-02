@@ -65,12 +65,15 @@ class RollDiceTask(Task):
 
         player = game_state.logic.current_player
 
+        BACKEND_GAMEDATA = GAME_DATA[game_state.version].backend_game_data
+
         dice_1 = self.dice_1 or str(random.randint(1, 6))
         dice_2 = self.dice_2 or str(random.randint(1, 6))
-        if game_state.version in ["1"]:
-            dice_3 = ""
-        else:
-            dice_3 = random.choice(["1", "2", "3", "c", "c", "xb"])
+        dice_3 = (
+            random.choice(["1", "2", "3", "c", "c", "xb"])
+            if BACKEND_GAMEDATA.logic.use_speed_die
+            else ""
+        )
 
         double_mode = get_double_mode(dice_1, dice_2, dice_3)
 
@@ -549,16 +552,11 @@ class BankruptTask(Task):
         elif num_alive == 1:
             winner = players_alive[0]
             for bds_id in normal_bds:
-                game_state.logic.bds[bds_id].owner = winner
+                game_state.logic.bds[bds_id].owner = None
                 game_state.logic.bds[bds_id].level = 0
 
             for bds_id in mortgaged_bds:
-                game_state.logic.bds[bds_id].owner = winner
-
-            bds_left = mortgaged_bds
-            if len(bds_left) > 0:
-                for bds in bds_left:
-                    game_state = mod_receive_mortgage(game_state, winner, bds)
+                game_state.logic.bds[bds_id].owner = None
 
             game_state, task = mod_release(game_state)
         else:
