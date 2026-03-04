@@ -3,7 +3,7 @@ import keras_cv as kcv
 
 def get_dice_detection_model(
     num_classes: int = 1,
-    bounding_box_format: str = "xyxy",
+    bounding_box_format: str = "xywh",
     model_name: str = "yolo_v8_xs_backbone",
     fpn_depth: int = 1,
 ):
