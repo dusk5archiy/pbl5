@@ -49,9 +49,9 @@ detector = Detector(
 async def detect_image_ws(websocket: WebSocket):
     init()
 
-    print(Fore.BLUE + "[--PENDING--] Waiting for a web socket...")
+    print(Fore.BLUE + "[--PENDING--] Waiting for a web socket...", Fore.RESET)
     await websocket.accept()
-    print(Fore.CYAN + "[--SUCCESS--] Got a new socket.")
+    print(Fore.CYAN + "[--SUCCESS--] Got a new socket.", Fore.RESET)
     connection_id = id(websocket)
     connection_states[connection_id] = ConnectionState()
 
@@ -80,7 +80,7 @@ async def detect_image_ws(websocket: WebSocket):
 
             # Always run detector to get number of dice
             bboxes, scores = detector(image)
-            print(Fore.MAGENTA + "Score detected", set(scores))
+            print(Fore.MAGENTA + "Score detected", set(scores), Fore.RESET)
             num_dice = len(bboxes)
 
             # Only track frames with exactly 2 dice

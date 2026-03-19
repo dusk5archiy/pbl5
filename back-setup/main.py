@@ -16,7 +16,11 @@ if __name__ == "__main__":
             config_content = yaml.safe_load(f)
 
         config = ConfigModel(**config_content)
-        print(Fore.GREEN + "[-- DONE --] Configuration validated successfully.")
+        print(
+            Fore.GREEN
+            + "[-- DONE --] Configuration validated successfully."
+            + Fore.RESET
+        )
 
         env_file_content = f"""#!/bin/bash
 
@@ -29,9 +33,13 @@ export NEXT_PUBLIC_BACKEND_PORT={config.back.port}
 
         os.chmod("../var/env.sh", mode=0o777)
 
-        print(Fore.GREEN + "[-- DONE --] Created startup env successfully.")
+        print(
+            Fore.GREEN + "[-- DONE --] Created startup env successfully." + Fore.RESET
+        )
 
     except Exception as e:
         traceback.print_exc()
-        print(Fore.RED + f"[-- FAIL --] Fail to validate configuration: {e}")
+        print(
+            Fore.RED + f"[-- FAIL --] Fail to validate configuration: {e}" + Fore.RESET
+        )
         exit(1)
