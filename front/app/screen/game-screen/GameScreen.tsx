@@ -35,6 +35,7 @@ import DashTab from "@/app/ui/game-board/DashTab";
 // ----------------------------------------------------------------------------
 
 const AUTO_CONFIRM = true;
+const DELAY = 250;
 
 // ----------------------------------------------------------------------------
 
@@ -131,7 +132,7 @@ export function GameScreen(props: GameScreenProps) {
       return;
     }
 
-    const intervalId = setInterval(() => { sendFrame(); }, 400);
+    const intervalId = setInterval(() => { sendFrame(); }, DELAY);
     return () => { clearInterval(intervalId); };
 
   }, [isAutoCapturing, diceDetectWs]);
