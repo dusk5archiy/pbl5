@@ -102,6 +102,9 @@ export function GameScreen(props: GameScreenProps) {
 
   // WebSocket for dice detection
   useEffect(() => {
+    if (!diceDetection) {
+      return;
+    }
     const websocket = new WebSocket("ws://localhost:8000/detect");
     websocket.onopen = () => {
       setDiceDetectWs(websocket);
@@ -226,21 +229,24 @@ export function GameScreen(props: GameScreenProps) {
   // Send roll dice data
 
   const sendDiceResults = (data: any) => {
-    const dice_1 = `${data.scores[0]}`;
-    const dice_2 = `${data.scores[1]}`;
     const jail_chore = gameState.current_chore.jail;
     const roll_dice_chore = gameState.current_chore.roll_dice;
     const two_dice_rent_u_chore = gameState.current_chore.two_dice_rent_u;
-    if (jail_chore != null) { jailFunc({ response: 0, dice_1, dice_2 }) }
-    if (roll_dice_chore != null) { rollDiceFunc({ dice_1, dice_2 }) }
-    if (two_dice_rent_u_chore != null) { twoDiceRentUFunc({ dice_1, dice_2 }) }
+    if (jail_chore != null) { jailFunc({ response: 0, ...data }) }
+    if (roll_dice_chore != null) { rollDiceFunc({ ...data }) }
+    if (two_dice_rent_u_chore != null) { twoDiceRentUFunc({ ...data }) }
   }
 
   const sendRollDice = () => {
-    if (diceDetectionResult == null)
-      return;
-
-    sendDiceResults(diceDetectionResult);
+    if (diceDetection && diceDetectionResult != null) {
+      const data = {
+        dice_1: `${diceDetectionResult.scores[0]}`,
+        dice_2: `${diceDetectionResult.scores[1]}`,
+      }
+      sendDiceResults(data);
+    } else if (!diceDetection) {
+      sendDiceResults({});
+    }
   };
 
   // Dice detection

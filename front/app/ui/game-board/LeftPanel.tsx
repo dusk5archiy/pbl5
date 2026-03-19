@@ -18,7 +18,7 @@ function RollDiceButton(
           '--bg-color': COLOR_UI_INFO[gameState.logic.current_player].lightColorCode
         } as React.CSSProperties
       }
-      onClick={diceDetection ? undefined : () => sendRollDice({})}
+      onClick={diceDetection ? undefined : () => sendRollDice()}
       disabled={
         jail == null &&
         roll_dice == null &&
