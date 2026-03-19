@@ -131,7 +131,7 @@ export function GameScreen(props: GameScreenProps) {
       return;
     }
 
-    const intervalId = setInterval(() => { sendFrame(); }, 300);
+    const intervalId = setInterval(() => { sendFrame(); }, 400);
     return () => { clearInterval(intervalId); };
 
   }, [isAutoCapturing, diceDetectWs]);

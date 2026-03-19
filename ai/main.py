@@ -104,14 +104,11 @@ async def detect_image_ws(websocket: WebSocket):
                 )
                 print(f"Similarity: {similarity:.3f}")
 
-                # Check if scores are the same
                 has_same_scores = Counter(scores) == state.previous_scores
 
             if is_similar_to_previous and has_same_scores:
-                # Increment counter for consecutive match
                 state.consecutive_matches += 1
             else:
-                # Break in similarity or scores, reset counter
                 state.consecutive_matches = 0
 
             print(f"Consecutive matches: {state.consecutive_matches}")
@@ -119,12 +116,13 @@ async def detect_image_ws(websocket: WebSocket):
             state.previous_frame = image
             state.previous_scores = Counter(scores)
 
-            # Success: 2 consecutive frames with 2 dice are similar and have same scores
             if (
                 state.consecutive_matches
                 >= config.tasks.frame_detection.qualified_consecutive_frames - 1
             ):
-                await websocket.send_json({"bboxes": bboxes, "scores": scores})
+                data = {"bboxes": bboxes, "scores": scores}
+                print(Fore.CYAN + "Sending", data, Fore.RESET)
+                await websocket.send_json(data)
 
                 # Reset state for next detection cycle
                 state.consecutive_matches = 0

@@ -1,10 +1,18 @@
 import tensorflow as tf
+from src.dataset import (
+    S7DatasetDiceDetection,
+    get_image_detection_datas,
+    make_tf_dataset
+)
 
 def convert2_tflite(
         path: str,
         out_tflite_filename: str,
         image_resolution: tuple[int, int],
-        colored: bool=True
+        colored: bool=True,
+        quantization: str = "float16",
+        dataset_path: str | None = None,
+        num_workers: int = 4
     ):
     num_channels = 3 if colored else 1
     print("[--INFO--] Importing model...")
@@ -19,11 +27,53 @@ def convert2_tflite(
     
     concrete_func = run_model.get_concrete_function()
     converter = tf.lite.TFLiteConverter.from_concrete_functions([concrete_func])
-        
+    
     converter.optimizations = [tf.lite.Optimize.DEFAULT]
-    converter.target_spec.supported_types = [tf.float16]
-
+    
+    if quantization == "int8":
+        # INT8 full quantization requires representative dataset
+        if dataset_path is None:
+            print("[--WARN--] INT8 quantization requires dataset_path. Using dynamic quantization instead.")
+            converter.target_spec.supported_types = [tf.int8, tf.float32]
+        else:
+            print(f"[--INFO--] Creating representative dataset from {dataset_path}...")
+            
+            # Reuse same dataset loading as training
+            all_image_datas = get_image_detection_datas(
+                dataset_path=dataset_path, num_workers=num_workers
+            )
+            # Use first ~20% for calibration
+            calibration_datas = all_image_datas[:max(1, len(all_image_datas)//5)]
+            
+            calibration_iterable = S7DatasetDiceDetection(
+                image_resolution=image_resolution,
+                image_datas=calibration_datas,
+                num_workers=num_workers,
+                colored=colored
+            )
+            
+            # Create dataset with batch size 1 for representative samples
+            calibration_dataset = make_tf_dataset(
+                calibration_iterable,
+                batch_size=1,
+                image_resolution=image_resolution,
+                colored=colored
+            )
+            
+            def representative_dataset():
+                for img_batch, _ in calibration_dataset.take(100):  # Use up to 100 batches
+                    yield [img_batch]
+            
+            converter.representative_dataset = representative_dataset
+            converter.target_spec.supported_types = [tf.int8]
+            
+    elif quantization == "float16":
+        converter.target_spec.supported_types = [tf.float16]
+    
+    print(f"[--INFO--] Using {quantization} quantization...")
     tflite_model = converter.convert()
+    
     with open(out_tflite_filename, 'wb') as f:
         f.write(tflite_model)
-    print(f"[--DONE--] Score model converted to {out_tflite_filename}")
+    
+    print(f"[--DONE--] Detection model converted to {out_tflite_filename}.")
