@@ -1,6 +1,7 @@
 from PIL import Image
 from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
+from colorama import Fore, init
 
 import asyncio
 import io
@@ -46,12 +47,17 @@ detector = Detector(
 
 @app.websocket("/detect")
 async def detect_image_ws(websocket: WebSocket):
+    init()
+
+    print(Fore.BLUE + "[--PENDING--] Waiting for a web socket...")
     await websocket.accept()
+    print(Fore.CYAN + "[--SUCCESS--] Got a new socket.")
     connection_id = id(websocket)
     connection_states[connection_id] = ConnectionState()
 
     try:
         while True:
+            print("Loop")
             # Receive image - get latest frame, skipping older queued frames
             data = await websocket.receive_bytes()
 
@@ -74,6 +80,7 @@ async def detect_image_ws(websocket: WebSocket):
 
             # Always run detector to get number of dice
             bboxes, scores = detector(image)
+            print(Fore.MAGENTA + "Score detected", set(scores))
             num_dice = len(bboxes)
 
             # Only track frames with exactly 2 dice
