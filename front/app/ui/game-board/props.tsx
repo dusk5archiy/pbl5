@@ -81,6 +81,8 @@ export interface IDiceDetectionProps {
   getDiceCaptureResults: () => void;
   encodedImage: string | null;
   setEncodedImage: (_: string | null) => void;
+  isAutoCapturing: boolean;
+  setIsAutoCapturing: (_: boolean) => void;
 }
 
 // ----------------------------------------------------------------------------

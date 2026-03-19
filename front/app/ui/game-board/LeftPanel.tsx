@@ -8,7 +8,7 @@ const COMMON_BUTTON_STYLE = " h-full text-[6cqw] font-bold text-gray-800 rounded
 function RollDiceButton(
   props: GameBoardProps,
 ) {
-  const { gameState, diceDetection, getDiceCaptureResults, sendRollDice } = props;
+  const { gameState, diceDetection, sendRollDice } = props;
   const { jail, roll_dice, two_dice_rent_u } = gameState.current_chore;
 
   return (
@@ -18,7 +18,7 @@ function RollDiceButton(
           '--bg-color': COLOR_UI_INFO[gameState.logic.current_player].lightColorCode
         } as React.CSSProperties
       }
-      onClick={diceDetection ? () => getDiceCaptureResults() : () => sendRollDice({})}
+      onClick={diceDetection ? undefined : () => sendRollDice({})}
       disabled={
         jail == null &&
         roll_dice == null &&

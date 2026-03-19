@@ -43,6 +43,7 @@ export function GamePresentation(props: GameScreenProps) {
   const [boardShown, setBoardShown] = useState<boolean>(true);
 
   const [diceDetectWs, setDiceDetectWs] = useState<WebSocket | null>(null);
+  const [isAutoCapturing, setIsAutoCapturing] = useState<boolean>(false);
 
 
   // Default values for selectors
@@ -117,6 +118,43 @@ export function GamePresentation(props: GameScreenProps) {
       websocket.close();
     };
   }, []);
+
+  // Auto-capture: Run interval when isAutoCapturing is true
+  useEffect(() => {
+    if (!isAutoCapturing || !diceDetectWs || diceDetectWs.readyState !== WebSocket.OPEN) {
+      return;
+    }
+
+    const intervalId = setInterval(() => {
+      getDiceCaptureResults();
+    }, 500); // 500ms = 0.5 seconds
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [isAutoCapturing, diceDetectWs]);
+
+  // Stop auto-capture when results arrive
+  useEffect(() => {
+    if (diceDetectionResult != null) {
+      setIsAutoCapturing(false);
+    }
+  }, [diceDetectionResult]);
+
+  // Start auto-capture when roll dice phase begins
+  useEffect(() => {
+    if (!diceDetection) return;
+
+    // Check if player needs to roll dice
+    const needsRollDice = gameState.current_chore.roll_dice != null
+      || gameState.current_chore.jail != null
+      || gameState.current_chore.two_dice_rent_u != null;
+
+    // Auto-start capture when entering roll dice phase (and no results shown)
+    if (needsRollDice && diceDetectionResult == null) {
+      setIsAutoCapturing(true);
+    }
+  }, [diceDetection, gameState, diceDetectionResult]);
 
   // Effects from the game state
   useEffect(() => {
@@ -250,6 +288,8 @@ export function GamePresentation(props: GameScreenProps) {
     setDiceDetectionResult,
     encodedImage,
     setEncodedImage,
+    isAutoCapturing,
+    setIsAutoCapturing,
   };
 
   const game_settings_props: IGameSettingsProps = {

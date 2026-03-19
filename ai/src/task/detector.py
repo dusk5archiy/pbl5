@@ -1,7 +1,7 @@
 from src.task.dice_detection.inference import DiceDetectionInference
 from src.task.dice_score.inference import DiceScoreInference
 from src.utils.time import MeasureTime
-
+from PIL import Image
 
 class Detector:
     def __init__(
@@ -26,7 +26,7 @@ class Detector:
         self.dice_detection_image_resolution = dice_detection_image_resolution
         self.dice_score_image_resolution = dice_score_image_resolution
 
-    def __call__(self, img):
+    def __call__(self, img: Image.Image):
         original_size = img.size  # (width, height)
         img_resized = img.resize(self.dice_detection_image_resolution)
         with MeasureTime(message="Total time spent"):

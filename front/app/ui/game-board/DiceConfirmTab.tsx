@@ -2,7 +2,7 @@ import { GameBoardProps } from "./props";
 import { useRef, useEffect } from "react";
 
 export function DiceConfirmTab(props: GameBoardProps) {
-  const { diceDetectionResult, setDiceDetectionResult, encodedImage, setEncodedImage, sendRollDice } = props;
+  const { diceDetectionResult, setDiceDetectionResult, encodedImage, setEncodedImage, sendRollDice, setIsAutoCapturing } = props;
   const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     if (canvasRef.current && encodedImage != null && diceDetectionResult != null) {
@@ -59,6 +59,7 @@ export function DiceConfirmTab(props: GameBoardProps) {
           onClick={() => {
             setEncodedImage(null);
             setDiceDetectionResult(null);
+            setIsAutoCapturing(true);
           }}
         >Chụp lại
         </button>

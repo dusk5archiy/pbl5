@@ -14,3 +14,4 @@ pillow
 tensorflow
 keras_cv
 ai-edge-litert
+scikit-image
