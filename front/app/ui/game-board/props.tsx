@@ -70,7 +70,6 @@ export interface IDiceDetectionResult {
   scores: number[];
   bboxes: number[][];
 }
-
 export interface IDiceDetectionProps {
   selectedCamera: string;
   videoRef: RefObject<HTMLVideoElement | null>;

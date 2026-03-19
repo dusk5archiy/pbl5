@@ -19,3 +19,7 @@ tasks:
     batch_size: 32
     epochs: 50
     image_resolution: [32, 32]
+
+  frame_detection:
+    similarity_threshold: 0.9
+    qualified_consecutive_frames: 3

@@ -5,18 +5,23 @@ from .utils import decode_dfl
 from src.utils.image import to_grayscale
 from PIL import Image
 
+
 class DiceDetectionInference:
-    def __init__(self,
-            model_path: str,
-            image_resolution: tuple[int, int],
-            colored: bool,
-            conf_threshold: float = 0.5,
-            iou_threshold: float = 0.5
-        ):
+    def __init__(
+        self,
+        model_path: str,
+        image_resolution: tuple[int, int],
+        colored: bool,
+        conf_threshold: float = 0.5,
+        iou_threshold: float = 0.7,
+    ):
         num_channels = 3 if colored else 1
         self.interpreter = Interpreter(model_path=model_path)
         input_details = self.interpreter.get_input_details()
-        self.interpreter.resize_tensor_input(input_details[0]["index"], [1, image_resolution[1], image_resolution[0], num_channels])
+        self.interpreter.resize_tensor_input(
+            input_details[0]["index"],
+            [1, image_resolution[1], image_resolution[0], num_channels],
+        )
         self.input_details = self.interpreter.get_input_details()
         self.output_details = self.interpreter.get_output_details()
         self.interpreter.allocate_tensors()
@@ -38,9 +43,7 @@ class DiceDetectionInference:
         img_tensor = tf.expand_dims(img_array, axis=0)  # Add batch dimension
 
         # Perform inference
-        self.interpreter.set_tensor(
-            self.input_details[0]["index"], img_tensor
-        )
+        self.interpreter.set_tensor(self.input_details[0]["index"], img_tensor)
         self.interpreter.invoke()
         pred = {
             output["name"]: self.interpreter.get_tensor(output["index"])
@@ -48,7 +51,9 @@ class DiceDetectionInference:
         }
         dfl_logits = pred["Identity"][0]  # (_, 64)
         confidences = pred["Identity_1"][0].squeeze()
-        pred_boxes = decode_dfl(dfl_logits, self.image_resolution)  # (_, 4) - decoded coordinates
+        pred_boxes = decode_dfl(
+            dfl_logits, self.image_resolution
+        )  # (_, 4) - decoded coordinates
 
         # Filter by confidence
         valid_mask = confidences > self.conf_threshold
@@ -59,7 +64,10 @@ class DiceDetectionInference:
         if len(valid_boxes) > 0:
             # Apply NMS
             selected_indices = tf.image.non_max_suppression(
-                valid_boxes, valid_conf, max_output_size=10, iou_threshold=self.iou_threshold
+                valid_boxes,
+                valid_conf,
+                max_output_size=10,
+                iou_threshold=self.iou_threshold,
             )
             selected_boxes = tf.gather(valid_boxes, selected_indices)
 
@@ -69,3 +77,4 @@ class DiceDetectionInference:
                 h = y2 - y
                 bboxes.append([x, y, w, h])
         return bboxes
+

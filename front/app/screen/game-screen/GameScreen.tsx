@@ -34,6 +34,10 @@ import DashTab from "@/app/ui/game-board/DashTab";
 
 // ----------------------------------------------------------------------------
 
+const AUTO_CONFIRM = true;
+
+// ----------------------------------------------------------------------------
+
 export function GameScreen(props: GameScreenProps) {
   const { onBack, gameData, gameState, setGameState, selectedCamera, diceDetection } = props;
 
@@ -132,11 +136,19 @@ export function GameScreen(props: GameScreenProps) {
 
   }, [isAutoCapturing, diceDetectWs]);
 
-  // Stop auto-capture when results arrive
+  // Stop auto-capture when results arrive and auto-submit if AUTO_CONFIRM is enabled
   useEffect(() => {
-    if (diceDetectionResult != null) {
-      setIsAutoCapturing(false);
-      sendDiceResults(diceDetectionResult);
+    if (diceDetectionResult == null) {
+      return;
+    }
+    setIsAutoCapturing(false);
+
+    if (AUTO_CONFIRM) {
+      // Use setTimeout to ensure state is updated before sending
+      const timer = setTimeout(() => {
+        sendRollDice();
+      }, 100);
+      return () => clearTimeout(timer);
     }
   }, [diceDetectionResult]);
 
@@ -347,7 +359,7 @@ export function GameScreen(props: GameScreenProps) {
   return (
     <div className="@container w-screen h-screen px-[2vw] py-[2vh] flex gap-[2vh] bg-[#2E6C3D] overflow-hidden">
       {
-        diceDetectionResult != null ?
+        !AUTO_CONFIRM && diceDetectionResult != null ?
           <DiceConfirmTab {...game_board_props} /> :
           bdsShown == 0 ?
             <>
