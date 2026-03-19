@@ -155,7 +155,7 @@ export function GameScreen(props: GameScreenProps) {
 
   // Start auto-capture when roll dice phase begins
   useEffect(() => {
-    if (!diceDetection) return;
+    if (!diceDetection || !diceDetectWs || diceDetectWs.readyState !== WebSocket.OPEN) return;
 
     // Check if player needs to roll dice
     const needsRollDice = gameState.current_chore.roll_dice != null
@@ -166,7 +166,7 @@ export function GameScreen(props: GameScreenProps) {
     if (needsRollDice && diceDetectionResult == null) {
       setIsAutoCapturing(true);
     }
-  }, [diceDetection, gameState, diceDetectionResult]);
+  }, [diceDetection, gameState, diceDetectionResult, diceDetectWs]);
 
   // Effects from the game state
   useEffect(() => {
