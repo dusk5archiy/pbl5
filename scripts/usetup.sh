@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [[ $USER != "root" ]]; then
+  echo "Please run the script with sudo."
+  exit
+fi
+
 # Minimized Ubuntu Server 24.04.3 (LTS)
 # Installed: OpenSSH
 
@@ -9,7 +14,7 @@ sudo mkdir -p /etc/systemd/system/getty@tty1.service.d
 sudo touch /etc/systemd/system/getty@tty1.service.d/override.conf
 sudo tee /etc/systemd/system/getty@tty1.service.d/override.conf >/dev/null <<EOF
 [Service]
-ExecStart=-/sbin/agetty --autologin $USER --noclear tty1
+ExecStart=-/sbin/agetty --autologin $SUDO_USER --noclear tty1
 EOF
 
 sudo systemctl stop kiosk || true
@@ -18,8 +23,8 @@ sudo tee /etc/systemd/system/kiosk.service >/dev/null <<EOF
 Before=snapd.service
 
 [Service]
-WorkingDirectory=/home/$USER/pbl5
-ExecStart=/bin/bash /home/$USER/pbl5/scripts/urun.sh
+WorkingDirectory=/home/$SUDO_USER/pbl5
+ExecStart=/bin/bash /home/$SUDO_USER/pbl5/scripts/urun.sh
 
 [Install]
 WantedBy=basic.target
