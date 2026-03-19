@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Minimized Ubuntu Server 24.04.3 (LTS)
 # Installed: OpenSSH
 

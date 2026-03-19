@@ -1,3 +1,5 @@
+#!/bin/bash
+
 export task="${1:-deploy}"
 export sudo=""
 
@@ -11,4 +13,3 @@ mkdir -p .venv
 
 chmod +x config/$task/setup.sh
 config/$task/setup.sh
-
