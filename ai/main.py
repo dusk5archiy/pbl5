@@ -1,4 +1,5 @@
 from PIL import Image
+from src.utils.time import MeasureTime
 from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from colorama import Fore, init
@@ -58,77 +59,79 @@ async def detect_image_ws(websocket: WebSocket):
 
     try:
         while True:
-            print("Loop")
-            # Receive image - get latest frame, skipping older queued frames
-            data = await websocket.receive_bytes()
+            with MeasureTime(message="Loop time", color=Fore.BLUE):
+                print("Loop")
+                # Receive image - get latest frame, skipping older queued frames
+                with MeasureTime(message="Request time", color=Fore.YELLOW):
+                    data = await websocket.receive_bytes()
 
-            # Drop stale frames: Keep only the most recent queued frame
-            # This prevents processing old frames when detector is slower than frame send rate
-            while True:
-                try:
-                    newer_data = await asyncio.wait_for(
-                        websocket.receive_bytes(),
-                        timeout=0.01,  # 10ms timeout to check for newer frames
+                    # Drop stale frames: Keep only the most recent queued frame
+                    # This prevents processing old frames when detector is slower than frame send rate
+                    while True:
+                        try:
+                            newer_data = await asyncio.wait_for(
+                                websocket.receive_bytes(),
+                                timeout=0.01,  # 10ms timeout to check for newer frames
+                            )
+                            data = newer_data
+                        except asyncio.TimeoutError:
+                            break  # No more queued frames, continue with latest
+
+                image = Image.open(io.BytesIO(data)).convert("RGB")
+
+                state = connection_states[connection_id]
+                state.frame_count += 1
+
+                # Always run detector to get number of dice
+                bboxes, scores = detector(image)
+                print(Fore.MAGENTA + "Score detected", Counter(scores), Fore.RESET)
+                num_dice = len(bboxes)
+
+                # Only track frames with exactly 2 dice
+                if num_dice != 2:
+                    # Reset counter - we need consecutive frames with 2 dice
+                    state.consecutive_matches = 0
+                    state.previous_frame = None
+                    state.previous_scores = None
+                    continue  # Don't send response, wait for next frame
+
+                # Current frame has 2 dice - check similarity with previous frame
+                is_similar_to_previous = False  # True for first frame with 2 dice
+                has_same_scores = False  # True for first frame with 2 dice
+
+                if state.previous_frame is not None:
+                    # Compare with previous frame
+                    similarity = similar_frames(image, state.previous_frame)
+                    is_similar_to_previous = (
+                        similarity >= config.tasks.frame_detection.similarity_threshold
                     )
-                    data = newer_data
-                except asyncio.TimeoutError:
-                    break  # No more queued frames, continue with latest
+                    print(f"Similarity: {similarity:.3f}")
 
-            image = Image.open(io.BytesIO(data)).convert("RGB")
+                    has_same_scores = Counter(scores) == state.previous_scores
 
-            state = connection_states[connection_id]
-            state.frame_count += 1
+                if is_similar_to_previous and has_same_scores:
+                    state.consecutive_matches += 1
+                else:
+                    state.consecutive_matches = 0
 
-            # Always run detector to get number of dice
-            bboxes, scores = detector(image)
-            print(Fore.MAGENTA + "Score detected", Counter(scores), Fore.RESET)
-            num_dice = len(bboxes)
+                print(f"Consecutive matches: {state.consecutive_matches}")
+                # Update previous frame and scores for next comparison
+                state.previous_frame = image
+                state.previous_scores = Counter(scores)
 
-            # Only track frames with exactly 2 dice
-            if num_dice != 2:
-                # Reset counter - we need consecutive frames with 2 dice
-                state.consecutive_matches = 0
-                state.previous_frame = None
-                state.previous_scores = None
-                continue  # Don't send response, wait for next frame
+                if (
+                    state.consecutive_matches
+                    >= config.tasks.frame_detection.qualified_consecutive_frames - 1
+                ):
+                    data = {"bboxes": bboxes, "scores": scores}
+                    print(Fore.CYAN + "Sending", data, Fore.RESET)
+                    await websocket.send_json(data)
 
-            # Current frame has 2 dice - check similarity with previous frame
-            is_similar_to_previous = False  # True for first frame with 2 dice
-            has_same_scores = False  # True for first frame with 2 dice
-
-            if state.previous_frame is not None:
-                # Compare with previous frame
-                similarity = similar_frames(image, state.previous_frame)
-                is_similar_to_previous = (
-                    similarity >= config.tasks.frame_detection.similarity_threshold
-                )
-                print(f"Similarity: {similarity:.3f}")
-
-                has_same_scores = Counter(scores) == state.previous_scores
-
-            if is_similar_to_previous and has_same_scores:
-                state.consecutive_matches += 1
-            else:
-                state.consecutive_matches = 0
-
-            print(f"Consecutive matches: {state.consecutive_matches}")
-            # Update previous frame and scores for next comparison
-            state.previous_frame = image
-            state.previous_scores = Counter(scores)
-
-            if (
-                state.consecutive_matches
-                >= config.tasks.frame_detection.qualified_consecutive_frames - 1
-            ):
-                data = {"bboxes": bboxes, "scores": scores}
-                print(Fore.CYAN + "Sending", data, Fore.RESET)
-                await websocket.send_json(data)
-
-                # Reset state for next detection cycle
-                state.consecutive_matches = 0
-                state.previous_frame = None
-                state.previous_scores = None
-                state.frame_count = 0
+                    # Reset state for next detection cycle
+                    state.consecutive_matches = 0
+                    state.previous_frame = None
+                    state.previous_scores = None
+                    state.frame_count = 0
 
     except Exception:
         print("WebSocket error:")
