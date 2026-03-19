@@ -78,7 +78,7 @@ export interface IDiceDetectionProps {
   setStream: (_: MediaStream) => void;
   diceDetectionResult: IDiceDetectionResult | null;
   setDiceDetectionResult: (_: IDiceDetectionResult | null) => void;
-  getDiceCaptureResults: () => void;
+  sendFrame: () => void;
   encodedImage: string | null;
   setEncodedImage: (_: string | null) => void;
   isAutoCapturing: boolean;
@@ -95,7 +95,7 @@ export interface IGameSettingsProps {
 // ----------------------------------------------------------------------------
 
 export interface ISendDataProps {
-  sendRollDice: (_: IDice) => void;
+  sendRollDice: () => void;
 }
 
 // ----------------------------------------------------------------------------

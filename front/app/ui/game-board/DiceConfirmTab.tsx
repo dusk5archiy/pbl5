@@ -43,16 +43,7 @@ export function DiceConfirmTab(props: GameBoardProps) {
         <button
           className={buttonClassName + " bg-green-300"}
           disabled={disabled}
-          onClick={
-            () => {
-              if (diceDetectionResult?.scores.length != 2) {
-                return;
-              }
-              const dice_1 = `${diceDetectionResult.scores[0]}`;
-              const dice_2 = `${diceDetectionResult.scores[1]}`;
-              sendRollDice({ dice_1: dice_1, dice_2: dice_2 });
-            }
-          }
+          onClick={sendRollDice}
         >Xác nhận</button>
         <button
           className={buttonClassName + " bg-yellow-300"}
