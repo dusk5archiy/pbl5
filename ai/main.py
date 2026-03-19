@@ -2,6 +2,7 @@ from PIL import Image
 from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from colorama import Fore, init
+from collections import Counter
 
 import asyncio
 import io
@@ -29,7 +30,7 @@ connection_states = {}
 class ConnectionState:
     def __init__(self):
         self.previous_frame: Image.Image | None = None  # Store only the previous frame
-        self.previous_scores: set | None = None  # Store scores from previous frame
+        self.previous_scores: Counter | None = None  # Store scores from previous frame
         self.consecutive_matches: int = (
             0  # Counter for consecutive frames with 2 dice and similarity
         )
@@ -80,7 +81,7 @@ async def detect_image_ws(websocket: WebSocket):
 
             # Always run detector to get number of dice
             bboxes, scores = detector(image)
-            print(Fore.MAGENTA + "Score detected", set(scores), Fore.RESET)
+            print(Fore.MAGENTA + "Score detected", Counter(scores), Fore.RESET)
             num_dice = len(bboxes)
 
             # Only track frames with exactly 2 dice
@@ -104,9 +105,9 @@ async def detect_image_ws(websocket: WebSocket):
                 print(f"Similarity: {similarity:.3f}")
 
                 # Check if scores are the same
-                has_same_scores = set(scores) == state.previous_scores
+                has_same_scores = Counter(scores) == state.previous_scores
                 print(
-                    f"Scores match: {has_same_scores} (current: {set(scores)}, previous: {state.previous_scores})"
+                    f"Scores match: {has_same_scores} (current: {Counter(scores)}, previous: {state.previous_scores})"
                 )
 
             if is_similar_to_previous and has_same_scores:
@@ -119,7 +120,7 @@ async def detect_image_ws(websocket: WebSocket):
 
             # Update previous frame and scores for next comparison
             state.previous_frame = image
-            state.previous_scores = set(scores)
+            state.previous_scores = Counter(scores)
 
             # Success: 2 consecutive frames with 2 dice are similar and have same scores
             if (
