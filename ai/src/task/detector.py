@@ -1,7 +1,6 @@
 from src.task.dice_detection.inference import DiceDetectionInference
 from src.task.dice_score.inference import DiceScoreInference
 from src.utils.time import MeasureTime
-import numpy as np
 
 
 class Detector:
@@ -53,4 +52,3 @@ class Detector:
             )
 
         return scaled_bboxes, scores
-
