@@ -2,4 +2,5 @@
 /**/.venv
 /var
 /runs
+/datasets
 !/**/.gitkeep

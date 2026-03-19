@@ -3,10 +3,8 @@ from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 import io
 import traceback
-from inference.detector import Detector
-from ults.setup import tf_init
-
-tf_init()
+from src.task.detector import Detector
+from src.parse.config import load_config
 
 app = FastAPI()
 
@@ -18,9 +16,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+config = load_config("config/config.yml")
+
 detector = Detector(
-    dice_detection_model_path="models/dice_detection/model.tflite",
-    dice_score_model_path="models/dice_score/model.tflite",
+    dice_detection_model_path=config.tasks.dice_detection.inference_path,
+    dice_score_model_path=config.tasks.dice_score.inference_path,
+    dice_detection_image_resolution=config.tasks.dice_detection.image_resolution,
+    dice_score_image_resolution=config.tasks.dice_score.image_resolution,
+    colored=config.colored,
 )
 
 

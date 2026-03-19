@@ -1,5 +1,48 @@
 import argparse
-from ults.config import load_config
+from src.parse.config import load_config
+
+config = load_config("config/config.yml")
+
+def train_detection():
+    task = config.tasks.dice_detection
+
+    from src.task.dice_detection.train import train_savedmodel
+    train_savedmodel(
+        dataset_path=config.dataset_path,
+        image_resolution=task.image_resolution,
+        batch_size=task.batch_size,
+        path=task.training_output_path,
+        epochs=task.epochs,
+        num_workers=config.num_workers,
+        colored=config.colored
+    )
+
+    from src.task.dice_detection.convert import convert2_tflite
+    convert2_tflite(
+        path=task.training_output_path,
+        out_tflite_filename=task.tflite_output_path,
+        image_resolution=task.image_resolution,
+        colored=config.colored
+    )
+
+def train_score():
+    task = config.tasks.dice_score
+    from src.task.dice_score.train import train_savedmodel
+    train_savedmodel(
+        dataset_path=config.dataset_path,
+        image_resolution=task.image_resolution,
+        batch_size=task.batch_size,
+        path=task.training_output_path,
+        epochs=task.epochs,
+        num_workers=config.num_workers,
+        colored=config.colored
+    )
+
+    from src.task.dice_score.convert import convert2_tflite
+    convert2_tflite(
+        path=task.training_output_path,
+        out_tflite_filename=task.tflite_output_path,
+    )
 
 
 def main():
@@ -11,32 +54,10 @@ def main():
     args = parser.parse_args()
 
     if args.score:
-        from training.dice_score.train import train_savedmodel
-        from training.dice_score.conv import conv2_tflite
-        config = load_config(file_path="config/train.yml")
-        train_savedmodel(
-            dataset_path=config.dataset_path,
-            output_savedmodel_dir="output/dice_score",
-            num_workers=config.num_workers,
-        )
-        conv2_tflite(
-            inp_savedmodel_dir="output/dice_score",
-            out_tflite_filename="output/dice_score_model.tflite",
-        )
+        train_score()
 
-    elif args.detection:
-        from training.dice_detection.train import train_savedmodel
-        from training.dice_detection.conv import conv2_tflite
-        config = load_config(file_path="config/train.yml")
-        train_savedmodel(
-            dataset_path=config.dataset_path,
-            output_savedmodel_dir="output/dice_detection",
-            num_workers=config.num_workers,
-        )
-        conv2_tflite(
-            inp_savedmodel_dir="output/dice_detection",
-            out_tflite_filename="output/dice_detection_model.tflite",
-        )
+    if args.detection:
+        train_detection()
 
 
 if __name__ == "__main__":

@@ -1,23 +1,22 @@
 {
-    "name": "NVIDIA Tensorflow",
-    "image": "nvcr.io/nvidia/tensorflow:25.02-tf2-py3",
-    "runArgs": [ 
-        "--gpus=all",
-         "--shm-size=1g"
-        ],
-    "mounts": [
-        "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
-        "source=/mnt/i/users/datasets,target=/workspace/datasets,type=bind,consistency=cached"
-    ],
-    "workspaceFolder": "/workspace",
-    "customizations": {
-        "vscode": {
-            "extensions": [
-                "ms-python.python",
-                "ms-python.black-formatter",
-                "ms-toolsai.jupyter"
-            ]
-        }
+  "name": "NVIDIA Tensorflow",
+  "image": "nvcr.io/nvidia/tensorflow:25.02-tf2-py3",
+  "runArgs": [
+    "--gpus=all",
+    "--shm-size=1g"
+  ],
+  "mounts": [
+    "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+    "source=/mnt/i/users/datasets,target=/workspace/datasets,type=bind,consistency=cached"
+  ],
+  "workspaceFolder": "/workspace",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.black-formatter",
+        "ms-toolsai.jupyter"
+      ]
     }
+  }
 }
-
