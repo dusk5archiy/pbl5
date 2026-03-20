@@ -12,6 +12,5 @@ websockets
 # AI
 pillow
 tensorflow
-keras_cv
 ai-edge-litert
-scikit-image
+opencv-python

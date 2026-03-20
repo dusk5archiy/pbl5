@@ -14,4 +14,4 @@ class MeasureTime:
         self.end = time.perf_counter()
         interval = self.end - self.start
         init()
-        print(self.color + self.message + f": {interval:.4f} seconds" + Fore.RESET)
+        print(self.color + self.message + f": {int(interval * 1000)}ms" + Fore.RESET)

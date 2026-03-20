@@ -23,17 +23,14 @@ app.add_middleware(
 
 config = load_config("config/config.yml")
 
-# Connection state management for frame stability detection
 connection_states = {}
 
 
 class ConnectionState:
     def __init__(self):
-        self.previous_frame: Image.Image | None = None  # Store only the previous frame
-        self.previous_scores: Counter | None = None  # Store scores from previous frame
-        self.consecutive_matches: int = (
-            0  # Counter for consecutive frames with 2 dice and similarity
-        )
+        self.previous_frame: Image.Image | None = None
+        self.previous_scores: Counter | None = None
+        self.consecutive_matches: int = 0
 
     def reset(self):
         self.consecutive_matches = 0
@@ -66,6 +63,20 @@ async def detect_image_ws(websocket: WebSocket):
     connection_id = id(websocket)
     connection_states[connection_id] = ConnectionState()
 
+    async def skip(timeout: float):
+        data = None
+        with MeasureTime(message="Skip", color=Fore.RED):
+            while True:
+                try:
+                    data = await asyncio.wait_for(
+                        websocket.receive_bytes(), timeout=timeout
+                    )
+
+                except asyncio.TimeoutError:
+                    break
+
+        return data
+
     try:
         while True:
             with MeasureTime(message="Loop time", color=Fore.BLUE):
@@ -74,21 +85,12 @@ async def detect_image_ws(websocket: WebSocket):
                 with MeasureTime(message="Request time", color=Fore.YELLOW):
                     data = await websocket.receive_bytes()
 
-                # Drop stale frames: Keep only the most recent queued frame
-                while True:
-                    try:
-                        newer_data = await asyncio.wait_for(
-                            websocket.receive_bytes(),
-                            timeout=0.01,  # 10ms timeout to check for newer frames
-                        )
-                        data = newer_data
-                    except asyncio.TimeoutError:
-                        break  # No more queued frames, continue with latest
-
+                data = await skip(timeout=0.01) or data
                 image = Image.open(io.BytesIO(data)).convert("RGB")
 
                 state = connection_states[connection_id]
-                bboxes, scores = detector(image)
+                with MeasureTime(message="Detect time", color=Fore.BLUE):
+                    bboxes, scores = detector(image)
 
                 print(Fore.MAGENTA + "Score detected", Counter(scores), Fore.RESET)
                 num_dice = len(bboxes)
@@ -104,7 +106,8 @@ async def detect_image_ws(websocket: WebSocket):
 
                 if state.previous_frame is not None:
                     # Compare with previous frame
-                    similarity = similar_frames(image, state.previous_frame)
+                    with MeasureTime(message="Similarity", color=Fore.YELLOW):
+                        similarity = similar_frames(image, state.previous_frame)
                     is_similar_to_previous = (
                         similarity >= config.tasks.frame_detection.similarity_threshold
                     )
@@ -127,6 +130,7 @@ async def detect_image_ws(websocket: WebSocket):
                     print(Fore.CYAN + "Sending", data, Fore.RESET)
                     await websocket.send_json(data)
                     state.reset()
+                    await skip(timeout=0.1)
 
     except Exception:
         print("WebSocket error:")

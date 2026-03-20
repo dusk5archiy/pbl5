@@ -1,6 +1,5 @@
 from src.task.dice_detection.inference import DiceDetectionInference
 from src.task.dice_score.inference import DiceScoreInference
-from src.utils.time import MeasureTime
 from PIL import Image
 
 
@@ -33,16 +32,13 @@ class Detector:
     def __call__(self, img: Image.Image):
         original_size = img.size  # (width, height)
         img_resized = img.resize(self.dice_detection_image_resolution)
-        with MeasureTime(message="Total time spent"):
-            with MeasureTime(message="Detection time"):
-                bboxes = self.dice_detection_model.predict(img=img_resized)
-            scores = []
-            for bbox in bboxes:
-                x, y, w, h = bbox
-                cropped = img_resized.crop((x, y, x + w, y + h))
-                with MeasureTime(message="Score time"):
-                    score = self.dice_score_model.predict(img=cropped)
-                scores.append(score)
+        bboxes = self.dice_detection_model.predict(img=img_resized)
+        scores = []
+        for bbox in bboxes:
+            x, y, w, h = bbox
+            cropped = img_resized.crop((x, y, x + w, y + h))
+            score = self.dice_score_model.predict(img=cropped)
+            scores.append(score)
 
         # Scale bboxes back to original size
         sx, sy = self.dice_detection_image_resolution

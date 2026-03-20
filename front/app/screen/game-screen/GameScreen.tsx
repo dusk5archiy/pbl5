@@ -35,7 +35,7 @@ import DashTab from "@/app/ui/game-board/DashTab";
 // ----------------------------------------------------------------------------
 
 const AUTO_CONFIRM = true;
-const DELAY = 200;
+const DELAY = 250;
 const IMAGE_QUALITY = 0.1;
 
 // ----------------------------------------------------------------------------
