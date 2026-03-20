@@ -80,19 +80,21 @@ async def detect_image_ws(websocket: WebSocket):
     try:
         while True:
             with MeasureTime(message="Loop time", color=Fore.BLUE):
-                print("Loop")
+                print("Loop" + "-" * 50)
                 # Receive image - get latest frame, skipping older queued frames
                 with MeasureTime(message="Request time", color=Fore.YELLOW):
                     data = await websocket.receive_bytes()
 
                 data = await skip(timeout=0.01) or data
-                image = Image.open(io.BytesIO(data)).convert("RGB")
+
+                with MeasureTime(message="Converting image", color=Fore.GREEN):
+                    image = Image.open(io.BytesIO(data)).convert("RGB")
 
                 state = connection_states[connection_id]
                 with MeasureTime(message="Detect time", color=Fore.BLUE):
                     bboxes, scores = detector(image)
 
-                print(Fore.MAGENTA + "Score detected", Counter(scores), Fore.RESET)
+                print("Score detected", Counter(scores))
                 num_dice = len(bboxes)
 
                 # Only track frames with exactly 2 dice
@@ -127,8 +129,9 @@ async def detect_image_ws(websocket: WebSocket):
                     >= config.tasks.frame_detection.qualified_consecutive_frames - 1
                 ):
                     data = {"bboxes": bboxes, "scores": scores}
-                    print(Fore.CYAN + "Sending", data, Fore.RESET)
-                    await websocket.send_json(data)
+                    print(Fore.CYAN + "Sending", scores, Fore.RESET)
+                    with MeasureTime(message="Send time", color=Fore.YELLOW):
+                        await websocket.send_json(data)
                     state.reset()
                     await skip(timeout=0.1)
 
