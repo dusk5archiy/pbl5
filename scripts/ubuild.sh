@@ -2,9 +2,9 @@
 
 # Minimized Ubuntu Server 24.04.3 (LTS)
 
-scripts/venv.setup.sh
+# scripts/venv.setup.sh
 
-sudo snap install node --classic
+# sudo snap install node --classic
 
 . scripts/venv.sh
 

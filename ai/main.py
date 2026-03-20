@@ -4,7 +4,6 @@ from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from colorama import Fore, init
 from collections import Counter
-
 import asyncio
 import io
 import traceback
@@ -35,7 +34,17 @@ class ConnectionState:
         self.consecutive_matches: int = (
             0  # Counter for consecutive frames with 2 dice and similarity
         )
-        self.frame_count: int = 0
+
+    def reset(self):
+        self.consecutive_matches = 0
+        self.previous_frame = None
+        self.previous_scores = None
+
+    def setMatches(self, b: bool):
+        if b:
+            self.consecutive_matches += 1
+        else:
+            self.consecutive_matches = 0
 
 
 detector = Detector(
@@ -65,22 +74,20 @@ async def detect_image_ws(websocket: WebSocket):
                 with MeasureTime(message="Request time", color=Fore.YELLOW):
                     data = await websocket.receive_bytes()
 
-                    # Drop stale frames: Keep only the most recent queued frame
-                    # This prevents processing old frames when detector is slower than frame send rate
-                    while True:
-                        try:
-                            newer_data = await asyncio.wait_for(
-                                websocket.receive_bytes(),
-                                timeout=0.01,  # 10ms timeout to check for newer frames
-                            )
-                            data = newer_data
-                        except asyncio.TimeoutError:
-                            break  # No more queued frames, continue with latest
+                # Drop stale frames: Keep only the most recent queued frame
+                while True:
+                    try:
+                        newer_data = await asyncio.wait_for(
+                            websocket.receive_bytes(),
+                            timeout=0.01,  # 10ms timeout to check for newer frames
+                        )
+                        data = newer_data
+                    except asyncio.TimeoutError:
+                        break  # No more queued frames, continue with latest
 
                 image = Image.open(io.BytesIO(data)).convert("RGB")
 
                 state = connection_states[connection_id]
-                state.frame_count += 1
 
                 # Always run detector to get number of dice
                 bboxes, scores = detector(image)
@@ -89,10 +96,7 @@ async def detect_image_ws(websocket: WebSocket):
 
                 # Only track frames with exactly 2 dice
                 if num_dice != 2:
-                    # Reset counter - we need consecutive frames with 2 dice
-                    state.consecutive_matches = 0
-                    state.previous_frame = None
-                    state.previous_scores = None
+                    state.reset()
                     continue  # Don't send response, wait for next frame
 
                 # Current frame has 2 dice - check similarity with previous frame
@@ -109,10 +113,7 @@ async def detect_image_ws(websocket: WebSocket):
 
                     has_same_scores = Counter(scores) == state.previous_scores
 
-                if is_similar_to_previous and has_same_scores:
-                    state.consecutive_matches += 1
-                else:
-                    state.consecutive_matches = 0
+                state.setMatches(is_similar_to_previous and has_same_scores)
 
                 print(f"Consecutive matches: {state.consecutive_matches}")
                 # Update previous frame and scores for next comparison
@@ -126,12 +127,7 @@ async def detect_image_ws(websocket: WebSocket):
                     data = {"bboxes": bboxes, "scores": scores}
                     print(Fore.CYAN + "Sending", data, Fore.RESET)
                     await websocket.send_json(data)
-
-                    # Reset state for next detection cycle
-                    state.consecutive_matches = 0
-                    state.previous_frame = None
-                    state.previous_scores = None
-                    state.frame_count = 0
+                    state.reset()
 
     except Exception:
         print("WebSocket error:")

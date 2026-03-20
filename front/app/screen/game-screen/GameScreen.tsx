@@ -35,7 +35,8 @@ import DashTab from "@/app/ui/game-board/DashTab";
 // ----------------------------------------------------------------------------
 
 const AUTO_CONFIRM = true;
-const DELAY = 250;
+const DELAY = 300;
+const IMAGE_QUALITY = 0.1;
 
 // ----------------------------------------------------------------------------
 
@@ -125,6 +126,25 @@ export function GameScreen(props: GameScreenProps) {
       websocket.close();
     };
   }, []);
+
+  // Dice detection
+  const sendFrame = async () => {
+    if (!videoRef?.current || !diceDetectWs || diceDetectWs.readyState !== WebSocket.OPEN) return;
+    let canvas = document.createElement('canvas');
+    let context = canvas.getContext('2d');
+    if (!context) return;
+    canvas.width = videoRef.current.videoWidth;
+    canvas.height = videoRef.current.videoHeight;
+    context.drawImage(videoRef.current, 0, 0);
+    canvas.toBlob(
+      (blob) => {
+        if (!blob || !diceDetectWs) return;
+        diceDetectWs.send(blob);
+        setEncodedImage(canvas.toDataURL());
+      },
+      'image/jpeg', IMAGE_QUALITY);
+  }
+
 
   // Auto-capture: Run interval when isAutoCapturing is true
   useEffect(() => {
@@ -261,24 +281,6 @@ export function GameScreen(props: GameScreenProps) {
       sendDiceResults({});
     }
   };
-
-  // Dice detection
-  const sendFrame = async () => {
-    if (!videoRef?.current || !diceDetectWs || diceDetectWs.readyState !== WebSocket.OPEN) return;
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-    if (!context) return;
-    canvas.width = videoRef.current.videoWidth;
-    canvas.height = videoRef.current.videoHeight;
-    context.drawImage(videoRef.current, 0, 0);
-    canvas.toBlob(
-      (blob) => {
-        if (!blob || !diceDetectWs) return;
-        diceDetectWs.send(blob);
-        setEncodedImage(canvas.toDataURL());
-      },
-      'image/jpeg', 0.8);
-  }
 
 
   const api_props: IApiProps = {

@@ -1,10 +1,6 @@
 #!/bin/bash
 
-if [ -d ".venv/deploy/bin" ]; then
-  . .venv/deploy/bin/activate
-else
-  exit
-fi
+. scripts/venv.sh
 
 (
   cd back-setup
@@ -23,9 +19,8 @@ fi
 
 (
   . var/env.sh
-  PATH=/snap/bin:$PATH
-  PORT=$FRONTEND_PORT
-
   cd front
+  PORT=$FRONTEND_PORT
+  PATH=/snap/bin:$PATH
   npm run dev
 )
