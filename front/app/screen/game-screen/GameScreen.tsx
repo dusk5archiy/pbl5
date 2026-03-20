@@ -35,7 +35,7 @@ import DashTab from "@/app/ui/game-board/DashTab";
 // ----------------------------------------------------------------------------
 
 const AUTO_CONFIRM = true;
-const DELAY = 300;
+const DELAY = 200;
 const IMAGE_QUALITY = 0.1;
 
 // ----------------------------------------------------------------------------
@@ -136,13 +136,13 @@ export function GameScreen(props: GameScreenProps) {
     canvas.width = videoRef.current.videoWidth;
     canvas.height = videoRef.current.videoHeight;
     context.drawImage(videoRef.current, 0, 0);
-    canvas.toBlob(
-      (blob) => {
-        if (!blob || !diceDetectWs) return;
-        diceDetectWs.send(blob);
-        setEncodedImage(canvas.toDataURL());
-      },
-      'image/jpeg', IMAGE_QUALITY);
+    const blob = await new Promise<Blob | null>((resolve) => {
+      canvas.toBlob(resolve, 'image/jpeg', IMAGE_QUALITY);
+    });
+    
+    if (!blob || !diceDetectWs) return;
+    diceDetectWs.send(blob);
+    setEncodedImage(canvas.toDataURL());
   }
 
 

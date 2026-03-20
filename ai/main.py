@@ -88,9 +88,8 @@ async def detect_image_ws(websocket: WebSocket):
                 image = Image.open(io.BytesIO(data)).convert("RGB")
 
                 state = connection_states[connection_id]
-
-                # Always run detector to get number of dice
                 bboxes, scores = detector(image)
+
                 print(Fore.MAGENTA + "Score detected", Counter(scores), Fore.RESET)
                 num_dice = len(bboxes)
 
