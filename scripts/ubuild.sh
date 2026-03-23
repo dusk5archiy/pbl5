@@ -4,7 +4,7 @@
 
 scripts/venv.setup.sh
 
-# sudo snap install node --classic
+sudo snap install node --classic
 
 . scripts/venv.sh
 
