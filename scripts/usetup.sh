@@ -62,6 +62,7 @@ scripts/venv.setup.sh
   PATH=/snap/bin:$PATH
 
   cd front
+  chmod -R +x node_modules/.bin
   npm install
   npm run build
 )
