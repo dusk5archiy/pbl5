@@ -12,6 +12,11 @@ if [[ ! "$NPM_TASK" =~ ^(start|dev)$ ]]; then
   exit 1
 fi
 
+if [[ $USER != "root" ]]; then
+  echoError "Please run the script with sudo."
+  exit 1
+fi
+
 . bin/_run-python-backends.sh
 
 (

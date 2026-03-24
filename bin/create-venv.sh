@@ -11,7 +11,7 @@ TASK_NAME="${1:-deploy}"
 mkdir -p .venv
 
 # Execute the task's setup file (
-chmod +x "config/$TASK_NAME/setup.sh"
+chmod +x "config/$TASK_NAME/create-venv.sh"
 "config/$TASK_NAME/create-venv.sh" ".venv/$TASK_NAME"
 # )
 

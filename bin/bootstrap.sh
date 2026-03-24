@@ -49,7 +49,7 @@ fi
 echoStart "Start bootstrapping..."
 
 # Update apt
-sudo apt update
+apt update
 bin/ubuntu/setup-packages.sh
 
 if [[ $use_ai == 1 ]]; then

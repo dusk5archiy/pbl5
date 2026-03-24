@@ -1,4 +1,4 @@
-sudo snap install node --classic
+snap install node --classic
 
 # Setup Raspberry Pi dependencies
 if [[ $use_rpi == 1 ]]; then
@@ -24,7 +24,7 @@ bin/create-venv.sh deploy
   PATH=/snap/bin:$PATH
 
   cd front
-  chmod -R +x node_modules/.bin
   npm install
+  chmod -R +x node_modules/.bin
   npm run build
 )
