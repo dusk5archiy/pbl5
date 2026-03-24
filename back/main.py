@@ -141,6 +141,7 @@ class GameStateResponse(BaseModel):
 
 @app.post("/initial_game_state", response_model=GameStateResponse)
 async def initial_game_state(request: GameStateRequest) -> GameStateResponse:
+    global game_state_server
     import random
 
     version = request.version
@@ -149,6 +150,9 @@ async def initial_game_state(request: GameStateRequest) -> GameStateResponse:
         game_data.frontend_game_data,
         game_data.backend_game_data,
     )
+
+    if game_state_server is not None:
+        return GameStateResponse(game_state=game_state_server,game_data=FRONTEND_GAME_DATA)
 
     players = request.players
     random.shuffle(players)
@@ -209,11 +213,13 @@ async def initial_game_state(request: GameStateRequest) -> GameStateResponse:
 
 
 # -----------------------------------------------------------------------------
-
-
+list_connection = []
+game_state_server = None
 @app.websocket("/ws/game_states")
 async def websocket_game_states(websocket: WebSocket):
+    global game_state_server
     await websocket.accept()
+    list_connection.append(websocket)
     try:
         while True:
             try:
@@ -329,7 +335,9 @@ async def websocket_game_states(websocket: WebSocket):
 
                 if task is not None and game_state is not None:
                     for state in generate_states(game_state, task):
-                        await websocket.send_text(state.model_dump_json())
+                        game_state_server = state
+                        for connection in list_connection:
+                            await connection.send_text(state.model_dump_json())
                         delay = state.effect.wait_ms
                         await asyncio.sleep(delay / 1000.0)
             except Exception as e:
@@ -341,6 +349,9 @@ async def websocket_game_states(websocket: WebSocket):
     except Exception as e:
         print(f"WebSocket error: {e}")
     finally:
+        list_connection.remove(websocket)
+        if len(list_connection) == 0:
+            game_state_server = None
         await websocket.close()
 
 
