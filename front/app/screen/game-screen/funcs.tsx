@@ -29,7 +29,6 @@ export async function getFunction(props: GameScreenProps, at: string, request: O
     } catch {
       onError();
     }
-    setUpdating(false);
   };
 }
 

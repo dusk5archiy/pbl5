@@ -41,7 +41,7 @@ const IMAGE_QUALITY = 0.1;
 // ----------------------------------------------------------------------------
 
 export function GameScreen(props: GameScreenProps) {
-  const { onBack, gameData, gameState, setGameState, selectedCamera, diceDetection } = props;
+  const { onBack, gameData, gameState, setGameState, selectedCamera, diceDetection, setUpdating } = props;
 
   const [bdsShown, setBdsShown] = useState<number>(0);
   const [propertyTab, setPropertyTab] = useState<string>("bds");
@@ -225,7 +225,7 @@ export function GameScreen(props: GameScreenProps) {
     };
     websocket.onmessage = (event) => {
       const game_state = JSON.parse(event.data);
-      console.log(game_state);
+      setUpdating(false);
       setGameState(game_state);
     };
     websocket.onclose = () => { };
@@ -259,8 +259,7 @@ export function GameScreen(props: GameScreenProps) {
   const startTradeFunc = getNormalFunction(props, "start_trade", ws);
   const tradeFunc = getTradeFunction(props, "trade", ws);
 
-  // Send roll dice data
-
+  // Send dice data to the backend
   const sendDiceResults = (data: any) => {
     const jail_chore = gameState.current_chore.jail;
     const roll_dice_chore = gameState.current_chore.roll_dice;
@@ -270,6 +269,7 @@ export function GameScreen(props: GameScreenProps) {
     if (two_dice_rent_u_chore != null) { twoDiceRentUFunc({ ...data }) }
   }
 
+  // Collect the dice data to send to the backend
   const sendRollDice = () => {
     if (diceDetection && diceDetectionResult != null) {
       const data = {
