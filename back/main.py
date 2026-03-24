@@ -152,7 +152,7 @@ async def initial_game_state(request: GameStateRequest) -> GameStateResponse:
     )
 
     if game_state_server is not None:
-        return GameStateResponse(game_state=game_state_server,game_data=FRONTEND_GAME_DATA)
+        return GameStateResponse(game_state=game_state_server, game_data=FRONTEND_GAME_DATA)
 
     players = request.players
     random.shuffle(players)
@@ -209,6 +209,7 @@ async def initial_game_state(request: GameStateRequest) -> GameStateResponse:
     game_state.current_chore.end_turn = EndTurnChore(next_player=False, player=player)
     gen = generate_states(game_state, EndTurnTask())
     game_state = next(gen)
+    game_state_server = game_state
     return GameStateResponse(game_state=game_state, game_data=FRONTEND_GAME_DATA)
 
 
@@ -352,6 +353,8 @@ async def websocket_game_states(websocket: WebSocket):
         list_connection.remove(websocket)
         if len(list_connection) == 0:
             game_state_server = None
+            
+        print("Players left:", len(list(list_connection)))
         await websocket.close()
 
 
