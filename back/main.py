@@ -359,4 +359,4 @@ if __name__ == "__main__":
     print(Fore.CYAN + "[-- INFO --] Configurations: ")
     print(config)
 
-    uvicorn.run(app, port=config["back"]["port"])
+    uvicorn.run(app, host="0.0.0.0", port=config["back"]["port"])
