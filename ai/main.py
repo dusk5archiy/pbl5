@@ -77,7 +77,7 @@ async def detect_image_ws(websocket: WebSocket):
     try:
         while True:
             with MeasureTime(message="Loop time", color=Fore.BLUE):
-                print("Loop" + "-" * 50)
+                # print("Loop" + "-" * 50)
                 # Receive image - get latest frame, skipping older queued frames
                 with MeasureTime(message="Request time", color=Fore.YELLOW):
                     data = await websocket.receive_bytes()
@@ -91,7 +91,7 @@ async def detect_image_ws(websocket: WebSocket):
                 with MeasureTime(message="Detect time", color=Fore.BLUE):
                     bboxes, scores = detector(image)
 
-                print("Score detected", Counter(scores))
+                # print("Score detected", Counter(scores))
                 num_dice = len(bboxes)
 
                 # Only track frames with exactly 2 dice

@@ -12,5 +12,5 @@ class MeasureTime:
 
     def __exit__(self, *_):
         self.end = time.perf_counter()
-        interval = self.end - self.start
-        print(self.color + self.message + f": {int(interval * 1000)}ms" + Fore.RESET)
+        # interval = self.end - self.start
+        # print(self.color + self.message + f": {int(interval * 1000)}ms" + Fore.RESET)
