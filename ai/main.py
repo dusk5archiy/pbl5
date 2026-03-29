@@ -55,8 +55,6 @@ detector = Detector(
 
 @app.websocket("/detect")
 async def detect_image_ws(websocket: WebSocket):
-    init()
-
     print(Fore.BLUE + "[--PENDING--] Waiting for a web socket...", Fore.RESET)
     await websocket.accept()
     print(Fore.CYAN + "[--SUCCESS--] Got a new socket.", Fore.RESET)
@@ -147,5 +145,8 @@ async def detect_image_ws(websocket: WebSocket):
 
 if __name__ == "__main__":
     import uvicorn
+    import os
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    init()
+
+    uvicorn.run(app, host="0.0.0.0", port=int(os.environ["AI_PORT"]))

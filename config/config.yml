@@ -3,3 +3,6 @@ front:
 
 back:
   port: 37001
+
+ai:
+  port: 8000

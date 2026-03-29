@@ -1,6 +1,7 @@
-from fastapi import FastAPI, WebSocket
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import VERSION, BaseModel
+from colorama import init, Fore
+from pydantic import BaseModel
 import asyncio
 import json
 from game_data_manager import (
@@ -36,6 +37,11 @@ from model.game_state import (
 
 from model.chore import EndTurnChore, TradeCard
 from task.trade import StartTradeTask, TradeTask
+
+# -----------------------------------------------------------------------------
+
+list_connection = []
+game_state_server = None
 
 # -----------------------------------------------------------------------------
 
@@ -152,7 +158,9 @@ async def initial_game_state(request: GameStateRequest) -> GameStateResponse:
     )
 
     if game_state_server is not None:
-        return GameStateResponse(game_state=game_state_server, game_data=FRONTEND_GAME_DATA)
+        return GameStateResponse(
+            game_state=game_state_server, game_data=FRONTEND_GAME_DATA
+        )
 
     players = request.players
     random.shuffle(players)
@@ -214,163 +222,152 @@ async def initial_game_state(request: GameStateRequest) -> GameStateResponse:
 
 
 # -----------------------------------------------------------------------------
-list_connection = []
-game_state_server = None
 @app.websocket("/ws/game_states")
 async def websocket_game_states(websocket: WebSocket):
     global game_state_server
+    print(Fore.CYAN + "[-- START --] Websocket called." + Fore.RESET)
     await websocket.accept()
+    print(Fore.GREEN + "[-- SUCCESS --] Connection established." + Fore.RESET)
     list_connection.append(websocket)
     try:
         while True:
-            try:
-                data = await websocket.receive_text()
-                msg = json.loads(data)
-                action = msg["action"]
-                params = msg.get("params", {})
-                params["game_state"] = msg["game_state"]
+            data = await websocket.receive_text()
+            msg = json.loads(data)
+            action = msg["action"]
+            params = msg.get("params", {})
+            params["game_state"] = msg["game_state"]
 
-                task = None
-                game_state = None
+            task = None
+            game_state = None
 
-                if action == "roll_dice":
-                    request = RollDiceRequest(**params)
-                    game_state = request.game_state
-                    task = RollDiceTask(dice_1=request.dice_1, dice_2=request.dice_2)
+            if action == "roll_dice":
+                request = RollDiceRequest(**params)
+                game_state = request.game_state
+                task = RollDiceTask(dice_1=request.dice_1, dice_2=request.dice_2)
 
-                elif action == "end_turn":
-                    request = StateRequest(**params)
-                    game_state = request.game_state
-                    task = EndTurnTask()
+            elif action == "end_turn":
+                request = StateRequest(**params)
+                game_state = request.game_state
+                task = EndTurnTask()
 
-                elif action == "buy":
-                    request = NumRequest(**params)
-                    game_state = request.game_state
-                    task = BuyTask(response=request.response)
+            elif action == "buy":
+                request = NumRequest(**params)
+                game_state = request.game_state
+                task = BuyTask(response=request.response)
 
-                elif action == "auction":
-                    request = AuctionRequest(**params)
-                    game_state = request.game_state
-                    task = AuctionBdsTask(amount=request.amount)
+            elif action == "auction":
+                request = AuctionRequest(**params)
+                game_state = request.game_state
+                task = AuctionBdsTask(amount=request.amount)
 
-                elif action == "upgrade_bds":
-                    request = BdsRequest(**params)
-                    game_state = request.game_state
-                    task = UpgradeTask(bds=request.bds)
+            elif action == "upgrade_bds":
+                request = BdsRequest(**params)
+                game_state = request.game_state
+                task = UpgradeTask(bds=request.bds)
 
-                elif action == "downgrade_bds":
-                    request = BdsRequest(**params)
-                    game_state = request.game_state
-                    task = DowngradeTask(bds=request.bds)
+            elif action == "downgrade_bds":
+                request = BdsRequest(**params)
+                game_state = request.game_state
+                task = DowngradeTask(bds=request.bds)
 
-                elif action == "mortgage_bds":
-                    request = BdsRequest(**params)
-                    game_state = request.game_state
-                    task = MortgageTask(bds=request.bds)
+            elif action == "mortgage_bds":
+                request = BdsRequest(**params)
+                game_state = request.game_state
+                task = MortgageTask(bds=request.bds)
 
-                elif action == "unmortgage_bds":
-                    request = BdsRequest(**params)
-                    game_state = request.game_state
-                    task = UnmortgageTask(bds=request.bds)
+            elif action == "unmortgage_bds":
+                request = BdsRequest(**params)
+                game_state = request.game_state
+                task = UnmortgageTask(bds=request.bds)
 
-                elif action == "pay":
-                    request = NumRequest(**params)
-                    game_state = request.game_state
-                    task = PayTask(response=request.response)
+            elif action == "pay":
+                request = NumRequest(**params)
+                game_state = request.game_state
+                task = PayTask(response=request.response)
 
-                elif action == "receive_mortgage":
-                    request = NumRequest(**params)
-                    game_state = request.game_state
-                    task = ReceiveMortgageTask(response=request.response)
+            elif action == "receive_mortgage":
+                request = NumRequest(**params)
+                game_state = request.game_state
+                task = ReceiveMortgageTask(response=request.response)
 
-                elif action == "jail":
-                    request = DiceNumRequest(**params)
-                    game_state = request.game_state
-                    task = JailTask(
-                        response=request.response,
-                        dice_1=request.dice_1,
-                        dice_2=request.dice_2,
-                    )
+            elif action == "jail":
+                request = DiceNumRequest(**params)
+                game_state = request.game_state
+                task = JailTask(
+                    response=request.response,
+                    dice_1=request.dice_1,
+                    dice_2=request.dice_2,
+                )
 
-                elif action == "dice_c":
-                    request = StateRequest(**params)
-                    game_state = request.game_state
-                    task = DiceCTask()
+            elif action == "dice_c":
+                request = StateRequest(**params)
+                game_state = request.game_state
+                task = DiceCTask()
 
-                elif action == "dice_xb":
-                    request = StateRequest(**params)
-                    game_state = request.game_state
-                    task = DiceXbTask()
+            elif action == "dice_xb":
+                request = StateRequest(**params)
+                game_state = request.game_state
+                task = DiceXbTask()
 
-                elif action == "triple_dice":
-                    request = DestinationRequest(**params)
-                    game_state = request.game_state
-                    task = TripleDiceTask(destination=request.destination)
+            elif action == "triple_dice":
+                request = DestinationRequest(**params)
+                game_state = request.game_state
+                task = TripleDiceTask(destination=request.destination)
 
-                elif action == "action_card":
-                    request = StateRequest(**params)
-                    game_state = request.game_state
-                    task = ActionCardTask()
+            elif action == "action_card":
+                request = StateRequest(**params)
+                game_state = request.game_state
+                task = ActionCardTask()
 
-                elif action == "two_dice_rent_u":
-                    request = RollDiceRequest(**params)
-                    game_state = request.game_state
-                    task = TwoDiceRentUTask(
-                        dice_1=request.dice_1, dice_2=request.dice_2
-                    )
+            elif action == "two_dice_rent_u":
+                request = RollDiceRequest(**params)
+                game_state = request.game_state
+                task = TwoDiceRentUTask(dice_1=request.dice_1, dice_2=request.dice_2)
 
-                elif action == "use_action_card":
-                    request = UseActionCardRequest(**params)
-                    game_state = request.game_state
-                    task = UseActionCardTask(group=request.group, card=request.card)
+            elif action == "use_action_card":
+                request = UseActionCardRequest(**params)
+                game_state = request.game_state
+                task = UseActionCardTask(group=request.group, card=request.card)
 
-                elif action == "start_trade":
-                    request = StateRequest(**params)
-                    game_state = request.game_state
-                    task = StartTradeTask()
+            elif action == "start_trade":
+                request = StateRequest(**params)
+                game_state = request.game_state
+                task = StartTradeTask()
 
-                elif action == "trade":
-                    request = TradeRequest(**params)
-                    game_state = request.game_state
-                    task = TradeTask(**params)
+            elif action == "trade":
+                request = TradeRequest(**params)
+                game_state = request.game_state
+                task = TradeTask(**params)
 
-                if task is not None and game_state is not None:
-                    for state in generate_states(game_state, task):
-                        game_state_server = state
-                        for connection in list_connection:
-                            await connection.send_text(state.model_dump_json())
-                        delay = state.effect.wait_ms
-                        await asyncio.sleep(delay / 1000.0)
-            except Exception as e:
-                import traceback
+            if task is not None and game_state is not None:
+                for state in generate_states(game_state, task):
+                    game_state_server = state
+                    for connection in list_connection:
+                        await connection.send_text(state.model_dump_json())
+                    delay = state.effect.wait_ms
+                    await asyncio.sleep(delay / 1000.0)
+    except WebSocketDisconnect:
+        print(Fore.YELLOW + "Socket disconnected." + Fore.RESET)
+    except Exception:
+        import traceback
 
-                traceback.print_exc()
-                print(f"WebSocket processing error: {e}")
-                break
-    except Exception as e:
-        print(f"WebSocket error: {e}")
+        traceback.print_exc()
     finally:
         list_connection.remove(websocket)
         if len(list_connection) == 0:
             game_state_server = None
-            
+
         print("Players left:", len(list(list_connection)))
-        await websocket.close()
 
 
 # -----------------------------------------------------------------------------
 
 if __name__ == "__main__":
     import uvicorn
-    import yaml
+    import os
     from colorama import Fore, init
 
     init()
 
-    with open("../config/config.yml", "r") as f:
-        config = yaml.safe_load(f)
-
-    print(Fore.CYAN + "[-- INFO --] Configurations: ")
-    print(config)
-
-    uvicorn.run(app, host="0.0.0.0", port=config["back"]["port"])
+    print(Fore.CYAN + "[-- INFO --] Configurations: " + Fore.RESET)
+    uvicorn.run(app, host="0.0.0.0", port=int(os.environ["BACKEND_PORT"]))

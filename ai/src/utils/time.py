@@ -1,5 +1,5 @@
 import time
-from colorama import Fore, init
+from colorama import Fore
 
 
 class MeasureTime:
@@ -13,5 +13,4 @@ class MeasureTime:
     def __exit__(self, *_):
         self.end = time.perf_counter()
         interval = self.end - self.start
-        init()
         print(self.color + self.message + f": {int(interval * 1000)}ms" + Fore.RESET)
