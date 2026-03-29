@@ -12,7 +12,9 @@ if [[ -z "$VENV_FOLDER" ]]; then
   exit 1
 fi
 
+# libgl1 for opencv-python 
 apt install --no-install-recommends --no-install-suggests -y \
-  libgl1 # For opencv-python
+  libgl1 \
+  python3-tk
 
 python -m venv --system-site-packages "$VENV_FOLDER"

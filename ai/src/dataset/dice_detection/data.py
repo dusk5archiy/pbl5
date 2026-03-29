@@ -4,9 +4,10 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 class ImageDetectionData:
     """Stores data for a single image with bounding boxes"""
 
-    def __init__(self, input_file_path: str, bboxes: list[tuple[int, int, int, int]]):
+    def __init__(self, input_file_path: str, bboxes: list[tuple[int, int, int, int]], scores: list[int]):
         self.input_file_path = input_file_path
         self.bboxes = bboxes
+        self.scores = scores
 
 
 def get_image_detection_datas(dataset_path: str, num_workers: int = 4) -> list[ImageDetectionData]:
@@ -22,15 +23,18 @@ def get_image_detection_datas(dataset_path: str, num_workers: int = 4) -> list[I
         target_file_path = os.path.join(target_dir_path, target_file_name)
 
         bboxes = []
+        scores = []
         with open(target_file_path, encoding="utf-8") as f:
             for line in f:
                 parts = line.strip().split()
-                x, y, w, h, _ = map(int, parts)
+                x, y, w, h, s = map(int, parts)
                 bboxes.append((x, y, w, h))
+                scores.append(s)
 
         return ImageDetectionData(
             input_file_path=input_file_path,
-            bboxes=bboxes
+            bboxes=bboxes,
+            scores=scores
         )
 
     # Parallel reading of txt files

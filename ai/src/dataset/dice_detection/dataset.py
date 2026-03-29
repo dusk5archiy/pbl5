@@ -50,9 +50,9 @@ class S7DatasetDiceDetection:
     def from_dataset_path(cls,
         dataset_path: str,
         image_resolution: tuple[int, int],
+        colored: bool,
         queue_capacity: int = 500,
         num_workers: int = 4,
-        colored: bool = True
     ):
         image_data = get_image_detection_datas(
             dataset_path=dataset_path, num_workers=num_workers

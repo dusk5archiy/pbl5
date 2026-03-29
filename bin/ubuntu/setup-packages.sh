@@ -4,6 +4,7 @@
 
 set -e
 
+apt update
 apt install -y --no-install-recommends \
   python-is-python3 \
   python3 \

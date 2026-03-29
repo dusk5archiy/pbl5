@@ -12,7 +12,6 @@ pillow
 tqdm
 numpy==1.26.4
 scikit-learn
-keras_cv
 ai_edge_litert
 
 # Interactive Notebook

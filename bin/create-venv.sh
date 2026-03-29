@@ -8,6 +8,8 @@ set -e
 TASK_NAME="${1:-deploy}"
 # ) Params
 
+bin/ubuntu/setup-packages.sh
+
 mkdir -p .venv
 
 # Execute the task's setup file (
