@@ -8,7 +8,9 @@ import { RuleTab } from "./RuleTab";
 import { TradeTab } from "./TradeTab";
 
 export function HandPanel(props: GameBoardProps) {
-  const { gameState, propertyTab, setPropertyTab, setBdsShown } = props;
+  const { gameState, propertyTab, setPropertyTab, setBdsShown, guest } = props;
+  const ui_player = guest || gameState.logic.viewing_player;
+  const color = COLOR_UI_INFO[ui_player].lightColorCode;
   const BUTTON_CLASS = "w-max h-max px-[2vw] py-[2vh] text-[2vw] px-[3vw] font-bold disabled:bg-(--bg-color) rounded bg-[lightgray] disabled:active:bg-(--bg-color)";
 
   return (
@@ -17,7 +19,7 @@ export function HandPanel(props: GameBoardProps) {
         <button
           style={
             {
-              '--bg-color': COLOR_UI_INFO[gameState.logic.viewing_player || gameState.logic.current_player].lightColorCode
+              '--bg-color': color,
             } as React.CSSProperties
           }
           className={BUTTON_CLASS}
@@ -27,7 +29,7 @@ export function HandPanel(props: GameBoardProps) {
         <button
           style={
             {
-              '--bg-color': COLOR_UI_INFO[gameState.logic.viewing_player || gameState.logic.current_player].lightColorCode
+              '--bg-color': color,
             } as React.CSSProperties
           }
           className={BUTTON_CLASS}
@@ -38,7 +40,7 @@ export function HandPanel(props: GameBoardProps) {
         <button
           style={
             {
-              '--bg-color': COLOR_UI_INFO[gameState.logic.viewing_player || gameState.logic.current_player].lightColorCode
+              '--bg-color': color,
             } as React.CSSProperties
           }
           className={BUTTON_CLASS}
@@ -49,7 +51,7 @@ export function HandPanel(props: GameBoardProps) {
         <button
           style={
             {
-              '--bg-color': COLOR_UI_INFO[gameState.logic.viewing_player || gameState.logic.current_player].lightColorCode
+              '--bg-color': color,
             } as React.CSSProperties
           }
           className={BUTTON_CLASS}
@@ -60,7 +62,7 @@ export function HandPanel(props: GameBoardProps) {
         <button
           style={
             {
-              '--bg-color': COLOR_UI_INFO[gameState.logic.viewing_player || gameState.logic.current_player].lightColorCode
+              '--bg-color': color,
             } as React.CSSProperties
           }
           className={BUTTON_CLASS}
@@ -71,7 +73,7 @@ export function HandPanel(props: GameBoardProps) {
         <button
           style={
             {
-              '--bg-color': COLOR_UI_INFO[gameState.logic.viewing_player || gameState.logic.current_player].lightColorCode
+              '--bg-color': color,
             } as React.CSSProperties
           }
           className={BUTTON_CLASS}
@@ -82,7 +84,7 @@ export function HandPanel(props: GameBoardProps) {
         <button
           style={
             {
-              '--bg-color': COLOR_UI_INFO[gameState.logic.viewing_player || gameState.logic.current_player].lightColorCode
+              '--bg-color': color,
             } as React.CSSProperties
           }
           className={BUTTON_CLASS}

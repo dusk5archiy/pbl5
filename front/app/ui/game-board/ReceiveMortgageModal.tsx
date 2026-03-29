@@ -13,7 +13,10 @@ interface ReceiveMortgageModalProps extends GameBoardProps {
 }
 
 export function ReceiveMortgageModal(props: ReceiveMortgageModalProps) {
-  const { gameState, func, chore } = props;
+  const { gameState, func, chore, guest } = props;
+  if (guest != null && guest != gameState.logic.viewing_player) {
+    return undefined;
+  }
   const { unmortgage, interest, bds, player } = chore;
   const player_budget = gameState.logic.budget[player];
   const buttonClassName = "p-[1vw] rounded disabled:text-white disabled:bg-gray-300 border-2 border-white";

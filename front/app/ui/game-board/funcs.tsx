@@ -44,12 +44,13 @@ export function getDrawSpaceFunction(props: GameBoardProps) {
 // ----------------------------------------------------------------------------
 
 export function getDrawSpaceTouchFunction(props: GameBoardProps) {
-  const { gameData, focusBds, setBdsShown, gameState, tripleDiceFunc, setPropertyTab } = props;
+  const { gameData, focusBds, setBdsShown, gameState, tripleDiceFunc, setPropertyTab, guest } = props;
+  const can_interact = guest == null || guest == gameState.logic.viewing_player;
   const vt = getVtFunction(props);
   const triple_dice_chore = gameState.current_chore.triple_dice;
 
   function ev(spaceId: string) {
-    if (triple_dice_chore != null) {
+    if (can_interact && triple_dice_chore != null) {
       tripleDiceFunc({ destination: spaceId });
       return;
     }

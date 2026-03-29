@@ -111,6 +111,8 @@ export interface GameBoardProps extends
   setBdsShown: (_: number) => void;
   propertyTab: string;
   setPropertyTab: (_: string) => void;
+  guest?: string;
+  boardShown: boolean;
 }
 
 // ----------------------------------------------------------------------------

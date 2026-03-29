@@ -1,12 +1,11 @@
 from PIL import Image
 from src.utils.time import MeasureTime
-from fastapi import FastAPI, WebSocket
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from colorama import Fore, init
 from collections import Counter
 import asyncio
 import io
-import traceback
 from src.task.detector import Detector
 from src.parse.config import load_config
 from src.utils.frames import similar_frames
@@ -133,8 +132,11 @@ async def detect_image_ws(websocket: WebSocket):
                     state.reset()
                     await skip(timeout=0.1)
 
+    except WebSocketDisconnect:
+        print(Fore.YELLOW + "Socket disconnected." + Fore.RESET)
     except Exception:
-        print("WebSocket error:")
+        import traceback
+
         traceback.print_exc()
     finally:
         # Cleanup connection state

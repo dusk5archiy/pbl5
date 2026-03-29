@@ -34,7 +34,7 @@ export function PromptModal(props: GameBoardProps) {
         {gameState.current_chore.pay != null && <PayModal {...{ ...props, func: payFunc, chore: gameState.current_chore.pay }} />}
         {gameState.current_chore.receive_mortgage != null && <ReceiveMortgageModal {...{ ...props, func: receiveMortgageFunc, chore: gameState.current_chore.receive_mortgage }} />}
         {gameState.current_chore.end_game != null && <EndGamePanel {...{ ...props, chore: gameState.current_chore.end_game }} />}
-        {gameState.current_chore.triple_dice != null && <TripleDiceModal />}
+        {gameState.current_chore.triple_dice != null && <TripleDiceModal {...props} />}
         {gameState.current_chore.action_card != null && <ActionCardModal {...{ ...props, chore: gameState.current_chore.action_card }} />}
         {gameState.current_chore.trade != null && <TradeModal {...{ ...props, func: tradeFunc, chore: gameState.current_chore.trade }} />}
       </div>

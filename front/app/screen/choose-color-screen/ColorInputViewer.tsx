@@ -1,22 +1,25 @@
-'use client'
-
-import { ChooseColorScreenProps } from "./props";
 import { COLOR_UI_INFO, ColorUIInfo } from "@/app/utils/pallete";
 
 export function getColorButtonHandler(
-  props: ChooseColorScreenProps
+  props: {
+    getSelectedColors: string[],
+    setSelectedColors: (_: string[]) => void
+  }
 ) {
   const { getSelectedColors, setSelectedColors } = props;
-  return (id: string) => {
-    if (!getSelectedColors.find(c => c === id)) {
-      setSelectedColors([...getSelectedColors, id]);
+  return (color: string) => {
+    if (!getSelectedColors.find(c => c === color)) {
+      setSelectedColors([...getSelectedColors, color]);
     }
   };
 
 }
 
 function getColorButtonMapping(
-  props: ChooseColorScreenProps
+  props: {
+    getSelectedColors: string[],
+    setSelectedColors: (_: string[]) => void
+  }
 ) {
   const { getSelectedColors } = props;
   const handleColorButton = getColorButtonHandler(props);
@@ -25,7 +28,7 @@ function getColorButtonMapping(
     return (
       <button
         key={id}
-        onMouseEnter={() => handleColorButton(id)}
+        onClick={() => handleColorButton(id)}
         disabled={is_disabled}
         style={
           {
@@ -38,7 +41,12 @@ function getColorButtonMapping(
   };
 }
 
-export function ColorInputViewer(props: ChooseColorScreenProps) {
+export function ColorInputViewer(
+  props: {
+    getSelectedColors: string[],
+    setSelectedColors: (_: string[]) => void
+  }
+) {
   const colorButtonMapping = getColorButtonMapping(props);
   return (
     <div className="w-full flex flex-col gap-[2vh] items-center">
@@ -51,4 +59,3 @@ export function ColorInputViewer(props: ChooseColorScreenProps) {
     </div>
   );
 };
-

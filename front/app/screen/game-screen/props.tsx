@@ -13,6 +13,7 @@ export interface GameScreenProps {
   setUpdating: (_: boolean) => void;
   selectedCamera: string;
   diceDetection: boolean;
+  guest?: string;
 };
 
 // ----------------------------------------------------------------------------

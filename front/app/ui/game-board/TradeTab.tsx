@@ -6,19 +6,24 @@ function NormalTradeTab(props: GameBoardProps) {
   const {
     gameState,
     startTradeFunc,
+    guest
   } = props;
+
   const BUTTON_CLASS = "w-max h-max px-[4cqw] py-[2cqw] text-[3cqw] font-bold bg-(--bg-color) rounded active:bg-[lightgray] disabled:text-white disabled:active:bg-(--bg-color)";
-  const player = gameState.logic.viewing_player || gameState.logic.current_player;
+  const player = gameState.logic.viewing_player;
+  const can_interact = guest == null || guest == player;
+  const ui_player = guest || player;
+  const color = COLOR_UI_INFO[ui_player].lightColorCode;
 
   return (
     <div className="w-full h-full flex justify-center items-center gap-[1vw]">
       <button
         style={
           {
-            '--bg-color': COLOR_UI_INFO[player].lightColorCode
+            '--bg-color': color
           } as React.CSSProperties
         }
-        disabled={!gameState.effect.can_trade}
+        disabled={!can_interact || !gameState.effect.can_trade}
         className={BUTTON_CLASS}
         onClick={() => {
           startTradeFunc();

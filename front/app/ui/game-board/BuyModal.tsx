@@ -11,7 +11,10 @@ interface BuyModalProps extends GameBoardProps {
 }
 
 export function BuyModal(props: BuyModalProps) {
-  const { gameState, func: buyFunc, chore } = props;
+  const { gameState, func: buyFunc, chore, guest } = props;
+  if (guest != null && guest != gameState.logic.viewing_player) {
+    return undefined;
+  }
   const { bds, price, player } = chore;
   const can_buy = gameState.logic.budget[player] >= price;
   const buttonClassName = "px-[7cqw] py-[5cqw] rounded disabled:text-white disabled:bg-gray-300 border-2 border-white";

@@ -9,14 +9,16 @@ export function StatTab(props: GameBoardProps) {
     selectedBoard,
     selectedTrack,
     focusBds,
-    setPropertyTab
+    setPropertyTab,
+    guest
   } = props;
 
   const selector_class_name = "flex-1 max-h-full flex flex-col overflow-auto gap-[0.5vw] pr-[0.25vw]";
   const selector_class_name_2 = "flex-1 flex w-full h-[5vh] gap-[0.5vw] pr-[0.25vw]";
   const option_class_name = "w-full flex justify-evenly rounded text-[3cqh] active:bg-gray-400";
   const option_class_name_2 = option_class_name + " py-[1vw] text-[3cqw]";
-  const active_color = COLOR_UI_INFO[gameState.logic.viewing_player || gameState.logic.current_player].lightColorCode;
+  const ui_player = guest || gameState.logic.viewing_player;
+  const active_color = COLOR_UI_INFO[ui_player].lightColorCode;
   const inactive_color = "lightgray";
 
   const selectBoard = (board: number) => {

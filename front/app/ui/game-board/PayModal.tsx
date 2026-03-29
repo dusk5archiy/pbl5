@@ -13,7 +13,12 @@ interface PayModalProps extends GameBoardProps {
 }
 
 export function PayModal(props: PayModalProps) {
-  const { gameState, func, chore } = props;
+  const { gameState, func, chore, guest } = props;
+
+  if (guest != null && guest != gameState.logic.viewing_player) {
+    return undefined;
+  }
+
   const { amount, player, receiver } = chore;
   const player_budget = gameState.logic.budget[player];
   const buttonClassName = "px-[7cqw] py-[3cqw] rounded disabled:text-white disabled:bg-gray-300 border-2 border-white";

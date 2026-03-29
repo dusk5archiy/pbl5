@@ -12,8 +12,11 @@ interface PayModalProps extends GameBoardProps {
 }
 
 export function TradeModal(props: PayModalProps) {
-  const { func, chore } = props;
+  const { func, chore, guest, gameState } = props;
   const { player, player_1, player_2 } = chore;
+  if (guest != null && guest != gameState.logic.viewing_player) {
+    return undefined;
+  }
   const buttonClassName = "p-[1vw] rounded disabled:text-white disabled:bg-gray-300 border-2 border-white";
 
   if (!chore.confirm_mode) {

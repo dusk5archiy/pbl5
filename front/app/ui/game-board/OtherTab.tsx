@@ -4,21 +4,25 @@ import { GameBoardProps } from "./props";
 function NormalTradeTab(props: GameBoardProps) {
   const {
     gameState,
-    payFunc, receiveMortgageFunc, jailFunc,
+    payFunc, receiveMortgageFunc, jailFunc, guest
   } = props;
+
+  const can_interact = guest != null || guest == gameState.logic.viewing_player;
+
   const pay_chore = gameState.current_chore.pay;
   const receive_mortgage_chore = gameState.current_chore.receive_mortgage;
   const jail_chore = gameState.current_chore.jail;
+  const ui_player = guest || gameState.logic.viewing_player;
 
   const BUTTON_CLASS = "w-max h-max px-[4cqw] py-[2cqw] text-[3cqw] font-bold bg-(--bg-color) rounded active:bg-[lightgray] disabled:text-white disabled:active:bg-(--bg-color)";
-  const player = gameState.logic.viewing_player || gameState.logic.current_player;
+  const color = COLOR_UI_INFO[ui_player].lightColorCode;
 
   return (
     <div className="w-full h-full flex justify-center items-center gap-[1vw]">
       <button
         style={
           {
-            '--bg-color': COLOR_UI_INFO[player].lightColorCode
+            '--bg-color': color,
           } as React.CSSProperties
         }
         onClick={
@@ -31,9 +35,12 @@ function NormalTradeTab(props: GameBoardProps) {
                 undefined
         }
         disabled={
-          pay_chore == null
-          && receive_mortgage_chore == null
-          && jail_chore == null
+          !can_interact ||
+          (
+            pay_chore == null
+            && receive_mortgage_chore == null
+            && jail_chore == null
+          )
         }
         className={BUTTON_CLASS}
       >Phá sản

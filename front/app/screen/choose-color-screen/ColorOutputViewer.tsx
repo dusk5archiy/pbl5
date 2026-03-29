@@ -1,6 +1,3 @@
-'use client'
-
-import { ChooseColorScreenProps } from "./props";
 import { COLOR_UI_INFO } from "@/app/utils/pallete";
 
 function ColorComponent(id: string) {
@@ -17,7 +14,12 @@ function ColorComponent(id: string) {
   );
 }
 
-export function ColorOutputViewer(props: ChooseColorScreenProps) {
+export function ColorOutputViewer(
+  props: {
+    getSelectedColors: string[],
+    setSelectedColors: (_: string[]) => void
+  }
+) {
   const { getSelectedColors, setSelectedColors } = props;
   return (
     <div className="w-full flex flex-col gap-[2vh] items-center">

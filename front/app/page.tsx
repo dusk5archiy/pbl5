@@ -1,6 +1,7 @@
 'use client'
 
 import ChooseColorScreen from "./screen/choose-color-screen/ChooseColorScreen";
+import GuestColorScreen from "./screen/choose-color-screen/GuestColorScreen";
 import { GameScreen } from "@/app/screen/game-screen/GameScreen";
 import HomeScreen from "./screen/home-screen/HomeScreen";
 import { useState } from 'react';
@@ -21,10 +22,16 @@ export default function Home() {
 
   switch (getCurrentScreen) {
     case 'home-screen':
-      return (<HomeScreen onStart={() => setCurrentScreen('choose-color-screen')} />);
+      return (
+        <HomeScreen
+          onStart={() => setCurrentScreen('choose-color-screen')}
+          onJoin={() => setCurrentScreen('guest-color-screen')}
+        />);
     case 'choose-color-screen':
       return (<ChooseColorScreen {...{
-        onBack: () => setCurrentScreen('home-screen'),
+        onBack: () => {
+          setCurrentScreen('home-screen');
+        },
         onNext: () => {
           if (diceDetection) {
             setCurrentScreen('check-camera-screen');
@@ -36,6 +43,15 @@ export default function Home() {
         setSelectedColors,
         version, setVersion,
         diceDetection, setDiceDetection
+      }} />);
+    case 'guest-color-screen':
+      return (<GuestColorScreen {...{
+        onBack: () => setCurrentScreen('home-screen'),
+        onNext: () => {
+          setCurrentScreen('loading-game-screen');
+        },
+        getSelectedColors,
+        setSelectedColors,
       }} />);
     case 'loading-game-screen':
       return (<LoadingGameScreen
@@ -68,6 +84,7 @@ export default function Home() {
           setUpdating={setUpdating}
           selectedCamera={selectedCamera}
           diceDetection={diceDetection}
+          guest={getSelectedColors.length > 1 ? undefined : getSelectedColors[0]}
         />
       );
 

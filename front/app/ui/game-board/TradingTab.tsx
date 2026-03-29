@@ -8,7 +8,7 @@ export function SelectPlayerTab(props: GameBoardProps) {
   const {
     gameState,
     tradeFunc,
-    setBdsShown
+    setBdsShown,
   } = props;
 
   const start_trade_chore = gameState.current_chore.start_trade;
@@ -49,9 +49,21 @@ function TradePlayerComponent(
     trade_chore: TradeChore
   }
 ) {
-  const { player, trade_item, trade_chore, onPriceClick, focusBds, setPropertyTab, setSelectedActionCard, setSelectedActionGroup } = props;
+  const {
+    player,
+    trade_item,
+    trade_chore,
+    onPriceClick,
+    focusBds,
+    setPropertyTab,
+    setSelectedActionCard,
+    setSelectedActionGroup,
+    gameState,
+    guest
+  } = props;
   const selector_class_name = "flex-1 max-h-full flex flex-col w-[23%] overflow-y-auto gap-[0.5vw] p-[0.5vw] border-2 border-white rounded-lg";
   const option_class_name = "w-full flex justify-center rounded whitespace-nowrap text-[3cqw] active:bg-gray-400 py-[2vw]";
+  const can_interact = guest == null || guest == gameState.logic.viewing_player;
   const prices = [100, 50, 10, 1, 0];
   return (
     <div
@@ -73,7 +85,7 @@ function TradePlayerComponent(
                   }
                   className={option_class_name + " bg-(--bg-color) disabled:active:bg-(--bg-color)"}
                   onClick={() => { focusBds(bds); setPropertyTab("bds"); }}
-                  disabled={trade_chore.confirm_mode}
+                  disabled={!can_interact || trade_chore.confirm_mode}
                 >{bds}
                 </button>
               )
@@ -91,7 +103,7 @@ function TradePlayerComponent(
                     } as React.CSSProperties
                   }
                   className={option_class_name + " bg-(--bg-color) disabled:active:bg-(--bg-color)"}
-                  disabled={trade_chore.confirm_mode}
+                  disabled={!can_interact || trade_chore.confirm_mode}
                   onClick={() => { setSelectedActionGroup(group); setSelectedActionCard(card); setPropertyTab("action_card"); }}
                 >{`${group}.${card}`}
                 </button>
@@ -114,7 +126,7 @@ function TradePlayerComponent(
                 }
                 className="flex-1 whitespace-nowrap bg-(--bg-color) rounded-lg p-[0.25vw] text-[2.5cqw] disabled:text-white"
                 onClick={() => onPriceClick(price)}
-                disabled={trade_chore.confirm_mode}
+                disabled={!can_interact || trade_chore.confirm_mode}
               >
                 {price == 0 ? formatBudget(price) : `+${formatBudget(price)}`}
               </button>

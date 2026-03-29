@@ -103,7 +103,7 @@ export interface GameLogicState {
   budget: Record<string, number>;
   player_order: string[];
   current_player: string;
-  viewing_player?: string;
+  viewing_player: string;
   build: LogicStateBuild;
   action_card: Record<string, string[]>;
   rent_multiplier: number;

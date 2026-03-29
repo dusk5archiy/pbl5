@@ -12,12 +12,17 @@ export function PropertySelector(props: GameBoardProps) {
     setSelectedTrack,
     setSelectedBoard,
     setSelectedGroup,
-    setSelectedBds
+    setSelectedBds,
+    guest,
   } = props;
 
   const selector_class_name = "flex-1 max-h-full flex flex-col w-[23%] overflow-y-auto gap-[0.5vw] pr-[0.25vw]";
   const option_class_name = "w-full flex justify-center rounded whitespace-nowrap text-[5cqh] active:bg-gray-400 py-[2vw]";
-  const active_color = COLOR_UI_INFO[gameState.logic.viewing_player || gameState.logic.current_player].lightColorCode;
+
+  const player = gameState.logic.viewing_player;
+  const ui_player = guest || player;
+
+  const active_color = COLOR_UI_INFO[ui_player].lightColorCode;
   const inactive_color = "lightgray";
 
   const selectBoard = (board: number) => {

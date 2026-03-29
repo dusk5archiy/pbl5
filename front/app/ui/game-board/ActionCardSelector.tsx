@@ -6,10 +6,12 @@ export function ActionCardSelector(props: GameBoardProps) {
     gameState, gameData,
     selectedActionGroup, setSelectedActionGroup,
     selectedActionCard, setSelectedActionCard,
+    guest,
   } = props;
   const selector_class_name = "flex-1 max-h-full flex flex-col w-[23%] overflow-y-auto gap-[0.5vw] pr-[0.25vw]";
   const option_class_name = "w-full flex justify-center rounded whitespace-nowrap text-[5cqw] active:bg-gray-400 py-[2vw]";
-  const active_color = COLOR_UI_INFO[gameState.logic.viewing_player || gameState.logic.current_player].lightColorCode;
+  const ui_player = guest || gameState.logic.viewing_player;
+  const active_color = COLOR_UI_INFO[ui_player].lightColorCode;
   const inactive_color = "lightgray";
 
   const selectGroup = (group: string) => {

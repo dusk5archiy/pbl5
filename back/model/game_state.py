@@ -34,7 +34,7 @@ class GameLogicState(BaseModel):
     player: dict[str, LogicStatePlayer]
     player_order: list[str]
     current_player: str
-    viewing_player: str | None = None
+    viewing_player: str
     build: LogicStateBuild
     action_card: dict[str, list[str]]
     rent_multiplier: int = 1

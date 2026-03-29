@@ -62,7 +62,7 @@ def mod_release(
 ) -> TaskResult:
     new_task = None
     game_state.current_chore = CurrentChore()
-    game_state.logic.viewing_player = None
+    game_state.logic.viewing_player = game_state.logic.current_player
     game_state.effect.select_bds = None
     game_state.effect.board = None
     game_data = GAME_DATA[game_state.version]

@@ -53,6 +53,7 @@ fi
 (
   kill_port "$FRONTEND_PORT"
   export NEXT_PUBLIC_BACKEND_PORT="$BACKEND_PORT"
+  export NEXT_PUBLIC_AI_PORT="$AI_PORT"
   cd front
   PORT="$FRONTEND_PORT"
   PATH=/snap/bin:$PATH

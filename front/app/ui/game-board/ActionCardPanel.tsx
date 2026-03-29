@@ -3,12 +3,13 @@ import { CSSProperties } from "react";
 import { GameBoardProps } from "./props";
 
 export function ActionCardPanel(props: GameBoardProps) {
-  const { gameState, selectedActionGroup, selectedActionCard, useActionCardFunc, tradeFunc, setPropertyTab } = props;
+  const { gameState, selectedActionGroup, selectedActionCard, useActionCardFunc, tradeFunc, setPropertyTab, guest } = props;
   const owner = gameState.logic.action[selectedActionGroup][selectedActionCard].owner;
   const text_color = owner == null ? "text-gray-100" : "text-black";
-  const viewing_player = gameState.logic.viewing_player || gameState.logic.current_player;
-
-  const enabled = gameState.ui.action[selectedActionGroup][selectedActionCard].can_use;
+  const viewing_player = gameState.logic.viewing_player;
+  const can_interact = guest == null || guest == viewing_player;
+  const can_use = can_interact && gameState.ui.action[selectedActionGroup][selectedActionCard].can_use;
+  const can_choose = can_interact && gameState.ui.action[selectedActionGroup][selectedActionCard].can_choose;
   const trade_chore = gameState.current_chore.trade;
 
   return (
@@ -28,9 +29,9 @@ export function ActionCardPanel(props: GameBoardProps) {
         </div>
       </div>
       <button
-        style={{ "--bg-color": (owner == null || owner != viewing_player || !enabled) ? "#D1D5DB" : COLOR_UI_INFO[owner].lightColorCode } as CSSProperties}
+        style={{ "--bg-color": (owner == null || owner != viewing_player || !can_use) ? "#D1D5DB" : COLOR_UI_INFO[owner].lightColorCode } as CSSProperties}
         className="flex-1 flex flex-col justify-center overflow-hidden font-bold rounded border-2 border-white disabled:text-white whitespace-nowrap bg-(--bg-color) active:bg-gray-400 disabled:active:bg-(--bg-color)"
-        disabled={!enabled}
+        disabled={!can_use}
         onClick={() => useActionCardFunc({ group: selectedActionGroup, card: selectedActionCard })}
       >
         <div className="text-[5cqw]">Sử dụng</div>
@@ -38,7 +39,7 @@ export function ActionCardPanel(props: GameBoardProps) {
       <button
         style={{ "--bg-color": "#D1D5DB" } as CSSProperties}
         className="flex-1 flex flex-col justify-center overflow-hidden font-bold rounded border-2 border-white disabled:text-white whitespace-nowrap bg-(--bg-color) active:bg-gray-400 disabled:active:bg-(--bg-color)"
-        disabled={!gameState.ui.action[selectedActionGroup][selectedActionCard].can_choose}
+        disabled={!can_choose}
         onClick={
           trade_chore != null ? () => {
             setPropertyTab("trade");

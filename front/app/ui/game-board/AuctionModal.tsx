@@ -13,7 +13,10 @@ interface AuctionModalProps extends GameBoardProps {
 }
 
 export function AuctionModal(props: AuctionModalProps) {
-  const { gameState, func, chore } = props;
+  const { gameState, func, chore, guest } = props;
+  if (guest != null && guest != gameState.logic.viewing_player) {
+    return undefined;
+  }
   const { player, original_price, current_price } = chore;
   const budget = gameState.logic.budget[player];
 

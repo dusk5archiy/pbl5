@@ -1,6 +1,12 @@
 'use client'
 
-export function TripleDiceModal() {
+import { GameBoardProps } from "./props";
+
+export function TripleDiceModal(props: GameBoardProps) {
+  const { gameState, guest } = props;
+  if (guest != null && guest != gameState.logic.viewing_player) {
+    return undefined;
+  }
   let text = "Chọn ô bất kì và di chuyển tới đó.";
 
   return (

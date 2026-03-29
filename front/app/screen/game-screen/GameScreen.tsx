@@ -29,7 +29,7 @@ import {
 import { LeftPanel } from "@/app/ui/game-board/LeftPanel";
 import { PromptModal } from "@/app/ui/game-board/PromptModal";
 import { DiceConfirmTab } from "@/app/ui/game-board/DiceConfirmTab";
-import { WS_BACKEND_PREFIX } from "@/app/utils/env";
+import { WS_AI_PREFIX, WS_BACKEND_PREFIX } from "@/app/utils/env";
 import DashTab from "@/app/ui/game-board/DashTab";
 
 // ----------------------------------------------------------------------------
@@ -41,7 +41,7 @@ const IMAGE_QUALITY = 0.1;
 // ----------------------------------------------------------------------------
 
 export function GameScreen(props: GameScreenProps) {
-  const { onBack, gameData, gameState, setGameState, selectedCamera, diceDetection, setUpdating } = props;
+  const { onBack, gameData, gameState, setGameState, selectedCamera, diceDetection, setUpdating, guest } = props;
 
   const [bdsShown, setBdsShown] = useState<number>(0);
   const [propertyTab, setPropertyTab] = useState<string>("bds");
@@ -111,7 +111,7 @@ export function GameScreen(props: GameScreenProps) {
     if (!diceDetection) {
       return;
     }
-    const websocket = new WebSocket("ws://localhost:8000/detect");
+    const websocket = new WebSocket(WS_AI_PREFIX + "/detect");
     websocket.onopen = () => {
       setDiceDetectWs(websocket);
     };
@@ -139,7 +139,7 @@ export function GameScreen(props: GameScreenProps) {
     const blob = await new Promise<Blob | null>((resolve) => {
       canvas.toBlob(resolve, 'image/jpeg', IMAGE_QUALITY);
     });
-    
+
     if (!blob || !diceDetectWs) return;
     diceDetectWs.send(blob);
     setEncodedImage(canvas.toDataURL());
@@ -357,6 +357,8 @@ export function GameScreen(props: GameScreenProps) {
     bdsShown, setBdsShown,
     propertyTab, setPropertyTab,
     tripleDiceFunc,
+    guest,
+    boardShown
   };
 
   return (
@@ -369,7 +371,7 @@ export function GameScreen(props: GameScreenProps) {
               <div className={`w-[calc(100%-95cqh)] h-full flex flex-col gap-[2vh]`}>
                 <div className="w-full h-full flex flex-col gap-[1vh] overflow-y-scroll">
                   {
-                    boardShown && <div className="w-full min-h-[50%] flex">
+                    boardShown && <div className={`w-full ${guest == null ? "min-h-[50%]" : "min-h-[70%]"} flex`}>
                       <PromptModal {...game_board_props} />
                     </div>
                   }

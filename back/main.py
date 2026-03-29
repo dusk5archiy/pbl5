@@ -189,6 +189,7 @@ async def initial_game_state(request: GameStateRequest) -> GameStateResponse:
         },
         budget=logic_budget,
         current_player=player,
+        viewing_player=player,
         player_order=players,
         build=LogicStateBuild(
             house=backend_logic.init_house,
