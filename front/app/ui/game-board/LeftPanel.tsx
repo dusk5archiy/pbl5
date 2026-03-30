@@ -8,8 +8,9 @@ const COMMON_BUTTON_STYLE = " h-full text-[6cqw] font-bold text-gray-800 rounded
 function RollDiceButton(
   props: GameBoardProps & { color: string },
 ) {
-  const { gameState, diceDetection, sendRollDice, color } = props;
+  const { gameState, diceDetection, sendRollDice, color, guest } = props;
   const { jail, roll_dice, two_dice_rent_u } = gameState.current_chore;
+  const can_interact = guest == null || guest == gameState.logic.viewing_player;
 
   return (
     <button
@@ -20,9 +21,12 @@ function RollDiceButton(
       }
       onClick={diceDetection ? undefined : () => sendRollDice()}
       disabled={
-        jail == null &&
-        roll_dice == null &&
-        two_dice_rent_u == null
+        !can_interact ||
+        (
+          jail == null &&
+          roll_dice == null &&
+          two_dice_rent_u == null
+        )
       }
       className={"w-full bg-(--bg-color) disabled:active:bg-(--bg-color)" + COMMON_BUTTON_STYLE}
     >Thảy
@@ -105,12 +109,9 @@ export function LeftPanel(props: GameBoardProps) {
   const can_interact = guest == null || guest == current_player;
   return (
     <div className="@container w-full h-full flex gap-[1vh]">
-      {
-        guest == null && <div className="w-[50%] h-full flex">
-          <BudgetPanel {...props} />
-        </div>
-      }
-
+      <div className="w-[50%] h-full flex">
+        <BudgetPanel {...props} />
+      </div>
       <div className="h-full flex flex-1 flex-col gap-[0.5vw] justify-between">
         {
           guest == null &&
@@ -126,9 +127,14 @@ export function LeftPanel(props: GameBoardProps) {
         <div className="h-[50%] flex gap-[0.5vw]">
           {
             guest != null &&
-            <div className="flex flex-1">
-              <BDSButton {...props} />
-            </div>
+            <>
+              <div className="flex flex-1">
+                <RollDiceButton {...{ ...props, color }} />
+              </div>
+              <div className="flex flex-1">
+                <BDSButton {...props} />
+              </div>
+            </>
           }
           <div className="flex flex-1">
             <NextButton {...{ ...props, color, can_interact }} />
