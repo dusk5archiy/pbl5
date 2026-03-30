@@ -1,7 +1,7 @@
 'use client'
 
 import { formatBudget } from "@/app/utils/format";
-import { GameBoardProps } from "./props";
+import { GameBoardProps } from "../game-board/props";
 import { NumRequest } from "@/app/screen/game-screen/props";
 import { BuyChore } from "@/app/model/chore";
 

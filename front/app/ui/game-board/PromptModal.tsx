@@ -1,13 +1,13 @@
 import { GameBoardProps } from "./props";
 import { DiceDock } from "./DiceDock";
-import { BuyModal } from "./BuyModal";
-import { AuctionModal } from "./AuctionModal";
-import { PayModal } from "./PayModal";
-import { ReceiveMortgageModal } from "./ReceiveMortgageModal";
-import { EndGamePanel } from "./EndGamePanel";
-import { TripleDiceModal } from "./TripleDiceModal";
-import { ActionCardModal } from "./ActionCardModal";
-import { TradeModal } from "./TradeModal";
+import { BuyModal } from "../prompt-modals/BuyModal";
+import { AuctionModal } from "../prompt-modals/AuctionModal";
+import { PayModal } from "../prompt-modals/PayModal";
+import { ReceiveMortgageModal } from "../prompt-modals/ReceiveMortgageModal";
+import { EndGameModal } from "../prompt-modals/EndGameModal";
+import { TripleDiceModal } from "../prompt-modals/TripleDiceModal";
+import { ActionCardModal } from "../prompt-modals/ActionCardModal";
+import { TradeModal } from "../prompt-modals/TradeModal";
 import { GameCamera } from "./GameCamera";
 
 export function PromptModal(props: GameBoardProps) {
@@ -33,7 +33,7 @@ export function PromptModal(props: GameBoardProps) {
         {gameState.current_chore.auction_bds != null && <AuctionModal {...{ ...props, func: auctionFunc, chore: gameState.current_chore.auction_bds }} />}
         {gameState.current_chore.pay != null && <PayModal {...{ ...props, func: payFunc, chore: gameState.current_chore.pay }} />}
         {gameState.current_chore.receive_mortgage != null && <ReceiveMortgageModal {...{ ...props, func: receiveMortgageFunc, chore: gameState.current_chore.receive_mortgage }} />}
-        {gameState.current_chore.end_game != null && <EndGamePanel {...{ ...props, chore: gameState.current_chore.end_game }} />}
+        {gameState.current_chore.end_game != null && <EndGameModal {...{ ...props, chore: gameState.current_chore.end_game }} />}
         {gameState.current_chore.triple_dice != null && <TripleDiceModal {...props} />}
         {gameState.current_chore.action_card != null && <ActionCardModal {...{ ...props, chore: gameState.current_chore.action_card }} />}
         {gameState.current_chore.trade != null && <TradeModal {...{ ...props, func: tradeFunc, chore: gameState.current_chore.trade }} />}

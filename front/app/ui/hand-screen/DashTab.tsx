@@ -1,5 +1,5 @@
 import { formatBudget } from "@/app/utils/format";
-import { GameBoardProps } from "./props";
+import { GameBoardProps } from "../game-board/props";
 
 export default function DashTab(props: GameBoardProps) {
   const { gameState } = props;

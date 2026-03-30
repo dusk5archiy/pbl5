@@ -1,8 +1,8 @@
-import { PropertyStatePanel } from "./BuildPanel";
+import { PropertyStatePanel } from "../game-board/BuildPanel";
 import { MortgagePanel as PropertyUpgradePanel } from "./PropertyUpgradePanel";
 import { PropertyDock } from "./PropertyDock";
 import { PropertySelector } from "./PropertySelector";
-import { GameBoardProps } from "./props";
+import { GameBoardProps } from "../game-board/props";
 
 export function PropertyTab(props: GameBoardProps) {
   return (

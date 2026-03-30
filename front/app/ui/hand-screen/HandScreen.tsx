@@ -1,13 +1,13 @@
-import { PropertyTab } from "./PropertyTab";
-import { GameBoardProps } from "./props";
+import { PropertyTab } from "../property-tab/PropertyTab";
+import { GameBoardProps } from "../game-board/props";
 import { COLOR_UI_INFO } from "@/app/utils/pallete";
-import { ActionCardTab } from "./ActionCardTab";
+import { ActionCardTab } from "../action-card-tab/ActionCardTab";
 import { OtherTab } from "./OtherTab";
 import { StatTab } from "./StatTab";
 import { RuleTab } from "./RuleTab";
 import { TradeTab } from "./TradeTab";
 
-export function HandPanel(props: GameBoardProps) {
+export function HandScreen(props: GameBoardProps) {
   const { gameState, propertyTab, setPropertyTab, setBdsShown, guest } = props;
   const ui_player = guest || gameState.logic.viewing_player;
   const color = COLOR_UI_INFO[ui_player].lightColorCode;

@@ -1,4 +1,4 @@
-import { GameBoardProps } from "./props";
+import { GameBoardProps } from "../game-board/props";
 export function RuleTab(props: GameBoardProps) {
   const { gameData } = props;
   const rule = gameData.rule;

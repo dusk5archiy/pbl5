@@ -1,4 +1,4 @@
-import { GameBoardProps } from "./props";
+import { GameBoardProps } from "../game-board/props";
 import { formatBudget } from "@/app/utils/format";
 
 

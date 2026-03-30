@@ -1,6 +1,6 @@
 'use client'
 
-import { GameBoardProps } from "./props";
+import { GameBoardProps } from "../game-board/props";
 
 export function TripleDiceModal(props: GameBoardProps) {
   const { gameState, guest } = props;

@@ -1,6 +1,6 @@
 'use client'
 
-import { GameBoardProps } from "./props";
+import { GameBoardProps } from "../game-board/props";
 import { NumRequest } from "@/app/screen/game-screen/props";
 import { CSSProperties } from "react";
 import { COLOR_UI_INFO } from "@/app/utils/pallete";

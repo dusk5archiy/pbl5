@@ -1,7 +1,7 @@
 import { ActionCardPanel } from "./ActionCardPanel";
-import { ActionCardModal } from "./ActionCardModal";
 import { ActionCardSelector } from "./ActionCardSelector";
-import { GameBoardProps } from "./props";
+import { ActionCardModal } from "../prompt-modals/ActionCardModal";
+import { GameBoardProps } from "../game-board/props";
 
 export function ActionCardTab(props: GameBoardProps) {
   return (
@@ -20,4 +20,3 @@ export function ActionCardTab(props: GameBoardProps) {
     </div>
   );
 }
-

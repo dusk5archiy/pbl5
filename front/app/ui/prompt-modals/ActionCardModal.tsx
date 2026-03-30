@@ -1,6 +1,6 @@
 'use client'
 
-import { GameBoardProps } from "./props";
+import { GameBoardProps } from "../game-board/props";
 import { ActionCardChore } from "@/app/model/chore";
 
 interface ActionCardModalProps extends GameBoardProps {

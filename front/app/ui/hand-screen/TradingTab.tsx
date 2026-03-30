@@ -1,7 +1,7 @@
 import { formatBudget } from "@/app/utils/format";
 import { COLOR_UI_INFO } from "@/app/utils/pallete";
 import { CSSProperties } from "react";
-import { GameBoardProps } from "./props";
+import { GameBoardProps } from "../game-board/props";
 import { TradeChore, TradeItem } from "@/app/model/chore";
 
 export function SelectPlayerTab(props: GameBoardProps) {

@@ -1,5 +1,5 @@
 import { COLOR_UI_INFO } from "@/app/utils/pallete";
-import { GameBoardProps } from "./props";
+import { GameBoardProps } from "../game-board/props";
 import { SelectPlayerTab, TradingTab } from "./TradingTab";
 
 function NormalTradeTab(props: GameBoardProps) {

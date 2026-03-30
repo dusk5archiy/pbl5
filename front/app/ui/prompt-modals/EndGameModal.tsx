@@ -1,15 +1,15 @@
 import { formatBudget } from "@/app/utils/format";
-import { GameBoardProps } from "./props";
+import { GameBoardProps } from "../game-board/props";
 import { COLOR_UI_INFO } from "@/app/utils/pallete";
 import { CSSProperties } from "react";
 import { EndGameChore } from "@/app/model/chore";
 
-interface EndGamePanelProps extends GameBoardProps {
+interface EndGameModalProps extends GameBoardProps {
   chore: EndGameChore;
 }
 
-export function EndGamePanel(
-  props: EndGamePanelProps
+export function EndGameModal(
+  props: EndGameModalProps
 ) {
   const { gameState, chore } = props;
   const { player_order } = chore;

@@ -14,7 +14,7 @@ import {
   IDiceDetectionResult,
   ISendDataProps,
 } from "@/app/ui/game-board/props";
-import { HandPanel } from "@/app/ui/game-board/HandPanel";
+import { HandScreen } from "@/app/ui/hand-screen/HandScreen";
 import {
   getNumFunction,
   getAuctionFunction,
@@ -30,7 +30,7 @@ import { LeftPanel } from "@/app/ui/game-board/LeftPanel";
 import { PromptModal } from "@/app/ui/game-board/PromptModal";
 import { DiceConfirmTab } from "@/app/ui/game-board/DiceConfirmTab";
 import { WS_AI_PREFIX, WS_BACKEND_PREFIX } from "@/app/utils/env";
-import DashTab from "@/app/ui/game-board/DashTab";
+import DashTab from "@/app/ui/hand-screen/DashTab";
 
 // ----------------------------------------------------------------------------
 
@@ -215,7 +215,7 @@ export function GameScreen(props: GameScreenProps) {
   const [stream, setStream] = useState<MediaStream | null>(null);
 
   // WebSocket connection
-  const [ws, setWs] = useState<WebSocket | null>(null);
+  const [gameStateWs, setWs] = useState<WebSocket | null>(null);
 
   // WebSocket connection
   useEffect(() => {
@@ -234,30 +234,30 @@ export function GameScreen(props: GameScreenProps) {
     };
   }, []);
 
-  if (ws == null) {
+  if (gameStateWs == null) {
     return null;
   }
 
   // Api's
-  const rollDiceFunc = getRollDiceFunction(props, "roll_dice", ws);
-  const endTurnFunc = getNormalFunction(props, "end_turn", ws);
-  const buyFunc = getNumFunction(props, "buy", ws);
-  const payFunc = getNumFunction(props, "pay", ws);
-  const receiveMortgageFunc = getNumFunction(props, "receive_mortgage", ws);
-  const auctionFunc = getAuctionFunction(props, "auction", ws);
-  const upgradeBdsFunc = getBdsFunction(props, "upgrade_bds", ws);
-  const downgradeBdsFunc = getBdsFunction(props, "downgrade_bds", ws);
-  const mortgageBdsFunc = getBdsFunction(props, "mortgage_bds", ws);
-  const unmortgageBdsFunc = getBdsFunction(props, "unmortgage_bds", ws);
-  const diceCFunc = getNormalFunction(props, "dice_c", ws);
-  const diceXbFunc = getNormalFunction(props, "dice_xb", ws);
-  const actionCardFunc = getNormalFunction(props, "action_card", ws);
-  const tripleDiceFunc = getDestinationFunction(props, "triple_dice", ws);
-  const jailFunc = getDiceNumFunction(props, "jail", ws);
-  const twoDiceRentUFunc = getRollDiceFunction(props, "two_dice_rent_u", ws);
-  const useActionCardFunc = getUseActionCardFunction(props, "use_action_card", ws);
-  const startTradeFunc = getNormalFunction(props, "start_trade", ws);
-  const tradeFunc = getTradeFunction(props, "trade", ws);
+  const rollDiceFunc = getRollDiceFunction(props, "roll_dice", gameStateWs);
+  const endTurnFunc = getNormalFunction(props, "end_turn", gameStateWs);
+  const buyFunc = getNumFunction(props, "buy", gameStateWs);
+  const payFunc = getNumFunction(props, "pay", gameStateWs);
+  const receiveMortgageFunc = getNumFunction(props, "receive_mortgage", gameStateWs);
+  const auctionFunc = getAuctionFunction(props, "auction", gameStateWs);
+  const upgradeBdsFunc = getBdsFunction(props, "upgrade_bds", gameStateWs);
+  const downgradeBdsFunc = getBdsFunction(props, "downgrade_bds", gameStateWs);
+  const mortgageBdsFunc = getBdsFunction(props, "mortgage_bds", gameStateWs);
+  const unmortgageBdsFunc = getBdsFunction(props, "unmortgage_bds", gameStateWs);
+  const diceCFunc = getNormalFunction(props, "dice_c", gameStateWs);
+  const diceXbFunc = getNormalFunction(props, "dice_xb", gameStateWs);
+  const actionCardFunc = getNormalFunction(props, "action_card", gameStateWs);
+  const tripleDiceFunc = getDestinationFunction(props, "triple_dice", gameStateWs);
+  const jailFunc = getDiceNumFunction(props, "jail", gameStateWs);
+  const twoDiceRentUFunc = getRollDiceFunction(props, "two_dice_rent_u", gameStateWs);
+  const useActionCardFunc = getUseActionCardFunction(props, "use_action_card", gameStateWs);
+  const startTradeFunc = getNormalFunction(props, "start_trade", gameStateWs);
+  const tradeFunc = getTradeFunction(props, "trade", gameStateWs);
 
   // Send dice data to the backend
   const sendDiceResults = (data: any) => {
@@ -422,7 +422,7 @@ export function GameScreen(props: GameScreenProps) {
               </div>
             </>
             :
-            <HandPanel {...game_board_props} />
+            <HandScreen {...game_board_props} />
       }
     </div>
   );
