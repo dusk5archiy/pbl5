@@ -1,10 +1,8 @@
-import { Dispatch, SetStateAction } from "react";
-
 export interface ChooseColorScreenProps {
   onBack: () => void;
   onNext: () => void;
   getSelectedColors: string[],
-  setSelectedColors: Dispatch<SetStateAction<string[]>>
+  setSelectedColors: (_: string[]) => void;
   version: string;
   setVersion: (_: string) => void;
   diceDetection: boolean;
