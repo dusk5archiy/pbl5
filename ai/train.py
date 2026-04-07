@@ -1,20 +1,15 @@
 import argparse
-from src.parse.config import load_config
+from src.config import load_config
 
 config = load_config("config/config.yml")
 
-def train_detection():
-    task = config.tasks.dice_detection
-
+def train_detection(model_name: str):
     from src.task.dice_detection.train import train_savedmodel
+    task = config.tasks.dice_detection
     train_savedmodel(
-        dataset_path=config.dataset_path,
-        image_resolution=task.image_resolution,
-        batch_size=task.batch_size,
-        path=task.training_output_path,
-        epochs=task.epochs,
-        num_workers=config.num_workers,
-        colored=config.colored
+        model_name=model_name,
+        config=config,
+        task=task,
     )
 
 def convert_detection(quantization = "int8"):
@@ -30,17 +25,13 @@ def convert_detection(quantization = "int8"):
         num_workers=config.num_workers
     )
 
-def train_score():
-    task = config.tasks.dice_score
+def train_score(model_name: str):
     from src.task.dice_score.train import train_savedmodel
+    task = config.tasks.dice_score
     train_savedmodel(
-        dataset_path=config.dataset_path,
-        image_resolution=task.image_resolution,
-        batch_size=task.batch_size,
-        path=task.training_output_path,
-        epochs=task.epochs,
-        num_workers=config.num_workers,
-        colored=config.colored
+        model_name=model_name,
+        config=config,
+        task=task,
     )
 
 def convert_score(quantization="int8"):
@@ -64,14 +55,15 @@ def main():
     parser.add_argument("--detection", action="store_true")
     parser.add_argument("--train", action="store_true")
     parser.add_argument("--convert", action="store_true")
+    parser.add_argument("--model_name", "-m", type=str, help="Model name to use")
 
     args = parser.parse_args()
 
     if args.train and args.score:
-        train_score()
+        train_score(model_name=args.model_name)
 
     if args.train and args.detection:
-        train_detection()
+        train_detection(model_name=args.model_name)
 
     if args.convert and args.score:
         convert_score()

@@ -1,5 +1,5 @@
 import os
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor
 
 class ImageDetectionData:
     """Stores data for a single image with bounding boxes"""
@@ -13,14 +13,20 @@ class ImageDetectionData:
 def get_image_detection_datas(dataset_path: str, num_workers: int = 4) -> list[ImageDetectionData]:
     input_dir_path = os.path.join(dataset_path, "inputs")
     target_dir_path = os.path.join(dataset_path, "targets")
-    target_files = [f for f in os.listdir(target_dir_path) if f.endswith(".txt")]
+    
+    target_files = []
+    for root, _, files in os.walk(target_dir_path):
+        for file in files:
+            if file.endswith(".txt"):
+                target_files.append(os.path.join(root, file))
+    
     result: list[ImageDetectionData] = []
 
-    def read_image_data(target_file_name):
-        """Read a single txt file and return ImageDetectionData"""
-        base = os.path.splitext(target_file_name)[0]
+    def read_image_data(target_file_path):
+        rel_path = os.path.relpath(target_file_path, target_dir_path)
+        base = os.path.splitext(rel_path)[0]
+        
         input_file_path = os.path.join(input_dir_path, base + ".png")
-        target_file_path = os.path.join(target_dir_path, target_file_name)
 
         bboxes = []
         scores = []
@@ -39,8 +45,7 @@ def get_image_detection_datas(dataset_path: str, num_workers: int = 4) -> list[I
 
     # Parallel reading of txt files
     with ThreadPoolExecutor(max_workers=num_workers) as executor:
-        futures = [executor.submit(read_image_data, f) for f in target_files]
-        for future in as_completed(futures):
-            result.append(future.result())
+        for image_data in executor.map(read_image_data, target_files):
+            result.append(image_data)
 
     return result

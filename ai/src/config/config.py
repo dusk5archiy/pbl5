@@ -6,14 +6,16 @@ class ParsedConfig(BaseModel):
     dataset_path: str
     num_workers: int
     colored: bool
+    use_random: bool
 
     class Tasks(BaseModel):
         class Base(BaseModel):
-            training_output_path: str
             tflite_output_path: str
             inference_path: str
             batch_size: int
             epochs: int
+            train_dataset_repeat: int
+            val_dataset_repeat: int
 
         class DiceDetection(Base):
             image_resolution: tuple[int, int]

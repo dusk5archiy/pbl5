@@ -1,0 +1,15 @@
+yolov8:
+  module: src.model.dice_detection.yolov8
+  class_name: YoloV8
+  config:
+    stackwise_channels: [8, 16, 32, 64]
+    stackwise_depth: [1, 2, 2, 1]
+    activation: swish
+
+yolo_v8_xs:
+  module: src.model.dice_detection.yolov8
+  class_name: YoloV8
+  config:
+    stackwise_channels: [32, 64, 128, 256]
+    stackwise_depth: [1, 2, 2, 1]
+    activation: swish

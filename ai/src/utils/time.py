@@ -1,11 +1,9 @@
 import time
-from colorama import Fore
 
 
 class MeasureTime:
-    def __init__(self, message: str = "Time spent", color=Fore.RESET):
+    def __init__(self, message: str = "Time spent"):
         self.message = message
-        self.color = color
 
     def __enter__(self, *_):
         self.start = time.perf_counter()

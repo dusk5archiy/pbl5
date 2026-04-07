@@ -1,12 +1,16 @@
-import random
 import numpy as np
-from PIL import Image, ImageEnhance
+from PIL import Image, ImageEnhance, ImageFilter
 from concurrent.futures import ThreadPoolExecutor, wait
 from pydantic import BaseModel
 import queue
 import threading
+import pickle
+import os
+from loguru import logger
 from src.utils.image import generate_rotate_and_flip_images, process_pil_image, to_grayscale
 from .data import ImageDetectionData, get_image_detection_datas
+from tqdm import tqdm
+from itertools import repeat, chain
 
 
 def transform_bbox(
@@ -46,45 +50,60 @@ def transform_bbox(
 
 
 class S7DatasetDiceDetection:
-    @classmethod
-    def from_dataset_path(cls,
-        dataset_path: str,
-        image_resolution: tuple[int, int],
-        colored: bool,
-        queue_capacity: int = 500,
-        num_workers: int = 4,
-    ):
-        image_data = get_image_detection_datas(
-            dataset_path=dataset_path, num_workers=num_workers
-        )
-        
-        return S7DatasetDiceDetection(
-            image_resolution=image_resolution,
-            image_datas=image_data,
-            queue_capacity=queue_capacity,
-            num_workers=num_workers,
-            colored=colored
-        )
-
     def __init__(
         self,
         image_resolution: tuple[int, int],
         image_datas: list[ImageDetectionData],
+        cache_path: str,
+        colored: bool,
+        use_random: bool,
+        dataset_repeat: int,
         queue_capacity: int = 500,
         num_workers: int = 4,
-        colored: bool = True
     ):
-        self.queue_capacity = queue_capacity
         self.num_workers = num_workers
+        self.image_resolution = image_resolution
+        self.colored = colored
+        self.use_random = use_random
+        self.queue_capacity = queue_capacity
         self.image_data = image_datas
-
+        self.dataset_repeat = dataset_repeat
+        self.cache_path = cache_path + f"-{dataset_repeat}" + ".pkl"
+        
         self.data_queue = queue.Queue(maxsize=queue_capacity)
         self.stop_loading = threading.Event()
         self.loading_thread = None
-        
-        self.image_resolution = image_resolution
-        self.colored = colored
+        self.cached_data = []
 
+        if not use_random:
+            # Try to load from cache
+            if os.path.exists(self.cache_path):
+                logger.info(f"Loading cached data from {self.cache_path}...")
+                self.cached_data = self._load_cache()
+            else:
+                logger.info(f"Cache not found. Creating and saving to {self.cache_path}...")
+                for results in [self._process_image_file(img_data) for img_data in tqdm(
+                        chain.from_iterable(repeat(self.image_data, self.dataset_repeat)),
+                        total=len(self.image_data) * self.dataset_repeat
+                    )
+                ]:
+                    self.cached_data.extend(results)
+
+                np.random.shuffle(self.cached_data)
+                self._save_cache(self.cached_data)
+
+    def _save_cache(self, data):
+        """Save cached data to pickle file."""
+        os.makedirs(os.path.dirname(self.cache_path), exist_ok=True)
+        with open(self.cache_path, 'wb') as f:
+            pickle.dump(data, f)
+        file_size_mb = os.path.getsize(self.cache_path) / (1024 * 1024)
+        logger.success(f"Cache saved to {self.cache_path} ({file_size_mb:.2f} MB)")
+
+    def _load_cache(self):
+        """Load cached data from pickle file."""
+        with open(self.cache_path, 'rb') as f:
+            return pickle.load(f)
 
     def _process_image_file(self, image_data: ImageDetectionData):
         results = []
@@ -111,15 +130,37 @@ class S7DatasetDiceDetection:
                 transform_bbox(bbox, rot, flip, new_width, new_height)
                 for bbox in bboxes
             ]
-            # Add random shift
-            dx = int(random.randint(-5, 5) / 100 * new_width)
-            dy = int(random.randint(-5, 5) / 100 * new_height)
-            transformed_bboxes = [(x - dx, y - dy, w, h) for x, y, w, h in transformed_bboxes]
-            aug_img = aug_img.transform(aug_img.size, Image.AFFINE, (1, 0, dx, 0, 1, dy), fillcolor=(0, 0, 0)) # type: ignore
-            # Apply random brightness augmentation
-            brightness_factor = random.uniform(0.5, 2.0)
+            
+            # Calculate maximum valid translation to keep bboxes in bounds
+            if transformed_bboxes:
+                min_x = min(x for x, y, w, h in transformed_bboxes)
+                max_right = max(x + w for x, y, w, h in transformed_bboxes)
+                min_y = min(y for x, y, w, h in transformed_bboxes)
+                max_bottom = max(y + h for x, y, w, h in transformed_bboxes)
+                
+                # Calculate translation limits
+                max_dx = new_width - max_right  # Can shift right up to this amount
+                min_dx = -min_x  # Can shift left up to this amount
+                max_dy = new_height - max_bottom  # Can shift down up to this amount
+                min_dy = -min_y  # Can shift up up to this amount
+                
+                # Apply random translation within valid limits (use np.random for consistency)
+                dx = int(np.random.uniform(min_dx, max_dx))
+                dy = int(np.random.uniform(min_dy, max_dy))
+            else:
+                dx = dy = 0
+            
+            transformed_bboxes = [(x + dx, y + dy, w, h) for x, y, w, h in transformed_bboxes]
+            # Negate dx, dy for PIL transform (opposite direction for image pixels)
+            aug_img = aug_img.transform(aug_img.size, Image.AFFINE, (1, 0, -dx, 0, 1, -dy), fillcolor=(128, 128, 128)) # type: ignore
+            
+            brightness_factor = np.random.uniform(0.01, 2.0)
             enhancer = ImageEnhance.Brightness(aug_img)
             aug_img = enhancer.enhance(brightness_factor)
+            
+            # Apply random blur augmentation
+            blur_radius = np.random.uniform(0, 2)
+            aug_img = aug_img.filter(ImageFilter.GaussianBlur(radius=blur_radius))
 
             aug_np_img = np.array(aug_img)
             if not self.colored:
@@ -128,78 +169,66 @@ class S7DatasetDiceDetection:
 
         return results
 
-    def _load_data_worker(self):
-        """Background worker that loads and preprocesses data into the queue using ThreadPoolExecutor"""
-        try:
+    def generate_data(self):
+        if not self.use_random:
+            yield from self.cached_data
+        else:
             with ThreadPoolExecutor(max_workers=self.num_workers) as executor:
-                # Use a limited set of in-flight futures to control memory usage
                 futures_set = set()
-                image_index = 0
-                max_in_flight = (
-                    self.num_workers * 2
-                )  # Keep 2x workers worth of tasks in flight
-
-                while image_index < len(self.image_data) or futures_set:
-                    # Submit new tasks up to max_in_flight limit
-                    while len(futures_set) < max_in_flight and image_index < len(
-                        self.image_data
-                    ):
-                        if self.stop_loading.is_set():
-                            break
-                        image_data = self.image_data[image_index]
+                
+                for _ in range(self.dataset_repeat):
+                    for image_data in self.image_data:
                         future = executor.submit(self._process_image_file, image_data)
                         futures_set.add(future)
-                        image_index += 1
 
-                    if not futures_set:
+                while futures_set:
+                    if self.stop_loading.is_set():
                         break
-
-                    # Wait for at least one future to complete
+                    
                     done, futures_set = wait(futures_set, return_when="FIRST_COMPLETED")
 
-                    # Process completed futures
                     for future in done:
-                        if self.stop_loading.is_set():
-                            break
                         try:
                             results = future.result()
                             for result in results:
-                                self.data_queue.put(result)
-                        except Exception as e:
-                            # Skip failed tasks
+                                yield result
+                        except Exception:
                             pass
+
+    def _load_data_worker(self):
+        try:
+            for result in self.generate_data():
+                self.data_queue.put(result)
         finally:
-            # Signal end of data
             self.data_queue.put(None)
+            
+    def clean_up(self):
+        self.stop_loading.set()
+        if self.loading_thread and self.loading_thread.is_alive():
+            self.loading_thread.join(timeout=1.0)
 
     def __iter__(self):
-        # Reset the queue and stop flag
-        self.data_queue = queue.Queue(maxsize=self.queue_capacity)
-        self.stop_loading.clear()
+        if not self.use_random:
+            yield from self.cached_data
+        else:
+            self.data_queue = queue.Queue(maxsize=self.queue_capacity)
+            self.stop_loading.clear()
 
-        # Start background loading thread
-        self.loading_thread = threading.Thread(
-            target=self._load_data_worker, daemon=True
-        )
-        self.loading_thread.start()
+            self.loading_thread = threading.Thread(
+                target=self._load_data_worker, daemon=True
+            )
+            self.loading_thread.start()
 
-        # Yield items from queue
-        while True:
-            item = self.data_queue.get()
-            if item is None:  # End of data signal
-                break
-            
-            yield item
+            while True:
+                item = self.data_queue.get()
+                if item is None:
+                    break
+                
+                yield item
 
-        # Clean up
-        self.stop_loading.set()
-        if self.loading_thread and self.loading_thread.is_alive():
-            self.loading_thread.join(timeout=1.0)
+            self.clean_up()
 
     def __del__(self):
-        """Cleanup when object is destroyed"""
-        self.stop_loading.set()
-        if self.loading_thread and self.loading_thread.is_alive():
-            self.loading_thread.join(timeout=1.0)
+        self.clean_up()
 
 

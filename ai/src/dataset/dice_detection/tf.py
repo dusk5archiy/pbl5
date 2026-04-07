@@ -26,14 +26,14 @@ def make_tf_dataset(iterable, batch_size: int, image_resolution: tuple[int, int]
         ),
     ).padded_batch(
         batch_size,
-        padded_shapes=([img_h, img_w, num_channels], [None, 4], [None]),
+        padded_shapes=([img_h, img_w, num_channels], [None, 4], [None]), # type: ignore
         padding_values=(0.0, -1.0, -1.0),
     )
     
-    def to_model_input(images, boxes, classes):
+    def to_model_input(img, boxes, classes):
         valid_mask = tf.reduce_any(boxes != -1.0, axis=-1)  # [B, N]
         boxes = tf.ragged.boolean_mask(boxes, valid_mask)
         classes = tf.ragged.boolean_mask(classes, valid_mask)
-        return images, {"boxes": boxes, "classes": classes}
+        return img, {"boxes": boxes, "classes": classes}
 
     return ds.map(to_model_input, num_parallel_calls=tf.data.AUTOTUNE)

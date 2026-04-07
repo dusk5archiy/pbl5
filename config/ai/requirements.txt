@@ -3,6 +3,7 @@
 # Configuration
 PyYAML
 pydantic
+loguru
 
 # Image Manipulation
 opencv-python

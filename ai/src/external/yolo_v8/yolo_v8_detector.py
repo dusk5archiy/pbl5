@@ -60,7 +60,7 @@ class YOLOV8Detector(Task):
         super().__init__(inputs=images, outputs=outputs, **kwargs)
 
         self.bounding_box_format = bounding_box_format
-        self._prediction_decoder = (
+        self.prediction_decoder = (
             prediction_decoder
             or layers.NonMaxSuppression(
                 bounding_box_format=bounding_box_format,
@@ -232,7 +232,7 @@ class YOLOV8Detector(Task):
                 self.label_encoder
             ),
             "prediction_decoder": tf.keras.saving.serialize_keras_object(
-                self._prediction_decoder
+                self.prediction_decoder
             ),
         }
 

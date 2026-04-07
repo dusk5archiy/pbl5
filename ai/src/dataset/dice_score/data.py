@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor
 import os
 
 class DiceCrop(BaseModel):
@@ -17,14 +17,24 @@ class DiceCrop(BaseModel):
 def get_dice_crops(dataset_path: str, num_workers: int=4) -> list[DiceCrop]:
     input_dir_path = os.path.join(dataset_path, "inputs")
     target_dir_path = os.path.join(dataset_path, "targets")
-    target_files = [f for f in os.listdir(target_dir_path) if f.endswith(".txt")]
+    
+    # Recursively find all .txt files in target directories
+    target_files = []
+    for root, _, files in os.walk(target_dir_path):
+        for file in files:
+            if file.endswith(".txt"):
+                target_files.append(os.path.join(root, file))
+    
     result: list[DiceCrop] = []
-    def read_txt_file(target_file_name):
+    
+    def read_txt_file(target_file_path):
         """Read a single txt file and return list of DiceCropData"""
         crops = []
-        base = os.path.splitext(target_file_name)[0]
+        
+        rel_path = os.path.relpath(target_file_path, target_dir_path)
+        base = os.path.splitext(rel_path)[0]
+        
         input_file_path = os.path.join(input_dir_path, base + ".png")
-        target_file_path = os.path.join(target_dir_path, target_file_name)
 
         with open(target_file_path, encoding="utf-8") as f:
             for line in f:
@@ -44,8 +54,7 @@ def get_dice_crops(dataset_path: str, num_workers: int=4) -> list[DiceCrop]:
 
     # Parallel reading of txt files
     with ThreadPoolExecutor(max_workers=num_workers) as executor:
-        futures = [executor.submit(read_txt_file, f) for f in target_files]
-        for future in as_completed(futures):
-            result.extend(future.result())
+        for crops in executor.map(read_txt_file, target_files):
+            result.extend(crops)
             
     return result

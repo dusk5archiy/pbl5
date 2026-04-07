@@ -1,5 +1,5 @@
 import tensorflow as tf
-from chroma import Fore
+from loguru import logger
 from src.dataset import S7DatasetDiceScore, get_dice_crops
 
 
@@ -13,22 +13,22 @@ def convert2_tflite(
     num_workers: int = 4,
 ):
     num_channels = 3 if colored else 1
-    print("[--INFO--] Importing model...")
+    logger.info("Importing model...")
     model = tf.keras.models.load_model(path)
 
-    print("[--INFO--] Converting...")
+    logger.info("Converting...")
     converter = tf.lite.TFLiteConverter.from_keras_model(model)
     converter.optimizations = [tf.lite.Optimize.DEFAULT]
 
     if quantization == "int8":
         # INT8 full quantization requires representative dataset
         if dataset_path is None:
-            print(
-                "[--WARN--] INT8 quantization requires dataset_path. Using dynamic quantization instead."
+            logger.warning(
+                "INT8 quantization requires dataset_path. Using dynamic quantization instead."
             )
             converter.target_spec.supported_types = [tf.int8, tf.float32]
         else:
-            print(f"[--INFO--] Creating representative dataset from {dataset_path}...")
+            logger.info(f"Creating representative dataset from {dataset_path}...")
 
             # Reuse same dataset loading as training
             all_dice_crops = get_dice_crops(
@@ -42,6 +42,7 @@ def convert2_tflite(
                 image_resolution=image_resolution,
                 dice_crops=calibration_crops,
                 colored=colored,
+                use_random=False
             )
 
             # Create generator similar to training
@@ -65,15 +66,11 @@ def convert2_tflite(
     elif quantization == "float16":
         converter.target_spec.supported_types = [tf.float16]
 
-    print(f"[--INFO--] Using {quantization} quantization...")
+    logger.info(f"Using {quantization} quantization...")
     tflite_model = converter.convert()
 
     with open(out_tflite_filename, "wb") as f:
         f.write(tflite_model)
 
-    print(
-        Fore.GREEN
-        + f"[--DONE--] Score model converted to {out_tflite_filename}"
-        + Fore.RESET
-    )
+    logger.info(f"Score model converted to {out_tflite_filename}")
 

@@ -1,0 +1,15 @@
+score01:
+  module: src.model.dice_score.score01
+  class_name: Score01
+  config:
+    filter_list: [32, 16, 80, 96, 128]
+    dense_dim: 96
+    activation: swish
+    dropout: 0.5
+
+mobilenet:
+  module: src.model.dice_score.mobilenet
+  class_name: MobileNet
+  config:
+    dense_dim: 128
+    dropout: 0.5

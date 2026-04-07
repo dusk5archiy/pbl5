@@ -3,21 +3,25 @@ num_workers: 4
 
 colored: False
 
+use_random: False
+
 tasks:
   dice_detection:
-    training_output_path: output/dice_detection/model.keras
     tflite_output_path: output/dice_detection/model.tflite
     inference_path: models/dice_detection/model.tflite
-    batch_size: 8
-    epochs: 50
+    train_dataset_repeat: 1
+    val_dataset_repeat: 1
+    batch_size: 16
+    epochs: 10
     image_resolution: [640, 480]
 
   dice_score:
-    training_output_path: output/dice_score/model.keras
     tflite_output_path: output/dice_score/model.tflite
     inference_path: models/dice_score/model.tflite
     batch_size: 32
-    epochs: 50
+    train_dataset_repeat: 2
+    val_dataset_repeat: 2
+    epochs: 20
     image_resolution: [32, 32]
 
   frame_detection:
