@@ -34,4 +34,5 @@ class Score01(BaseAIModel):
         x = tf.keras.layers.Dense(config.dense_dim, activation=config.activation)(x)
         x = tf.keras.layers.Dropout(config.dropout)(x)
         x = tf.keras.layers.Dense(config.num_classes, activation='softmax')(x)
-        super().__init__(inputs=inp, outputs=x)
+        tf.keras.Model.__init__(self, inputs=inp, outputs=x)
+        BaseAIModel.__init__(self, config)

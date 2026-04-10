@@ -1,4 +1,6 @@
 import tensorflow as tf
+from src.backend.logging import logger
+from pathlib import Path
 from src.dataset import (
     S7DatasetDiceDetection,
     get_image_detection_datas,
@@ -7,7 +9,6 @@ from src.dataset import (
 
 def convert2_tflite(
         path: str,
-        out_tflite_filename: str,
         image_resolution: tuple[int, int],
         colored: bool=True,
         quantization: str = "float16",
@@ -15,9 +16,9 @@ def convert2_tflite(
         num_workers: int = 4
     ):
     num_channels = 3 if colored else 1
-    print("[--INFO--] Importing model...")
+    logger.info("Importing model...")
     model = tf.keras.models.load_model(path)
-    print("[--INFO--] Converting...")
+    logger.info("Converting...")
 
     @tf.function(input_signature=[
         tf.TensorSpec(shape=[1, image_resolution[1], image_resolution[0], num_channels], dtype=tf.float32)
@@ -33,10 +34,10 @@ def convert2_tflite(
     if quantization == "int8":
         # INT8 full quantization requires representative dataset
         if dataset_path is None:
-            print("[--WARN--] INT8 quantization requires dataset_path. Using dynamic quantization instead.")
+            logger.warning("INT8 quantization requires dataset_path. Using dynamic quantization instead.")
             converter.target_spec.supported_types = [tf.int8, tf.float32]
         else:
-            print(f"[--INFO--] Creating representative dataset from {dataset_path}...")
+            logger.info(f"Creating representative dataset from {dataset_path}...")
             
             # Reuse same dataset loading as training
             all_image_datas = get_image_detection_datas(
@@ -49,7 +50,8 @@ def convert2_tflite(
                 image_resolution=image_resolution,
                 image_datas=calibration_datas,
                 num_workers=num_workers,
-                colored=colored
+                colored=colored,
+                use_random=True
             )
             
             # Create dataset with batch size 1 for representative samples
@@ -70,10 +72,11 @@ def convert2_tflite(
     elif quantization == "float16":
         converter.target_spec.supported_types = [tf.float16]
     
-    print(f"[--INFO--] Using {quantization} quantization...")
+    logger.info(f"Using {quantization} quantization...")
     tflite_model = converter.convert()
     
-    with open(out_tflite_filename, 'wb') as f:
+    output_path = Path(path).with_suffix('.tflite')
+    with open(output_path, 'wb') as f:
         f.write(tflite_model)
     
-    print(f"[--DONE--] Detection model converted to {out_tflite_filename}.")
+    logger.success(f"Detection model converted to {output_path}.")

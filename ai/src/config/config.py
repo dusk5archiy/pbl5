@@ -10,7 +10,7 @@ class ParsedConfig(BaseModel):
 
     class Tasks(BaseModel):
         class Base(BaseModel):
-            tflite_output_path: str
+            name: str
             inference_path: str
             batch_size: int
             epochs: int
@@ -18,9 +18,11 @@ class ParsedConfig(BaseModel):
             val_dataset_repeat: int
 
         class DiceDetection(Base):
+            name: str="dice_detection"
             image_resolution: tuple[int, int]
 
         class DiceScore(Base):
+            name: str="dice_score"
             image_resolution: tuple[int, int]
 
         class FrameDetection(BaseModel):

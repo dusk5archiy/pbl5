@@ -39,7 +39,11 @@ class DiceDetectionInference:
     def __call__(self, img: np.ndarray):
         if not self.colored:
             img = to_grayscale(img)
-        img_array = img.astype(np.float32) / 255.0
+        # Check if image is already normalized (0-1 range)
+        if img.dtype == np.float32 and img.max() <= 1.0:
+            img_array = img
+        else:
+            img_array = img.astype(np.float32) / 255.0
         img_tensor = tf.expand_dims(img_array, axis=0)  # Add batch dimension
 
         # Perform inference

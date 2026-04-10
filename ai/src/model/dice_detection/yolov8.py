@@ -37,8 +37,11 @@ class YoloV8(BaseAIModel, YOLOV8Detector):
             bounding_box_format=config.bbox_format,
             fpn_depth=fpn_depth,
         )
+        BaseAIModel.__init__(self, config)
 
     @classmethod
     def from_config(cls, config):
-        result =  cls(config=cls.Config(**config))
-        return result
+        return cls(config=cls.Config(**config))
+    
+    def get_config(self):
+        return BaseAIModel.get_config(self)

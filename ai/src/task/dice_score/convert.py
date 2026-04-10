@@ -1,11 +1,11 @@
 import tensorflow as tf
-from loguru import logger
+from src.backend.logging import logger
+from pathlib import Path
 from src.dataset import S7DatasetDiceScore, get_dice_crops
 
 
 def convert2_tflite(
     path: str,
-    out_tflite_filename: str,
     image_resolution: tuple[int, int] = (32, 32),
     quantization: str = "float16",
     dataset_path: str | None = None,
@@ -42,7 +42,7 @@ def convert2_tflite(
                 image_resolution=image_resolution,
                 dice_crops=calibration_crops,
                 colored=colored,
-                use_random=False
+                use_random=True
             )
 
             # Create generator similar to training
@@ -69,8 +69,9 @@ def convert2_tflite(
     logger.info(f"Using {quantization} quantization...")
     tflite_model = converter.convert()
 
-    with open(out_tflite_filename, "wb") as f:
+    output_path = Path(path).with_suffix('.tflite')
+    with open(output_path, "wb") as f:
         f.write(tflite_model)
 
-    logger.info(f"Score model converted to {out_tflite_filename}")
+    logger.success(f"Score model converted to {output_path}")
 

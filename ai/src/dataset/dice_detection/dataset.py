@@ -1,14 +1,13 @@
 import numpy as np
 from PIL import Image, ImageEnhance, ImageFilter
 from concurrent.futures import ThreadPoolExecutor, wait
-from pydantic import BaseModel
 import queue
 import threading
 import pickle
 import os
-from loguru import logger
+from src.backend.logging import logger
 from src.utils.image import generate_rotate_and_flip_images, process_pil_image, to_grayscale
-from .data import ImageDetectionData, get_image_detection_datas
+from .data import ImageDetectionData
 from tqdm import tqdm
 from itertools import repeat, chain
 
@@ -54,10 +53,10 @@ class S7DatasetDiceDetection:
         self,
         image_resolution: tuple[int, int],
         image_datas: list[ImageDetectionData],
-        cache_path: str,
         colored: bool,
         use_random: bool,
-        dataset_repeat: int,
+        cache_path: str | None = None,
+        dataset_repeat: int = 1,
         queue_capacity: int = 500,
         num_workers: int = 4,
     ):
@@ -68,32 +67,37 @@ class S7DatasetDiceDetection:
         self.queue_capacity = queue_capacity
         self.image_data = image_datas
         self.dataset_repeat = dataset_repeat
-        self.cache_path = cache_path + f"-{dataset_repeat}" + ".pkl"
+        self.cache_path = None if cache_path is None else cache_path + f"-{dataset_repeat}" + ".pkl"
         
         self.data_queue = queue.Queue(maxsize=queue_capacity)
         self.stop_loading = threading.Event()
         self.loading_thread = None
         self.cached_data = []
 
+        self.rng = np.random.RandomState(seed=42 if not use_random else None)
+
         if not use_random:
             # Try to load from cache
+            assert self.cache_path is not None
             if os.path.exists(self.cache_path):
                 logger.info(f"Loading cached data from {self.cache_path}...")
                 self.cached_data = self._load_cache()
             else:
                 logger.info(f"Cache not found. Creating and saving to {self.cache_path}...")
-                for results in [self._process_image_file(img_data) for img_data in tqdm(
-                        chain.from_iterable(repeat(self.image_data, self.dataset_repeat)),
-                        total=len(self.image_data) * self.dataset_repeat
-                    )
-                ]:
-                    self.cached_data.extend(results)
+                for img_data in tqdm(
+                    chain.from_iterable(repeat(self.image_data, self.dataset_repeat)),
+                    total=len(self.image_data) * self.dataset_repeat,
+                ):
+                    self.cached_data.extend(self._process_image_file(img_data))
 
-                np.random.shuffle(self.cached_data)
+                self.rng.shuffle(self.cached_data)
                 self._save_cache(self.cached_data)
 
+    def __len__(self):
+        return len(self.cached_data)
+
     def _save_cache(self, data):
-        """Save cached data to pickle file."""
+        assert self.cache_path is not None
         os.makedirs(os.path.dirname(self.cache_path), exist_ok=True)
         with open(self.cache_path, 'wb') as f:
             pickle.dump(data, f)
@@ -101,16 +105,16 @@ class S7DatasetDiceDetection:
         logger.success(f"Cache saved to {self.cache_path} ({file_size_mb:.2f} MB)")
 
     def _load_cache(self):
-        """Load cached data from pickle file."""
+        assert self.cache_path is not None
         with open(self.cache_path, 'rb') as f:
             return pickle.load(f)
 
     def _process_image_file(self, image_data: ImageDetectionData):
         results = []
 
-        img = Image.open(image_data.input_file_path)
-        orig_width, orig_height = img.size
-        img = process_pil_image(img, self.image_resolution)
+        with Image.open(image_data.input_file_path) as img:
+            orig_width, orig_height = img.size
+            img = process_pil_image(img, self.image_resolution)
         new_width, new_height = img.size
         scale_x = new_width / orig_width
         scale_y = new_height / orig_height
@@ -145,8 +149,8 @@ class S7DatasetDiceDetection:
                 min_dy = -min_y  # Can shift up up to this amount
                 
                 # Apply random translation within valid limits (use np.random for consistency)
-                dx = int(np.random.uniform(min_dx, max_dx))
-                dy = int(np.random.uniform(min_dy, max_dy))
+                dx = int(self.rng.uniform(min_dx, max_dx))
+                dy = int(self.rng.uniform(min_dy, max_dy))
             else:
                 dx = dy = 0
             
@@ -154,12 +158,12 @@ class S7DatasetDiceDetection:
             # Negate dx, dy for PIL transform (opposite direction for image pixels)
             aug_img = aug_img.transform(aug_img.size, Image.AFFINE, (1, 0, -dx, 0, 1, -dy), fillcolor=(128, 128, 128)) # type: ignore
             
-            brightness_factor = np.random.uniform(0.01, 2.0)
+            brightness_factor = self.rng.uniform(0.01, 2.0)
             enhancer = ImageEnhance.Brightness(aug_img)
             aug_img = enhancer.enhance(brightness_factor)
             
             # Apply random blur augmentation
-            blur_radius = np.random.uniform(0, 2)
+            blur_radius = self.rng.uniform(0, 2)
             aug_img = aug_img.filter(ImageFilter.GaussianBlur(radius=blur_radius))
 
             aug_np_img = np.array(aug_img)

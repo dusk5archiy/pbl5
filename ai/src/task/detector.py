@@ -12,7 +12,6 @@ class Detector:
         dice_score_image_resolution: tuple[int, int],
         colored: bool,
     ):
-        print("[--INFO--] Detector is loading...")
         self.dice_detection_model = DiceDetectionInference(
             model_path=dice_detection_model_path,
             image_resolution=dice_detection_image_resolution,
@@ -26,8 +25,6 @@ class Detector:
 
         self.dice_detection_image_resolution = dice_detection_image_resolution
         self.dice_score_image_resolution = dice_score_image_resolution
-
-        print("[--DONE--] Detector is ready.")
 
     def __call__(self, img: Image.Image):
         original_size = img.size  # (width, height)

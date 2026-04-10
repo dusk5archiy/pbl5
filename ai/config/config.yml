@@ -7,21 +7,19 @@ use_random: False
 
 tasks:
   dice_detection:
-    tflite_output_path: output/dice_detection/model.tflite
     inference_path: models/dice_detection/model.tflite
     train_dataset_repeat: 1
     val_dataset_repeat: 1
     batch_size: 16
-    epochs: 10
+    epochs: 30
     image_resolution: [640, 480]
 
   dice_score:
-    tflite_output_path: output/dice_score/model.tflite
     inference_path: models/dice_score/model.tflite
     batch_size: 32
     train_dataset_repeat: 2
     val_dataset_repeat: 2
-    epochs: 20
+    epochs: 5
     image_resolution: [32, 32]
 
   frame_detection:

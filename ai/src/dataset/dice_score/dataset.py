@@ -8,7 +8,7 @@ from tqdm import tqdm
 from PIL import Image, ImageEnhance, ImageFilter
 import numpy as np
 from itertools import repeat, chain
-from loguru import logger
+from src.backend.logging import logger
 
 from .data import DiceCrop
 
@@ -17,12 +17,12 @@ class S7DatasetDiceScore:
         self,
         dice_crops: list[DiceCrop],
         image_resolution: tuple[int, int],
-        cache_path: str,
         colored: bool,
         use_random: bool,
-        dataset_repeat: int,
         queue_capacity: int = 1000,
         num_workers: int = 4,
+        dataset_repeat: int = 1,
+        cache_path: str | None = None,
     ):
         self.num_workers = num_workers
         self.image_resolution = image_resolution
@@ -36,9 +36,12 @@ class S7DatasetDiceScore:
         self.dice_crops = dice_crops
         self.cached_data = []
         self.dataset_repeat = dataset_repeat
-        self.cache_path = cache_path + f"-{dataset_repeat}" + ".pkl"
+        self.cache_path: str | None = None if cache_path is None else cache_path + f"-{dataset_repeat}" + ".pkl"
+
+        self.rng = np.random.RandomState(seed=42 if not use_random else None)
 
         if not use_random:
+            assert self.cache_path is not None
             if os.path.exists(self.cache_path):
                 self.cached_data = self._load_cache()
             else:
@@ -49,8 +52,11 @@ class S7DatasetDiceScore:
                 ]:
                     self.cached_data.extend(results)
 
-                np.random.shuffle(self.cached_data)
+                self.rng.shuffle(self.cached_data)
                 self._save_cache(self.cached_data)
+                
+    def __len__(self):
+        return len(self.cached_data)
                     
     def generate_data(self):
         with ThreadPoolExecutor(max_workers=self.num_workers) as executor:
@@ -71,6 +77,7 @@ class S7DatasetDiceScore:
                     yield from future.result()
 
     def _save_cache(self, data):
+        assert self.cache_path is not None
         os.makedirs(os.path.dirname(self.cache_path), exist_ok=True)
         with open(self.cache_path, 'wb') as f:
             pickle.dump(data, f)
@@ -78,6 +85,7 @@ class S7DatasetDiceScore:
         logger.success(f"Cache saved to {self.cache_path} ({file_size_mb:.2f} MB)")
 
     def _load_cache(self):
+        assert self.cache_path is not None
         with open(self.cache_path, 'rb') as f:
             return pickle.load(f)
 
@@ -97,10 +105,10 @@ class S7DatasetDiceScore:
             input_pil_image, self.image_resolution
         )
         for img, _, _ in generate_rotate_and_flip_images(input_pil_image):
-            brightness_factor = np.random.uniform(0.1, 1.5)
+            brightness_factor = self.rng.uniform(0.1, 1.5)
             enhancer = ImageEnhance.Brightness(img)
             img = enhancer.enhance(brightness_factor)
-            blur_radius = np.random.uniform(0, 1) 
+            blur_radius = self.rng.uniform(0, 1) 
             img = img.filter(ImageFilter.GaussianBlur(radius=blur_radius))
             img_np = np.array(img)
             
