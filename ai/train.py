@@ -70,7 +70,7 @@ def main():
     parser.add_argument("--score", action="store_true")
     parser.add_argument("--detection", action="store_true")
     parser.add_argument("--train", "-t", action="store_true")
-    parser.add_argument("--convert", action="store_true")
+    parser.add_argument("--convert", "-c", action="store_true")
     parser.add_argument("--eval", "-e", action="store_true")
     parser.add_argument("--model_name", "-m", type=str, help="Model name to use")
     parser.add_argument("--quantization", type=str, default="int8", help="Quantization type for TFLite conversion (int8, float16, float32)")

@@ -66,10 +66,7 @@ def make_tf_dataset(
         padding_values=(0.0, -1.0, -1.0),
     )
 
-    ds = ds.prefetch(
-        tf.data.AUTOTUNE
-    )
-
+    ds = ds.prefetch(tf.data.AUTOTUNE)
     ds = ds.cache()
 
     def to_model_input(img: tf.Tensor, boxes: tf.Tensor, classes: tf.Tensor):

@@ -4,8 +4,9 @@ from pathlib import Path
 from src.dataset import (
     S7DatasetDiceDetection,
     get_image_detection_datas,
-    make_tf_dataset
 )
+
+from src.dataset.dice_detection.tf import make_tf_dataset
 
 def convert2_tflite(
         path: str,
@@ -59,7 +60,8 @@ def convert2_tflite(
                 calibration_iterable,
                 batch_size=1,
                 image_resolution=image_resolution,
-                colored=colored
+                colored=colored,
+                use_random=True
             )
             
             def representative_dataset():

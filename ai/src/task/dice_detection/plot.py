@@ -5,7 +5,7 @@ from src.backend.logging import logger
 
 @validate_call
 def plot_training_history(
-    path_base: str,
+    output_dir: str,
     history: Any,
 ):
     # Plot training and validation loss
@@ -66,7 +66,7 @@ def plot_training_history(
     add_classification_loss_plot(ax2)
 
     plt.tight_layout()
-    plt.savefig(path_base + ".png", dpi=300, bbox_inches="tight")
+    plt.savefig(f"{output_dir}/train.png", dpi=300, bbox_inches="tight")
     plt.close()
-    logger.success(f"Training history plot saved to {path_base}")
+    logger.success(f"Training history plot saved to {output_dir}")
 

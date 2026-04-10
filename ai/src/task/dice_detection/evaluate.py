@@ -3,8 +3,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 import time
-from matplotlib.patches import Rectangle
-from matplotlib.lines import Line2D
 from tqdm import tqdm
 
 from sklearn.model_selection import train_test_split
@@ -12,17 +10,17 @@ from sklearn.model_selection import train_test_split
 from src.dataset import (
     get_image_detection_datas,
     S7DatasetDiceDetection,
-    make_tf_dataset,
-    make_tf_dataset_from_dataset,
 )
+from src.dataset.dice_detection.tf import make_tf_dataset
 from src.external.yolo_v8.bounding_box.iou import compute_ciou
 from src.task.dice_detection.utils import decode_dfl
 from src.task.dice_detection.inference import DiceDetectionInference
 import yaml
 from src.backend.logging import logger
+from src.config import ParsedConfig
 
 
-def get_val_dataset(config, task):
+def get_val_dataset(config, task: ParsedConfig.Tasks.DiceDetection):
     # Prepare validation dataset
     all_image_datas = get_image_detection_datas(
         dataset_path=config.dataset_path, num_workers=config.num_workers
@@ -37,129 +35,144 @@ def get_val_dataset(config, task):
         colored=config.colored,
         use_random=False,
         cache_path="output/dice_detection_val",
-        dataset_repeat=1,
+        dataset_repeat=task.val_dataset_repeat,
         num_workers=4,
     )
 
-    val_dataset = make_tf_dataset_from_dataset(
+    val_dataset = make_tf_dataset(
         val_dataset_obj,
-        batch_size=task.batch_size,
+        batch_size=1,
+        image_resolution=task.image_resolution,
+        colored=config.colored,
+        use_random=config.use_random
     )
 
-    return val_dataset
-
-
+    return val_dataset_obj, val_dataset
 def evaluate_with_ciou(
-    model,
-    val_dataset,
-    image_resolution: tuple[int, int],
-    output_dir: str,
-    model_name: str,
-    iou_threshold: float = 0.5,
-):
-    return evaluate_with_ciou_tflite(
-        inference=None,
-        model=model,
-        val_dataset=val_dataset,
-        image_resolution=image_resolution,
-        iou_threshold=iou_threshold,
-        output_dir=output_dir,
-        model_name=model_name,
-        is_tflite=False,
-    )
-
-
-def evaluate_with_ciou_tflite(
     inference,
     model,
+    val_dataset_obj,
     val_dataset,
     image_resolution: tuple[int, int],
     output_dir: str,
     model_name: str,
     is_tflite: bool,
-    iou_threshold: float = 0.5,
+    iou_threshold: float = 0.7,
 ):
     from matplotlib.patches import Rectangle
     from matplotlib.lines import Line2D
 
     all_ciou_scores = []
     total_predictions = total_gts = correct_detections = 0
+    inference_times = []
 
     # For visualization: store first 8 images
     viz_images = []
     viz_data = {"img_count": 0}
 
-    for images, targets in tqdm(val_dataset):
-        batch_size = tf.shape(images)[0].numpy()
+    processed_samples = 0
+    total_inference_time = 0.0
 
-        for b in range(batch_size):
-            if is_tflite:
-                # Use TFLite inference
-                img = images[b].numpy()
-                pred_boxes_filtered = inference(img)
-                pred_boxes_filtered = np.array(pred_boxes_filtered)
-                # Convert from xywh to xyxy for CIoU calculation
-                if len(pred_boxes_filtered) > 0:
-                    pred_boxes_filtered = np.stack([
-                        pred_boxes_filtered[:, 0],  # x
-                        pred_boxes_filtered[:, 0] + pred_boxes_filtered[:, 2],  # x + w
-                        pred_boxes_filtered[:, 1],  # y
-                        pred_boxes_filtered[:, 1] + pred_boxes_filtered[:, 3],  # y + h
-                    ], axis=1).T
-            else:
-                # Use Keras model
-                predictions = model(tf.expand_dims(images[b], axis=0), training=False)
-                # Decode predictions
-                dfl_batch = predictions["boxes"][0]
-                conf_batch = predictions["classes"][0]
-                pred_boxes_xyxy = decode_dfl(dfl_batch, image_resolution).numpy()
-                pred_confs = (
-                    conf_batch.numpy()
-                    if hasattr(conf_batch, "numpy")
-                    else np.array(conf_batch)
-                )
-                pred_confs = pred_confs.squeeze()
-                pred_boxes_filtered = pred_boxes_xyxy[pred_confs > 0.5]
+    if model is not None:
+        @tf.function(reduce_retracing=True)
+        def keras_infer_step(input_tensor):
+            return model(input_tensor, training=False)
+
+    # Iterate dataset with progress bar
+    with tqdm(total=len(val_dataset_obj), desc="Evaluating", unit="sample") as pbar:
+        # Iterate over batches
+        for images, targets in val_dataset:
+            # Iterate samples in the batch without using explicit numeric indices
+            for img_tensor, gt_boxes_tensor, gt_classes_tensor in zip(
+                images, targets["boxes"], targets["classes"]
+            ):
+                if is_tflite:
+                    # Use TFLite inference
+                    img = img_tensor.numpy()
+                    start_time = time.perf_counter()
+                    pred_boxes_filtered = inference(img)
+                    end_time = time.perf_counter()
+                    elapsed = end_time - start_time
+                    inference_times.append(elapsed)
+                    processed_samples += 1
+                    total_inference_time += elapsed
+                    avg_inf_time = total_inference_time / processed_samples if processed_samples else 0.0
+                    pbar.update(1)
+                    pbar.set_postfix(
+                        avg_inf_ms=f"{avg_inf_time * 1000:.2f}",
+                        last_sample_ms=f"{elapsed * 1000:.2f}",
+                    )
+                    pred_boxes_filtered = np.array(pred_boxes_filtered)
+                    
+                    # Capture for visualization after inference
+                    if viz_data["img_count"] < 8:
+                        img_display = (img_tensor.numpy() * 255).astype(np.uint8)
+                        viz_images.append(
+                            {
+                                "img": img_display,
+                                "gt_boxes": gt_boxes_tensor.numpy() if hasattr(gt_boxes_tensor, "numpy") else np.array(gt_boxes_tensor),
+                                "pred_boxes": pred_boxes_filtered,
+                            }
+                        )
+                        viz_data["img_count"] += 1
+                    
+                    # Convert from xywh to xyxy for CIoU calculation
+                    if len(pred_boxes_filtered) > 0:
+                        pred_boxes_filtered = np.stack([
+                            pred_boxes_filtered[:, 0],  # x
+                            pred_boxes_filtered[:, 0] + pred_boxes_filtered[:, 2],  # x + w
+                            pred_boxes_filtered[:, 1],  # y
+                            pred_boxes_filtered[:, 1] + pred_boxes_filtered[:, 3],  # y + h
+                        ], axis=1).T
+                else:
+                    # Use Keras model via provided keras_infer_step (tf.function), operate on tensors
+                    inp = tf.expand_dims(img_tensor, axis=0)
+                    start_time = time.perf_counter()
+                    predictions = keras_infer_step(inp)
+                    end_time = time.perf_counter()
+                    elapsed = end_time - start_time
+                    inference_times.append(elapsed)
+                    processed_samples += 1
+                    total_inference_time += elapsed
+                    avg_inf_time = total_inference_time / processed_samples if processed_samples else 0.0
+                    pbar.update(1)
+                    pbar.set_postfix(
+                        avg_inf_ms=f"{avg_inf_time * 1000:.2f}",
+                        last_sample_ms=f"{elapsed * 1000:.2f}",
+                    )
+                    # Decode predictions (keep tensors)
+                    dfl_batch = predictions["boxes"][0]
+                    conf_batch = predictions["classes"][0]
+                    pred_boxes_xyxy = decode_dfl(dfl_batch, image_resolution)
+                    pred_confs = tf.squeeze(conf_batch)
+                    # Filter predicted boxes by confidence
+                    mask = pred_confs > 0.5
+                    pred_boxes_filtered = tf.boolean_mask(pred_boxes_xyxy, mask)
+                    
+                    # Capture for visualization after inference
+                    if viz_data["img_count"] < 8:
+                        img_display = (img_tensor.numpy() * 255).astype(np.uint8)
+                        viz_images.append(
+                            {
+                                "img": img_display,
+                                "gt_boxes": gt_boxes_tensor.numpy() if hasattr(gt_boxes_tensor, "numpy") else np.array(gt_boxes_tensor),
+                                "pred_boxes": pred_boxes_filtered.numpy() if hasattr(pred_boxes_filtered, "numpy") else np.array(pred_boxes_filtered),
+                            }
+                        )
+                        viz_data["img_count"] += 1
 
             # Filter GT boxes
-            gt_boxes_np = (
-                targets["boxes"][b].numpy()
-                if hasattr(targets["boxes"][b], "numpy")
-                else np.array(targets["boxes"][b])
-            )
-            gt_classes_np = (
-                targets["classes"][b].numpy()
-                if hasattr(targets["classes"][b], "numpy")
-                else np.array(targets["classes"][b])
-            )
-            gt_boxes_np = (
-                gt_boxes_np.reshape(-1, 4) if gt_boxes_np.ndim == 1 else gt_boxes_np
-            )
-            gt_classes_np = (
-                gt_classes_np.reshape(-1) if gt_classes_np.ndim == 0 else gt_classes_np
-            )
-            gt_boxes_filtered = (
-                gt_boxes_np[gt_classes_np >= 0.0]
-                if len(gt_boxes_np) > 0
-                and gt_boxes_np.shape[0] == gt_classes_np.shape[0]
-                else np.array([], dtype=np.float32).reshape(0, 4)
-            )
+            # Keep GT as tensors
+            gt_boxes = tf.reshape(gt_boxes_tensor, (-1, 4)) if tf.rank(gt_boxes_tensor) == 1 else gt_boxes_tensor
+            gt_classes = tf.reshape(gt_classes_tensor, (-1,)) if tf.rank(gt_classes_tensor) == 0 else gt_classes_tensor
+            gt_boxes_filtered = tf.boolean_mask(gt_boxes, gt_classes >= 0.0)
 
-            total_predictions += len(pred_boxes_filtered)
-            total_gts += len(gt_boxes_filtered)
-
-            # Store first 8 images for visualization
-            if output_dir and model_name and viz_data["img_count"] < 8:
-                viz_images.append(
-                    {
-                        "img": (images[b].numpy() * 255).astype(np.uint8),
-                        "gt_boxes": gt_boxes_filtered,
-                        "pred_boxes": pred_boxes_filtered,
-                    }
-                )
-                viz_data["img_count"] += 1
+            # Use tensor shapes
+            total_predictions += int(tf.shape(pred_boxes_filtered)[0])
+            total_gts += int(tf.shape(gt_boxes_filtered)[0])
 
             if len(pred_boxes_filtered) == 0 or len(gt_boxes_filtered) == 0:
+                # No GT or no predictions — progress already updated during inference
                 continue
 
             # Convert GT to xyxy and compute CIoU
@@ -186,6 +199,7 @@ def evaluate_with_ciou_tflite(
                 all_ciou_scores.append(best_ciou)
                 if best_ciou > iou_threshold:
                     correct_detections += 1
+            # progress updated per-sample inside inference branches (like dice_score)
 
     # Generate visualization of first 8 images
     if output_dir and model_name and len(viz_images) > 0:
@@ -243,7 +257,7 @@ def evaluate_with_ciou_tflite(
         )
 
         # Save visualization
-        viz_path = os.path.join(output_dir, f"{model_name}-eval.png")
+        viz_path = os.path.join(output_dir, "eval.png")
         plt.tight_layout()
         plt.savefig(viz_path, dpi=300, bbox_inches="tight")
         plt.close()
@@ -251,6 +265,7 @@ def evaluate_with_ciou_tflite(
 
     mean_ciou = float(np.mean(all_ciou_scores)) if all_ciou_scores else 0.0
     recall = correct_detections / total_predictions if total_predictions > 0 else 0.0
+    avg_sample_inference_ms = float((np.mean(inference_times) * 1000) if inference_times else 0)
 
     return {
         "mean_ciou": mean_ciou,
@@ -258,6 +273,7 @@ def evaluate_with_ciou_tflite(
         "total_predictions": total_predictions,
         "total_gts": total_gts,
         "recall": recall,
+        "avg_sample_inference_ms": avg_sample_inference_ms,
     }
 
 
@@ -280,47 +296,12 @@ def evaluate_model(model_path: str, config, task):
         model = tf.keras.models.load_model(model_path)
         logger.info(f"Loaded Keras model from {model_path}")
 
-        @tf.function(reduce_retracing=True)
-        def keras_infer_step(input_tensor):
-            return model(input_tensor, training=False)
-
     # Get validation dataset
     logger.info("Loading validation dataset...")
-    val_dataset = get_val_dataset(config, task)
+    val_dataset_obj, val_dataset = get_val_dataset(config, task)
 
-    # Measure average inference time
-    logger.info("Measuring inference time...")
-    inference_times = []
-    
-    if is_tflite:
-        # For TFLite, measure per-image inference time
-        sample_count = 0
-        for images, _ in val_dataset:
-            batch_size = tf.shape(images)[0].numpy()
-            for b in range(batch_size):
-                img = images[b].numpy()
-                # Convert to PIL Image for inference
-                img_pil = tf.keras.utils.array_to_img(img)
-                start_time = time.time()
-                _ = inference.predict(img_pil)
-                inference_times.append(time.time() - start_time)
-                sample_count += 1
-                if sample_count >= 100:  # Limit to 100 samples for timing
-                    break
-            if sample_count >= 100:
-                break
-    else:
-        # For Keras, measure batch inference time
-        for images, _ in val_dataset:
-            start_time = time.perf_counter()
-            _ = keras_infer_step(images)
-            inference_times.append(time.perf_counter() - start_time)
-
-    avg_sample_inference_ms = float((np.mean(inference_times) * 1000) if inference_times else 0)
-    avg_batch_inference_ms = avg_sample_inference_ms * task.batch_size if not is_tflite else avg_sample_inference_ms
-
-    logger.info(".2f")
-    logger.info(".2f")
+    # No separate timing loop — timings measured inside evaluate_with_ciou
+    avg_sample_inference_ms = 0.0
 
     # Get model name from path
     model_name_base = os.path.splitext(os.path.basename(model_path))[0]
@@ -329,9 +310,10 @@ def evaluate_model(model_path: str, config, task):
 
     # Evaluate with CIoU metric
     logger.info("Evaluating with CIoU metric...")
-    ciou_metrics = evaluate_with_ciou_tflite(
+    ciou_metrics = evaluate_with_ciou(
         inference=inference if is_tflite else None,
         model=model if not is_tflite else None,
+        val_dataset_obj=val_dataset_obj,
         val_dataset=val_dataset,
         image_resolution=task.image_resolution,
         iou_threshold=0.5,
@@ -340,7 +322,11 @@ def evaluate_model(model_path: str, config, task):
         is_tflite=is_tflite,
     )
 
-    # Create metrics dict
+    # Create metrics dict (use avg inference time from evaluator)
+    avg_sample_inference_ms = float(ciou_metrics.get("avg_sample_inference_ms", 0.0))
+    # Create metrics dict (use avg inference time from evaluator)
+    avg_sample_inference_ms = float(ciou_metrics.get("avg_sample_inference_ms", 0.0))
+
     metrics = {
         "model": model_name_base,
         "mean_ciou": float(ciou_metrics["mean_ciou"]),
@@ -348,14 +334,12 @@ def evaluate_model(model_path: str, config, task):
         "correct_detections": int(ciou_metrics["correct_detections"]),
         "total_predictions": int(ciou_metrics["total_predictions"]),
         "total_gts": int(ciou_metrics["total_gts"]),
-        "avg_batch_inference_ms": avg_batch_inference_ms,
         "avg_sample_inference_ms": avg_sample_inference_ms,
-        "batch_size": int(task.batch_size),
         "model_type": model_extension,
     }
 
     # Write metrics to YAML
-    yml_path = os.path.join(output_dir, f"{model_name}-eval.yml")
+    yml_path = os.path.join(output_dir, "eval.yml")
     with open(yml_path, 'w') as f:
         yaml.dump(metrics, f, default_flow_style=False)
     logger.info(f"Evaluation metrics saved to {yml_path}")

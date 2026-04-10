@@ -10,7 +10,7 @@ class TrainResults(TypedDict):
     image_resolution: tuple[int, int]
     
 def report_training_results(
-    path_base: str,
+    output_dir: str,
     model: tf.keras.Model,
     **kwargs: Unpack[TrainResults]
 ) -> None:
@@ -20,5 +20,5 @@ def report_training_results(
         "n_params": model.count_params(),
     }
 
-    with open(path_base + ".yml", 'w') as f:
+    with open(f"{output_dir}/train.yml", 'w') as f:
         yaml.dump(info, f, default_flow_style=False, sort_keys=False)

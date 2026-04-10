@@ -27,10 +27,9 @@ def train_savedmodel(
     val_workers: int = 4,
 ):
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-    output_dir = "output/dice_detection"
+    output_dir = f"output/{task.name}/{model_name}/{timestamp}"
     os.makedirs(output_dir, exist_ok=True)
-    path_base = f"{output_dir}/{model_name}-{timestamp}"
-    model_filepath = f"{path_base}.keras"
+    model_filepath = f"{output_dir}/model.keras"
 
     if not config.use_random:
         enable_determ()
@@ -130,12 +129,12 @@ def train_savedmodel(
     )
     
     plot_training_history(
-        path_base=path_base,
+        output_dir=output_dir,
         history=history
     ) 
 
     report_training_results(
-        path_base=path_base,
+        output_dir=output_dir,
         model_name=model_name,
         model=model,
         batch_size=task.batch_size,
