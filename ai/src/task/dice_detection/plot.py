@@ -65,8 +65,9 @@ def plot_training_history(
     add_box_loss_plot(ax1)
     add_classification_loss_plot(ax2)
 
+    filename = f"{output_dir}/train.png"
     plt.tight_layout()
-    plt.savefig(f"{output_dir}/train.png", dpi=300, bbox_inches="tight")
+    plt.savefig(filename, dpi=300, bbox_inches="tight")
     plt.close()
-    logger.success(f"Training history plot saved to {output_dir}")
+    logger.success(f"Training history plot saved to {filename}")
 

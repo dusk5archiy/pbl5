@@ -1,0 +1,1 @@
+from argparse import * # pyright: ignore[reportWildcardImportFromLibrary]

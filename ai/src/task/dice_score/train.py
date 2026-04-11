@@ -21,6 +21,8 @@ from src.backend.logging import logger
 def train_savedmodel(
     model_name: str,
     config: ParsedConfig,
+    batch_size: int,
+    epochs: int,
     task: ParsedConfig.Tasks.DiceScore,
     train_workers: int = 4,
     val_workers: int = 4,
@@ -66,7 +68,7 @@ def train_savedmodel(
     # Create train and val datasets using make_tf_dataset
     train_dataset = make_tf_dataset(
         train_dataset_obj,
-        batch_size=task.batch_size,
+        batch_size=batch_size,
         image_resolution=task.image_resolution,
         colored=config.colored,
         use_random=config.use_random
@@ -74,7 +76,7 @@ def train_savedmodel(
 
     val_dataset = make_tf_dataset(
         val_dataset_obj,
-        batch_size=task.batch_size,
+        batch_size=batch_size,
         image_resolution=task.image_resolution,
         colored=config.colored,
         use_random=config.use_random
@@ -120,7 +122,7 @@ def train_savedmodel(
     history = model.fit(
         train_dataset,
         validation_data=val_dataset,
-        epochs=task.epochs,
+        epochs=epochs,
         callbacks=callbacks,
         verbose=0,
     )
@@ -130,8 +132,8 @@ def train_savedmodel(
         output_dir=output_dir,
         model=model,
         model_name=model_name,
-        batch_size=task.batch_size,
-        n_epochs=task.epochs,
+        batch_size=batch_size,
+        n_epochs=epochs,
         image_resolution=task.image_resolution
     )
 

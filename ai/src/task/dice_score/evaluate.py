@@ -16,6 +16,7 @@ from src.model.utils.determ import enable_determ
 from src.task.dice_score.inference import DiceScoreInference
 from src.dataset.dice_score.tf import make_tf_dataset
 
+
 def get_val_dataset(config: ParsedConfig, task: ParsedConfig.Tasks.DiceScore):
     # Prepare validation dataset
     all_dice_crops = get_dice_crops(
@@ -34,7 +35,7 @@ def get_val_dataset(config: ParsedConfig, task: ParsedConfig.Tasks.DiceScore):
         num_workers=4,
         use_random=False,
         dataset_repeat=task.val_dataset_repeat,
-        cache_path="output/dice_score_eval"
+        cache_path="output/dice_score_eval",
     )
 
     val_dataset = make_tf_dataset(
@@ -42,7 +43,7 @@ def get_val_dataset(config: ParsedConfig, task: ParsedConfig.Tasks.DiceScore):
         batch_size=1,
         image_resolution=task.image_resolution,
         colored=config.colored,
-        use_random=config.use_random
+        use_random=config.use_random,
     )
 
     return val_dataset_obj, val_dataset
@@ -51,15 +52,19 @@ def get_val_dataset(config: ParsedConfig, task: ParsedConfig.Tasks.DiceScore):
 def evaluate_model(model_path: str, config, task):
     # Get model extension
     _, ext = os.path.splitext(model_path)
-    model_extension = ext[1:] if ext else "keras"  # Remove leading dot, default to keras
+    model_extension = (
+        ext[1:] if ext else "keras"
+    )  # Remove leading dot, default to keras
     is_tflite = model_extension == "tflite"
-    
+
+    inference = None
+
     if is_tflite:
         # Load TFLite model
         inference = DiceScoreInference(
             model_path=model_path,
             image_resolution=task.image_resolution,
-            colored=config.colored
+            colored=config.colored,
         )
         logger.info(f"Loaded TFLite model from {model_path}")
     else:
@@ -95,8 +100,7 @@ def evaluate_model(model_path: str, config, task):
 
     with tqdm(total=len(val_dataset_obj), desc="Evaluating", unit="sample") as pbar:
         for batch_images, batch_labels in val_dataset:
-
-            if is_tflite:
+            if is_tflite and inference:
                 # Use TFLite inference for each image
                 batch_preds = []
                 batch_inference_time = 0.0
@@ -109,20 +113,26 @@ def evaluate_model(model_path: str, config, task):
                     batch_inference_time += elapsed
                     predicted = pred - 1  # Convert 1-6 to 0-5 for evaluation
                     batch_preds.append(predicted)
-                    
+
                     # Capture for visualization after inference
                     if viz_data["img_count"] < 8:
                         img_display = (img.numpy() * 255).astype(np.uint8)
-                        viz_images.append({
-                            "img": img_display,
-                            "actual": int(batch_labels[img_idx]),
-                            "predicted": predicted,
-                        })
+                        viz_images.append(
+                            {
+                                "img": img_display,
+                                "actual": int(batch_labels[img_idx]),
+                                "predicted": predicted,
+                            }
+                        )
                         viz_data["img_count"] += 1
-                    
+
                     processed_samples += 1
                     total_inference_time += elapsed
-                    avg_inference_time = total_inference_time / processed_samples if processed_samples else 0.0
+                    avg_inference_time = (
+                        total_inference_time / processed_samples
+                        if processed_samples
+                        else 0.0
+                    )
                     pbar.update(1)
                     pbar.set_postfix(
                         avg_inf_ms=f"{avg_inference_time * 1000:.2f}",
@@ -142,20 +152,26 @@ def evaluate_model(model_path: str, config, task):
                     batch_inference_time += elapsed
                     predicted = int(tf.argmax(pred[0]).numpy())
                     batch_preds.append(predicted)
-                    
+
                     # Capture for visualization after inference
                     if viz_data["img_count"] < 8:
                         img_display = (img.numpy() * 255).astype(np.uint8)
-                        viz_images.append({
-                            "img": img_display,
-                            "actual": int(batch_labels[img_idx]),
-                            "predicted": predicted,
-                        })
+                        viz_images.append(
+                            {
+                                "img": img_display,
+                                "actual": int(batch_labels[img_idx]),
+                                "predicted": predicted,
+                            }
+                        )
                         viz_data["img_count"] += 1
-                    
+
                     processed_samples += 1
                     total_inference_time += elapsed
-                    avg_inference_time = total_inference_time / processed_samples if processed_samples else 0.0
+                    avg_inference_time = (
+                        total_inference_time / processed_samples
+                        if processed_samples
+                        else 0.0
+                    )
                     pbar.update(1)
                     pbar.set_postfix(
                         avg_inf_ms=f"{avg_inference_time * 1000:.2f}",
@@ -185,19 +201,38 @@ def evaluate_model(model_path: str, config, task):
 
         for idx, data in enumerate(viz_images):
             ax = axes[idx]
-            ax.imshow(data["img"].squeeze(), cmap="gray" if data["img"].shape[-1] == 1 else None)
-            
+            ax.imshow(
+                data["img"].squeeze(),
+                cmap="gray" if data["img"].shape[-1] == 1 else None,
+            )
+
             # Add text overlay with predicted and actual values
             pred_text = f"Pred: {data['predicted']}"
             actual_text = f"Actual: {data['actual']}"
             color = "green" if data["predicted"] == data["actual"] else "red"
-            
-            ax.text(0.05, 0.95, pred_text, transform=ax.transAxes, 
-                   fontsize=12, color=color, fontweight="bold",
-                   verticalalignment="top", bbox=dict(boxstyle="round,pad=0.3", facecolor="white", alpha=0.8))
-            ax.text(0.05, 0.05, actual_text, transform=ax.transAxes, 
-                   fontsize=12, color="blue", fontweight="bold",
-                   verticalalignment="bottom", bbox=dict(boxstyle="round,pad=0.3", facecolor="white", alpha=0.8))
+
+            ax.text(
+                0.05,
+                0.95,
+                pred_text,
+                transform=ax.transAxes,
+                fontsize=12,
+                color=color,
+                fontweight="bold",
+                verticalalignment="top",
+                bbox=dict(boxstyle="round,pad=0.3", facecolor="white", alpha=0.8),
+            )
+            ax.text(
+                0.05,
+                0.05,
+                actual_text,
+                transform=ax.transAxes,
+                fontsize=12,
+                color="blue",
+                fontweight="bold",
+                verticalalignment="bottom",
+                bbox=dict(boxstyle="round,pad=0.3", facecolor="white", alpha=0.8),
+            )
 
             ax.set_title(f"Image {idx + 1}", fontsize=12, fontweight="bold")
             ax.axis("off")
@@ -208,10 +243,30 @@ def evaluate_model(model_path: str, config, task):
 
         # Add legend
         legend_elements = [
-            Rectangle((0,0),1,1, facecolor="white", edgecolor="green", label="Correct Prediction"),
-            Rectangle((0,0),1,1, facecolor="white", edgecolor="red", label="Wrong Prediction"),
+            Rectangle(
+                (0, 0),
+                1,
+                1,
+                facecolor="white",
+                edgecolor="green",
+                label="Correct Prediction",
+            ),
+            Rectangle(
+                (0, 0),
+                1,
+                1,
+                facecolor="white",
+                edgecolor="red",
+                label="Wrong Prediction",
+            ),
         ]
-        fig.legend(handles=legend_elements, loc="upper center", bbox_to_anchor=(0.5, 0.98), ncol=2, fontsize=12)
+        fig.legend(
+            handles=legend_elements,
+            loc="upper center",
+            bbox_to_anchor=(0.5, 0.98),
+            ncol=2,
+            fontsize=12,
+        )
 
         # Save visualization
         viz_path = os.path.join(output_dir, "eval.png")
@@ -234,6 +289,6 @@ def evaluate_model(model_path: str, config, task):
 
     # Write metrics to YAML
     yml_path = os.path.join(output_dir, "eval.yml")
-    with open(yml_path, 'w') as f:
+    with open(yml_path, "w") as f:
         yaml.dump(metrics, f, default_flow_style=False)
     logger.info(f"Evaluation metrics saved to {yml_path}")

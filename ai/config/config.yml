@@ -10,16 +10,12 @@ tasks:
     inference_path: models/dice_detection/model.tflite
     train_dataset_repeat: 1
     val_dataset_repeat: 1
-    batch_size: 8
-    epochs: 50
     image_resolution: [640, 480]
 
   dice_score:
     inference_path: models/dice_score/model.tflite
-    batch_size: 32
     train_dataset_repeat: 2
     val_dataset_repeat: 2
-    epochs: 5
     image_resolution: [32, 32]
 
   frame_detection:

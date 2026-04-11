@@ -3,4 +3,5 @@
 /var
 /runs
 /datasets
+/**/cmd/*
 !/**/.gitkeep

@@ -12,8 +12,6 @@ class ParsedConfig(BaseModel):
         class Base(BaseModel):
             name: str
             inference_path: str
-            batch_size: int
-            epochs: int
             train_dataset_repeat: int
             val_dataset_repeat: int
 
