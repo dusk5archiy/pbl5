@@ -13,6 +13,8 @@ class TaskArgParser:
         # Train subparser
         train_parser = subparsers.add_parser("train", help="Train the model")
         train_parser.add_argument("--model_name", "-m", type=str, required=True)
+        train_parser.add_argument("--batch_size", type=int, required=True)
+        train_parser.add_argument("--epochs", type=int, required=True)
 
         # Eval subparser
         eval_parser = subparsers.add_parser("eval", help="Evaluate the model")
@@ -36,6 +38,8 @@ class TaskArgParser:
                 return lambda: train_savedmodel(
                     model_name=args.model_name,
                     config=self.config,
+                    batch_size=args.batch_size,
+                    epochs=args.epochs,
                     task=task,
                 )
             case "eval":

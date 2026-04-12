@@ -54,9 +54,7 @@ def make_tf_dataset(
     )
     
     ds = ds.batch(batch_size)
-
     ds = ds.prefetch(tf.data.AUTOTUNE)
-
     ds = ds.cache()
 
     logger.success("Dataset created successfully.")

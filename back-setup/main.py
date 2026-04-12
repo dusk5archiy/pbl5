@@ -2,13 +2,11 @@ import os
 import traceback
 
 if __name__ == "__main__":
-    from colorama import Fore, init
+    from loguru import logger
 
     try:
         from model.config import ConfigModel
         import yaml
-
-        init()
 
         CONFIG_FILE_PATH = "../config/config.yml"
 
@@ -16,11 +14,7 @@ if __name__ == "__main__":
             config_content = yaml.safe_load(f)
 
         config = ConfigModel(**config_content)
-        print(
-            Fore.GREEN
-            + "[-- DONE --] Configuration validated successfully."
-            + Fore.RESET
-        )
+        logger.success("Configuration validated successfully.")
 
         env_file_content = f"""#!/bin/bash
 
@@ -34,13 +28,8 @@ export AI_PORT={config.ai.port}
 
         os.chmod("../var/env.sh", mode=0o777)
 
-        print(
-            Fore.GREEN + "[-- DONE --] Created startup env successfully." + Fore.RESET
-        )
+        logger.success("Created startup env successfully.")
 
     except Exception as e:
-        traceback.print_exc()
-        print(
-            Fore.RED + f"[-- FAIL --] Fail to validate configuration: {e}" + Fore.RESET
-        )
+        logger.exception(f"ERROR: Fail to validate configuration: {e}")
         exit(1)

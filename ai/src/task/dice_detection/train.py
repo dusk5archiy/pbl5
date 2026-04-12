@@ -23,6 +23,8 @@ def train_savedmodel(
     model_name: str,
     config: ParsedConfig,
     task: ParsedConfig.Tasks.DiceDetection,
+    batch_size: int,
+    epochs: int,
     train_workers: int = 4,
     val_workers: int = 4,
 ):
@@ -65,14 +67,14 @@ def train_savedmodel(
 
     train_dataset = make_tf_dataset(
         train_dataset_obj,
-        batch_size=task.batch_size,
+        batch_size=batch_size,
         image_resolution=task.image_resolution,
         colored=config.colored,
         use_random=config.use_random
     )
     val_dataset = make_tf_dataset(
         val_dataset_obj,
-        batch_size=task.batch_size,
+        batch_size=batch_size,
         image_resolution=task.image_resolution,
         colored=config.colored,
         use_random=config.use_random
@@ -82,7 +84,10 @@ def train_savedmodel(
     model = load_model(
         task="dice_detection",
         model_name=model_name,
-        task_args=DiceDetectionTaskArgs(colored=config.colored),
+        task_args=DiceDetectionTaskArgs(
+            colored=config.colored,
+            image_resolution=task.image_resolution,
+        ),
     )
 
     # Compile model
@@ -123,13 +128,13 @@ def train_savedmodel(
     history = model.fit(
         train_dataset,
         validation_data=val_dataset,
-        epochs=task.epochs,
+        epochs=epochs,
         callbacks=callbacks,
         verbose=0,
     )
     
     plot_training_history(
-        output_dir=output_dir,
+        path_base=os.path.join(output_dir, "train"),
         history=history
     ) 
 
@@ -137,8 +142,8 @@ def train_savedmodel(
         output_dir=output_dir,
         model_name=model_name,
         model=model,
-        batch_size=task.batch_size,
-        n_epochs=task.epochs,
+        batch_size=batch_size,
+        n_epochs=epochs,
         image_resolution=task.image_resolution
     )
 

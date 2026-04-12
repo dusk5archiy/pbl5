@@ -18,7 +18,12 @@ def convert2_tflite(
     ):
     num_channels = 3 if colored else 1
     logger.info("Importing model...")
-    model = tf.keras.models.load_model(path)
+    from src.model.dice_detection.yolov8 import YoloV8
+
+    model = tf.keras.models.load_model(
+        path,
+        custom_objects={"YoloV8": YoloV8},
+    )
     logger.info("Converting...")
 
     @tf.function(input_signature=[
@@ -41,18 +46,16 @@ def convert2_tflite(
             logger.info(f"Creating representative dataset from {dataset_path}...")
             
             # Reuse same dataset loading as training
-            all_image_datas = get_image_detection_datas(
+            calibration_datas = get_image_detection_datas(
                 dataset_path=dataset_path, num_workers=num_workers
             )
-            # Use first ~20% for calibration
-            calibration_datas = all_image_datas[:max(1, len(all_image_datas)//5)]
-            
             calibration_iterable = S7DatasetDiceDetection(
                 image_resolution=image_resolution,
                 image_datas=calibration_datas,
+                cache_path="output/dice_detection_train",
                 num_workers=num_workers,
                 colored=colored,
-                use_random=True
+                use_random=False
             )
             
             # Create dataset with batch size 1 for representative samples
@@ -61,11 +64,11 @@ def convert2_tflite(
                 batch_size=1,
                 image_resolution=image_resolution,
                 colored=colored,
-                use_random=True
+                use_random=False
             )
             
             def representative_dataset():
-                for img_batch, _ in calibration_dataset.take(100):  # Use up to 100 batches
+                for img_batch, _ in calibration_dataset.take(1):
                     yield [img_batch]
             
             converter.representative_dataset = representative_dataset

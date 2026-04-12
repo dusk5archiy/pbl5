@@ -1,8 +1,11 @@
 import tensorflow as tf
 from src.external.yolo_v8.yolo_v8_detector import YOLOV8Detector
+from src.external.yolo_v8.yolo_v8_backbone import YOLOV8Backbone
 from src.model.shared.args import DiceDetectionTaskArgs
 from src.model.shared.base import BaseAIModel
+import keras
 
+@keras.saving.register_keras_serializable()
 class YoloV8(BaseAIModel, YOLOV8Detector):
     class Config(DiceDetectionTaskArgs):
         stackwise_channels: list[int]
@@ -29,7 +32,10 @@ class YoloV8(BaseAIModel, YOLOV8Detector):
             "weights": None
         }
 
-        backbone = tf.keras.saving.deserialize_keras_object(backbone_config)
+        backbone = keras.saving.deserialize_keras_object(
+            backbone_config,
+            custom_objects={"YOLOV8Backbone": YOLOV8Backbone},
+        )
         YOLOV8Detector.__init__(
             self,
             num_classes=1,

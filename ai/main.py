@@ -7,7 +7,7 @@ from collections import Counter
 import asyncio
 import io
 from src.task.detector import Detector
-from src.parse.config import load_config
+from src.config.config import load_config
 from src.utils.frames import similar_frames
 
 app = FastAPI()
@@ -76,6 +76,7 @@ async def detect_image_ws(websocket: WebSocket):
 
     try:
         while True:
+            print("------START------")
             with MeasureTime(message="Loop time", color=Fore.BLUE):
                 # print("Loop" + "-" * 50)
                 # Receive image - get latest frame, skipping older queued frames
@@ -91,6 +92,7 @@ async def detect_image_ws(websocket: WebSocket):
                 with MeasureTime(message="Detect time", color=Fore.BLUE):
                     bboxes, scores = detector(image)
 
+                print("Scores:", scores)
                 # print("Score detected", Counter(scores))
                 num_dice = len(bboxes)
 

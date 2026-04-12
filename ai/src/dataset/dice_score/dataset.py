@@ -105,7 +105,7 @@ class S7DatasetDiceScore:
             input_pil_image, self.image_resolution
         )
         for img, _, _ in generate_rotate_and_flip_images(input_pil_image):
-            brightness_factor = self.rng.uniform(0.1, 1.5)
+            brightness_factor = self.rng.uniform(0.5, 1.5)
             enhancer = ImageEnhance.Brightness(img)
             img = enhancer.enhance(brightness_factor)
             blur_radius = self.rng.uniform(0, 1) 

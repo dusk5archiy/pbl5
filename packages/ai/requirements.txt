@@ -3,7 +3,10 @@
 # Configuration
 PyYAML
 pydantic
+
+# Logging
 loguru
+colorama
 
 # Image Manipulation
 opencv-python

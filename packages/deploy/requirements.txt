@@ -3,6 +3,9 @@ PyYAML
 colorama
 pydantic
 
+# Logging
+loguru
+
 # API
 fastapi
 uvicorn

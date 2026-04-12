@@ -158,7 +158,7 @@ class S7DatasetDiceDetection:
             # Negate dx, dy for PIL transform (opposite direction for image pixels)
             aug_img = aug_img.transform(aug_img.size, Image.AFFINE, (1, 0, -dx, 0, 1, -dy), fillcolor=(128, 128, 128)) # type: ignore
             
-            brightness_factor = self.rng.uniform(0.01, 2.0)
+            brightness_factor = self.rng.uniform(0.5, 1.5)
             enhancer = ImageEnhance.Brightness(aug_img)
             aug_img = enhancer.enhance(brightness_factor)
             

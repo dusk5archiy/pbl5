@@ -1,5 +1,6 @@
 from src.task.dice_detection.inference import DiceDetectionInference
 from src.task.dice_score.inference import DiceScoreInference
+from src.backend.logging import logger
 from PIL import Image
 
 
@@ -12,16 +13,21 @@ class Detector:
         dice_score_image_resolution: tuple[int, int],
         colored: bool,
     ):
-        self.dice_detection_model = DiceDetectionInference(
-            model_path=dice_detection_model_path,
-            image_resolution=dice_detection_image_resolution,
-            colored=colored,
-        )
         self.dice_score_model = DiceScoreInference(
             model_path=dice_score_model_path,
             image_resolution=dice_score_image_resolution,
             colored=colored,
         )
+        
+        logger.success("Dice score model loaded.")
+
+        self.dice_detection_model = DiceDetectionInference(
+            model_path=dice_detection_model_path,
+            image_resolution=dice_detection_image_resolution,
+            colored=colored,
+        )
+
+        logger.success("Dice detection model loaded.")
 
         self.dice_detection_image_resolution = dice_detection_image_resolution
         self.dice_score_image_resolution = dice_score_image_resolution

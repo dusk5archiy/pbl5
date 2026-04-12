@@ -2,7 +2,7 @@ import tensorflow as tf
 from pydantic import BaseModel
 from typing import Any
 import yaml
-
+import keras
 
 class ModelInfo(BaseModel):
     module: str
@@ -18,9 +18,8 @@ def load_model(
     with open(f"config/models/{task}.yml", encoding="utf-8") as f:
         c = yaml.safe_load(f)[model_name]
     c = ModelInfo(**c)
-    config = task_args.model_dump()
-    config.update(c.config)
-    model = tf.keras.saving.deserialize_keras_object(
+    config = {**task_args.model_dump(), **c.config}
+    model = keras.saving.deserialize_keras_object(
         {
             "module": c.module,
             "class_name": c.class_name,

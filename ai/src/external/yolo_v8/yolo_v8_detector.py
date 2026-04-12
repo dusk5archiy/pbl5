@@ -3,6 +3,7 @@ import warnings
 from . import bounding_box
 from . import layers
 import tensorflow as tf
+import keras
 from keras import ops
 from .ciou_loss import CIoULoss
 from .yolo_v8_label_encoder import (
@@ -251,6 +252,6 @@ class YOLOV8Detector(Task):
             prediction_decoder, dict
         ):
             config["prediction_decoder"] = (
-                tf.keras.saving.deserialize_keras_object(prediction_decoder)
+                keras.saving.deserialize_keras_object(prediction_decoder)
             )
         return cls(**config)
