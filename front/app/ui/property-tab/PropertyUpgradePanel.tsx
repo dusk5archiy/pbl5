@@ -1,6 +1,6 @@
 import { formatBudget } from "@/app/utils/format";
 import { CSSProperties } from "react";
-import { GameBoardProps } from "./props";
+import { GameBoardProps } from "../game-board/props";
 
 export function MortgagePanel(props: GameBoardProps) {
   const { upgradeBdsFunc, downgradeBdsFunc, mortgageBdsFunc, unmortgageBdsFunc, setPropertyTab, guest } = props;

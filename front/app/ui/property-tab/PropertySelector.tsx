@@ -1,4 +1,4 @@
-import { GameBoardProps } from "./props";
+import { GameBoardProps } from "../game-board/props";
 import { COLOR_UI_INFO } from "@/app/utils/pallete";
 
 export function PropertySelector(props: GameBoardProps) {
