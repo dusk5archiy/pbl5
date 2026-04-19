@@ -3,5 +3,6 @@
 /var
 /runs
 /datasets
+/**/.vscode
 /**/cmd/*
 !/**/.gitkeep
