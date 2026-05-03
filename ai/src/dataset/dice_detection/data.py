@@ -1,5 +1,5 @@
-import os
 from concurrent.futures import ThreadPoolExecutor
+import os
 
 class ImageDetectionData:
     """Stores data for a single image with bounding boxes"""

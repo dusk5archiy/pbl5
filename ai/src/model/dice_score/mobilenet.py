@@ -1,7 +1,8 @@
-import tensorflow as tf
-import keras
 from src.model.shared.args import DiceScoreTaskArgs
 from src.model.shared.base import BaseAIModel
+
+import tensorflow as tf
+import keras
 
 class MobileNet(BaseAIModel):
     class Config(DiceScoreTaskArgs):

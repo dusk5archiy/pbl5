@@ -1,0 +1,1 @@
+T_IMAGE_RESOLUTION = tuple[int, int]

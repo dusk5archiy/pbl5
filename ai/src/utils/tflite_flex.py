@@ -1,4 +1,5 @@
 from keras import backend
+
 import ctypes
 
 def tf_init():

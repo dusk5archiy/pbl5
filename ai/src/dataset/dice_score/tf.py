@@ -1,8 +1,10 @@
+from src.backend.logging import logger
+
+from tqdm import tqdm
 import numpy as np
 import tensorflow as tf
+
 from typing import Iterator, Tuple
-from tqdm import tqdm
-from src.backend.logging import logger
 
 
 def make_tf_dataset(

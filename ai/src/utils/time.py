@@ -1,5 +1,6 @@
-import time
 from colorama import Fore
+
+import time
 
 
 class MeasureTime:

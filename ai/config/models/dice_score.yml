@@ -13,3 +13,11 @@ mobilenet:
   config:
     dense_dim: 128
     dropout: 0.5
+
+mobilenetv2:
+  module: src.model.dice_score.mobilenetv2
+  class_name: MobilenetV2
+
+resnet:
+  module: src.model.dice_score.resnet
+  class_name: Resnet

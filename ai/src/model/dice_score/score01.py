@@ -1,7 +1,9 @@
-import tensorflow as tf
 from src.model.shared.args import DiceScoreTaskArgs
 from src.model.shared.base import BaseAIModel
+
+import tensorflow as tf
 from pydantic import Field
+
 from typing import Literal
 
 class Score01(BaseAIModel):

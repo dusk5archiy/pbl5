@@ -1,15 +1,18 @@
-import numpy as np
-from PIL import Image, ImageEnhance, ImageFilter
-from concurrent.futures import ThreadPoolExecutor, wait
-import queue
-import threading
-import pickle
-import os
+from .data import ImageDetectionData
+
 from src.backend.logging import logger
 from src.utils.image import generate_rotate_and_flip_images, process_pil_image, to_grayscale
-from .data import ImageDetectionData
+
+from PIL import Image, ImageEnhance, ImageFilter
 from tqdm import tqdm
+import numpy as np
+
+from concurrent.futures import ThreadPoolExecutor, wait
 from itertools import repeat, chain
+import os
+import pickle
+import queue
+import threading
 
 
 def transform_bbox(

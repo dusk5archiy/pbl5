@@ -6,9 +6,9 @@ from colorama import Fore, init
 from collections import Counter
 import asyncio
 import io
-from src.task.detector import Detector
-from src.config.config import load_config
-from src.utils.frames import similar_frames
+from src.core.detector import Detector
+from config import load_config
+from src.functions.frames import similar_frames
 
 app = FastAPI()
 

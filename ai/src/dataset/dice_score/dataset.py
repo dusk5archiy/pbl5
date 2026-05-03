@@ -1,16 +1,18 @@
-import threading
-import queue
-import pickle
-import os
-from src.utils.image import generate_rotate_and_flip_images, process_pil_image, to_grayscale
-from concurrent.futures import ThreadPoolExecutor, wait
-from tqdm import tqdm
-from PIL import Image, ImageEnhance, ImageFilter
-import numpy as np
-from itertools import repeat, chain
-from src.backend.logging import logger
-
 from .data import DiceCrop
+
+from src.backend.logging import logger
+from src.utils.image import generate_rotate_and_flip_images, process_pil_image, to_grayscale
+
+from PIL import Image, ImageEnhance, ImageFilter
+from tqdm import tqdm
+import numpy as np
+
+from concurrent.futures import ThreadPoolExecutor, wait
+from itertools import repeat, chain
+import os
+import pickle
+import queue
+import threading
 
 class S7DatasetDiceScore:
     def __init__(

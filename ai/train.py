@@ -1,7 +1,8 @@
-import argparse
 from src.config import load_config
-from src.task.dice_score.arguments import TaskArgParser as ScoreArgParser
-from src.task.dice_detection.arguments import TaskArgParser as DetectionArgParser
+from src.core.dice_detection import TaskArgParser as DetectionArgParser
+from src.core.dice_score import TaskArgParser as ScoreArgParser
+
+import argparse
 
 config = load_config("config/config.yml")
 
