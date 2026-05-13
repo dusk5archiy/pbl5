@@ -15,6 +15,7 @@ from calc.calc import (
     update_action_cards_can,
     update_bds_can,
     update_bds_trade,
+    update_total_ui
 )
 from calc.prepare_prompt import prepare_pay_prompt
 from calc.mod import (
@@ -48,6 +49,7 @@ def generate_states(game_state: GameState, task: Task | None = None):
             update_bds_can(game_state, FRONTEND_GAME_DATA, BACKEND_GAME_DATA)
             update_action_cards_can(game_state)
 
+        game_state = update_total_ui(game_state, FRONTEND_GAME_DATA)
         yield game_state
 
 
@@ -560,6 +562,7 @@ class BankruptTask(Task):
 
             game_state, task = mod_release(game_state)
         else:
+            game_state, _ = mod_release(game_state)
             task = EndGameTask()
 
         return game_state, task

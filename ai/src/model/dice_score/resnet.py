@@ -10,7 +10,7 @@ layers = tf.keras.layers
 
 class Resnet(BaseAIModel):
     class Config(DiceScoreTaskArgs):
-        model_type: str = Literal["resnet18", "resnet34", "resnet50", "resnet101", "resnet152"]
+        model_type: Literal["resnet18", "resnet34", "resnet50", "resnet101", "resnet152"]
 
     def __init__(self, config: Config):
         x, inp = prepare_image_input(
@@ -23,4 +23,3 @@ class Resnet(BaseAIModel):
 
         tf.keras.Model.__init__(self, inputs=inp, outputs=x)
         BaseAIModel.__init__(self, config)
-

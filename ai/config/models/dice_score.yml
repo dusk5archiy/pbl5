@@ -21,3 +21,5 @@ mobilenetv2:
 resnet:
   module: src.model.dice_score.resnet
   class_name: Resnet
+  config:
+    model_type: resnet18

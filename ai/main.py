@@ -7,7 +7,7 @@ from collections import Counter
 import asyncio
 import io
 from src.core.detector import Detector
-from config import load_config
+from src.config import load_config
 from src.functions.frames import similar_frames
 
 app = FastAPI()

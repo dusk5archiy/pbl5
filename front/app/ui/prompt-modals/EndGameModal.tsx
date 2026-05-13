@@ -14,6 +14,8 @@ export function EndGameModal(
   const { gameState, chore } = props;
   const { player_order } = chore;
   const buttonClassName = "p-[0.5vw] rounded disabled:text-white disabled:bg-gray-300 border-2 border-white";
+  
+  console.log(gameState);
 
   return (
     <div className="w-full h-full flex flex-col gap-[1.5vw] justify-center">

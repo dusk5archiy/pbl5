@@ -7,7 +7,7 @@ function NormalTradeTab(props: GameBoardProps) {
     payFunc, receiveMortgageFunc, jailFunc, guest
   } = props;
 
-  const can_interact = guest != null || guest == gameState.logic.viewing_player;
+  const can_interact = guest == null || guest == gameState.logic.viewing_player;
 
   const pay_chore = gameState.current_chore.pay;
   const receive_mortgage_chore = gameState.current_chore.receive_mortgage;
