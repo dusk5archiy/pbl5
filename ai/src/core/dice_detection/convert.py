@@ -1,9 +1,5 @@
 from src.backend.logging import logger
-from src.dataset import (
-    S7DatasetDiceDetection,
-    get_image_detection_datas,
-)
-from src.dataset.dice_detection.tf import make_tf_dataset
+from src.dataset.dice_detection.custom_dice_dataset import CustomDiceDataset
 
 from pathlib import Path
 
@@ -15,7 +11,6 @@ def convert2_tflite(
         colored: bool=True,
         quantization: str = "float16",
         dataset_path: str | None = None,
-        num_workers: int = 4
     ):
     num_channels = 3 if colored else 1
     logger.info("Importing model...")
@@ -46,29 +41,23 @@ def convert2_tflite(
         else:
             logger.info(f"Creating representative dataset from {dataset_path}...")
             
-            # Reuse same dataset loading as training
-            calibration_datas = get_image_detection_datas(
-                dataset_path=dataset_path, num_workers=num_workers
-            )
-            calibration_iterable = S7DatasetDiceDetection(
-                image_resolution=image_resolution,
-                image_datas=calibration_datas,
-                cache_path="output/dice_detection_train",
-                num_workers=num_workers,
+            # Use CustomDataset manager
+            dataset_manager = CustomDiceDataset(
+                root_dir=dataset_path,
+                image_size=image_resolution,
                 colored=colored,
-                use_random=False
+                seed=42
             )
             
-            # Create dataset with batch size 1 for representative samples
-            calibration_dataset = make_tf_dataset(
-                calibration_iterable,
-                batch_size=1,
-                image_resolution=image_resolution,
-                colored=colored,
-                use_random=False
-            )
+            # Get base dataset (contains image and bboxes)
+            calibration_dataset = dataset_manager.get_tf_dataset(base_only=True)
+            
+            # For representative dataset, we only need the images
+            # Batch size 1 required for representative dataset
+            calibration_dataset = calibration_dataset.batch(1)
             
             def representative_dataset():
+                # Provide images from the dataset
                 for img_batch, _ in calibration_dataset.take(1):
                     yield [img_batch]
             

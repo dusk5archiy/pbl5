@@ -17,7 +17,7 @@ class ParsedConfig(BaseModel):
 
         class DiceDetection(Base):
             name: str="dice_detection"
-            image_resolution: tuple[int, int]
+            image_resolution: tuple[int, int] # [width, height]
 
         class DiceScore(Base):
             name: str="dice_score"

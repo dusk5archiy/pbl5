@@ -1,65 +1,49 @@
+import os
+import tensorflow as tf
 from src.config import ParsedConfig
-from src.dataset import S7DatasetDiceScore, get_dice_crops
-from src.dataset.dice_score.tf import make_tf_dataset
-
-from sklearn.model_selection import train_test_split
-
+from src.dataset.dice_score.custom_dice_dataset import CustomDiceScoreDataset
 
 def load_dataset(
     config: ParsedConfig,
-    batch_size: int,
     task: ParsedConfig.Tasks.DiceScore,
-    train_workers: int,
-    val_workers: int,
+    batch_size: int,
 ):
-    # Get all dice crops
-    all_dice_crops = get_dice_crops(
-        dataset_path=config.dataset_path,
-        num_workers=config.num_workers,
-    )
-
-    # Split into 70% train and 30% validation
-    train_crops, val_crops = train_test_split(
-        all_dice_crops, test_size=0.3, random_state=42
-    )
-
-    # Create datasets with split crops
-    train_dataset_obj = S7DatasetDiceScore(
-        image_resolution=task.image_resolution,
-        dice_crops=train_crops,
+    # 1. Initialize a single manager
+    dataset_manager = CustomDiceScoreDataset(
+        root_dir=config.dataset_path, 
+        image_size=task.image_resolution,
         colored=config.colored,
-        num_workers=train_workers,
-        use_random=config.use_random,
-        dataset_repeat=task.train_dataset_repeat,
-        cache_path="output/dice_score_train",
+        seed=42
+    )
+    total_samples = len(dataset_manager.samples)
+    
+    train_count = int(total_samples * 0.70)
+    val_count = int(total_samples * 0.15)
+
+    img_w, img_h = task.image_resolution
+    suffix = f"-{'c' if config.colored else 'g'}-{img_w}-{img_h}"
+    cache_dir = os.path.abspath("output/cache/dice_score")
+    os.makedirs(cache_dir, exist_ok=True)
+
+    # 2. Get the base dataset once (loading and resizing)
+    base_dataset = dataset_manager.get_tf_dataset(
+        base_only=True
     )
 
-    val_dataset_obj = S7DatasetDiceScore(
-        image_resolution=task.image_resolution,
-        dice_crops=val_crops,
-        colored=config.colored,
-        num_workers=val_workers,
-        use_random=config.use_random,
-        dataset_repeat=task.val_dataset_repeat,
-        cache_path="output/dice_score_val",
-    )
+    # 3. Split the TF dataset using take and skip
+    train_ds = base_dataset.take(train_count).cache(os.path.join(cache_dir, f"train{suffix}"))
+    val_ds = base_dataset.skip(train_count).take(val_count).cache(os.path.join(cache_dir, f"val{suffix}"))
 
-    # Create train and val datasets using make_tf_dataset
-    train_dataset = make_tf_dataset(
-        train_dataset_obj,
-        batch_size=batch_size,
-        image_resolution=task.image_resolution,
-        colored=config.colored,
-        use_random=config.use_random,
-    )
+    # 4. Apply training-specific steps (repeat, augment, format)
+    train_dataset = train_ds.repeat(task.train_dataset_repeat)
+    train_dataset = train_dataset.map(dataset_manager.apply_augmentation, num_parallel_calls=tf.data.AUTOTUNE)
+    train_dataset = train_dataset.map(dataset_manager.format_output, num_parallel_calls=tf.data.AUTOTUNE)
+    train_dataset = train_dataset.batch(batch_size).prefetch(tf.data.AUTOTUNE)
 
-    val_dataset = make_tf_dataset(
-        val_dataset_obj,
-        batch_size=batch_size,
-        image_resolution=task.image_resolution,
-        colored=config.colored,
-        use_random=config.use_random,
-    )
-
+    # 5. Apply validation-specific steps (format)
+    val_dataset = val_ds.map(dataset_manager.format_output, num_parallel_calls=tf.data.AUTOTUNE)
+    val_dataset = val_dataset.batch(batch_size).prefetch(tf.data.AUTOTUNE)
+    
     return train_dataset, val_dataset
+
 

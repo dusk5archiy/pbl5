@@ -9,6 +9,7 @@ class TrainResults(TypedDict):
     batch_size: int
     n_epochs: int
     image_resolution: tuple[int, int]
+    lr: float
     
 def report_training_results(
     output_dir: str,

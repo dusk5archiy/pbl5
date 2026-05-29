@@ -10,6 +10,7 @@ from src.utils.determ import enable_determ
 
 from tqdm.keras import TqdmCallback
 import tensorflow as tf
+from keras import mixed_precision
 
 from datetime import datetime
 import os
@@ -20,48 +21,52 @@ def train_savedmodel(
     config: ParsedConfig,
     task: ParsedConfig.Tasks.DiceDetection,
     batch_size: int,
+    lr: float,
     epochs: int,
-    train_workers: int = 4,
-    val_workers: int = 4,
+    alias: str | None = None,
 ):
-    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-    output_dir = f"output/{task.name}/{model_name}/{timestamp}"
+    output_suffix = alias if alias else datetime.now().strftime("%Y%m%d%H%M%S")
+    output_dir = f"output/{task.name}/{model_name}/{output_suffix}"
     os.makedirs(output_dir, exist_ok=True)
     model_filepath = f"{output_dir}/model.keras"
 
     if not config.use_random:
         enable_determ()
 
+    policy = mixed_precision.Policy("mixed_float16")
+    mixed_precision.set_global_policy(policy)
+    logger.info(f"Mixed precision policy set to: {policy.name}")
+
+    strategy = tf.distribute.MirroredStrategy()
+    logger.info(f"Number of devices in strategy: {strategy.num_replicas_in_sync}")
+    tf.config.optimizer.set_jit(False)
+
     train_dataset, val_dataset = load_dataset(
         config=config,
         task=task,
         batch_size=batch_size,
-        train_workers=train_workers,
-        val_workers=val_workers
     )
 
-    model = load_model(
-        task="dice_detection",
-        model_name=model_name,
-        task_args=DiceDetectionTaskArgs(
-            colored=config.colored,
-            image_resolution=task.image_resolution,
-        ),
-    )
+    with strategy.scope():
+        model = load_model(
+            task="dice_detection",
+            model_name=model_name,
+            task_args=DiceDetectionTaskArgs(
+                colored=config.colored,
+                image_resolution=task.image_resolution,
+            ),
+        )
 
-    # Compile model
-    model.compile(
-        optimizer="adam",
-        box_loss="ciou",
-        classification_loss="binary_crossentropy",
-    )
+        model.compile(
+            optimizer=tf.keras.optimizers.Adam(learning_rate=lr),
+            box_loss="ciou",
+            classification_loss="binary_crossentropy",
+            jit_compile=False,
+        )
 
     logger.success("Model compiled successfully")
     model.summary()
 
-    # Get model parameter count for metadata
-
-    # Callbacks
     callbacks = [
         TqdmCallback(verbose=1),
         tf.keras.callbacks.ModelCheckpoint(
@@ -101,6 +106,7 @@ def train_savedmodel(
         output_dir=output_dir,
         model_name=model_name,
         model=model,
+        lr=lr,
         batch_size=batch_size,
         n_epochs=epochs,
         image_resolution=task.image_resolution

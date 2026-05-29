@@ -16,6 +16,7 @@ def report(
     mean_ciou = float(np.mean(all_ciou_scores)) if all_ciou_scores else 0.0
     precision = correct_detections / total_predictions if total_predictions > 0 else 0.0
     recall = correct_detections / total_gts if total_gts > 0 else 0.0
+    f1_score = (2 * precision * recall) / (precision + recall) if (precision + recall) > 0 else 0.0
     # Calculate average inference time using only the last 10 records
     last_n_inference_times = inference_times[-10:] if len(inference_times) >= 10 else inference_times
     avg_sample_inference_ms = float((np.mean(last_n_inference_times) * 1000) if last_n_inference_times else 0)
@@ -24,6 +25,7 @@ def report(
         "mean_ciou": mean_ciou,
         "precision": precision,
         "recall": recall,
+        "f1_score": f1_score,
         "correct_detections": correct_detections,
         "total_predictions": total_predictions,
         "total_gts": total_gts,

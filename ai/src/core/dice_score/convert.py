@@ -1,5 +1,5 @@
 from src.backend.logging import logger
-from src.dataset import S7DatasetDiceScore, get_dice_crops
+from src.dataset.dice_score.custom_dice_dataset import CustomDiceScoreDataset
 
 import tensorflow as tf
 
@@ -11,7 +11,6 @@ def convert2_tflite(
     quantization: str = "float16",
     dataset_path: str | None = None,
     colored: bool = True,
-    num_workers: int = 4,
 ):
     num_channels = 3 if colored else 1
     logger.info("Importing model...")
@@ -31,34 +30,20 @@ def convert2_tflite(
         else:
             logger.info(f"Creating representative dataset from {dataset_path}...")
 
-            # Reuse same dataset loading as training
-            all_dice_crops = get_dice_crops(
-                dataset_path=dataset_path,
-                num_workers=num_workers,
-            )
-
-            calibration_crops = all_dice_crops[: max(1, len(all_dice_crops) // 5)]
-
-            calibration_dataset_obj = S7DatasetDiceScore(
-                image_resolution=image_resolution,
-                dice_crops=calibration_crops,
+            # Use CustomDataset manager
+            dataset_manager = CustomDiceScoreDataset(
+                root_dir=dataset_path,
+                image_size=image_resolution,
                 colored=colored,
-                use_random=True
+                seed=42
             )
 
-            # Create generator similar to training
-            def calibration_generator():
-                for img, _ in calibration_dataset_obj:
-                    yield tf.cast(img, tf.float32) / 255.0
-
-            shape = (*image_resolution, num_channels)
-            calibration_dataset = tf.data.Dataset.from_generator(
-                calibration_generator,
-                output_signature=tf.TensorSpec(shape=shape, dtype=tf.float32),
-            ).batch(batch_size=1)
+            # Get base dataset (contains image and label)
+            # Batch size 1 required for representative dataset
+            calibration_dataset = dataset_manager.get_tf_dataset(base_only=True).batch(1)
 
             def representative_dataset():
-                for img_batch in calibration_dataset.take(100):  # Use up to 100 batches
+                for img_batch, _ in calibration_dataset.take(100):  # Use up to 100 batches
                     yield [img_batch]
 
             converter.representative_dataset = representative_dataset

@@ -1,3 +1,23 @@
+import os
+
+import tensorflow as tf
+
+# gpus = tf.config.list_physical_devices('GPU')
+# if gpus:
+#     try:
+#         tf.config.set_logical_device_configuration(
+#             gpus[0],
+#             [
+#                 tf.config.LogicalDeviceConfiguration(memory_limit=2048),
+#                 tf.config.LogicalDeviceConfiguration(memory_limit=2048)
+#             ]
+#         )
+#         logical_gpus = tf.config.list_logical_devices('GPU')
+#         print(f"--- {len(logical_gpus)} LOGICAL DEVICES ENABLED ---")
+#     except RuntimeError as e:
+#         print(f"--- FAILED TO SET LOGICAL DEVICES: {e} ---")
+
+
 from src.config import load_config
 from src.core.dice_detection import TaskArgParser as DetectionArgParser
 from src.core.dice_score import TaskArgParser as ScoreArgParser

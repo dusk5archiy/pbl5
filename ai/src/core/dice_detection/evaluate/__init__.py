@@ -12,8 +12,11 @@ from src.model.shared.args import DiceDetectionTaskArgs
 from tqdm import tqdm
 import numpy as np
 import tensorflow as tf
-
+import os
 import time
+
+# Suppress internal TensorFlow rendezvous info logs
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 
 def evaluate_model(
@@ -39,81 +42,98 @@ def evaluate_model(
     )
 
     # Get validation dataset
-    logger.info("Loading validation dataset...")
-    val_dataset_obj, val_dataset = load_dataset(config, task)
+    logger.info("Loading validation dataset for timing (Batch 1)...")
+    val_dataset_obj, time_dataset = load_dataset(config, task, batch_size=1)
 
-    # Get model name from path
+    # 1. Measurement of average inference time (10 samples)
+    logger.info("Measuring inference time (10 samples)...")
+    inference_times = []
+    time_samples_count = 0
+    total_samples_for_time = 10
+    
+    for images, _ in time_dataset:
+        for img_tensor in images:
+            img = img_tensor.numpy()
+            start_time = time.perf_counter()
+            _ = inference.model(img)
+            end_time = time.perf_counter()
+            inference_times.append(end_time - start_time)
+            time_samples_count += 1
+            if time_samples_count >= total_samples_for_time:
+                break
+        if time_samples_count >= total_samples_for_time:
+            break
+    
+    avg_inf_ms = (sum(inference_times) / len(inference_times)) * 1000
+    logger.info(f"Average inference time: {avg_inf_ms:.2f} ms")
 
-    # Evaluate with CIoU metric
-    logger.info("Evaluating with CIoU metric...")
+    # 2. Measurement of accuracy (Full dataset with Batch 8)
+    logger.info("Loading validation dataset for accuracy (Batch 8)...")
+    val_dataset_obj, val_dataset = load_dataset(config, task, batch_size=8)
+    
+    # Calculate exactly how many samples are in the test set
+    total_samples = len(val_dataset_obj)
+    train_count = int(total_samples * 0.70)
+    val_count = int(total_samples * 0.15)
+    test_count = total_samples - train_count - val_count
+
+    logger.info("Evaluating accuracy on full dataset...")
     all_ciou_scores = []
     total_predictions = total_gts = correct_detections = 0
-    inference_times = []
 
     # For visualization: store first 8 images
     viz_images = []
     viz_data = {"img_count": 0}
 
-    processed_samples = 0
-    total_inference_time = 0.0
-
     # Iterate dataset with progress bar
-    with tqdm(total=len(val_dataset_obj), desc="Evaluating", unit="sample") as pbar:
+    with tqdm(total=test_count, desc="Accuracy Eval", unit="sample") as pbar:
         # Iterate over batches
-        for images, targets in val_dataset:
-            # Iterate samples in the batch without using explicit numeric indices
-            for img_tensor, target_boxes, target_classes in zip(
-                images, targets["boxes"], targets["classes"]
-            ):
-                img = img_tensor.numpy()
-                start_time = time.perf_counter()
-                pred_boxes = inference.model(img)
-                end_time = time.perf_counter()
-                elapsed = end_time - start_time
-                inference_times.append(elapsed)
-                processed_samples += 1
-                total_inference_time += elapsed
-                pbar.update(1)
-                pbar.set_postfix(
-                    last_sample_ms=f"{elapsed * 1000:.2f}",
-                )
+        try:
+            for images, targets in val_dataset:
+                # Iterate samples in the batch without using explicit numeric indices
+                for img_tensor, target_boxes, target_classes in zip(
+                    images, targets["boxes"], targets["classes"]
+                ):
+                    img = img_tensor.numpy()
+                    pred_boxes = inference.model(img)
+                    pbar.update(1)
 
-                # Capture for visualization after inference
-                if viz_data["img_count"] < 8:
-                    img_display = (img_tensor.numpy() * 255).astype(np.uint8)
-                    gt_boxes = (
-                        target_boxes.numpy()
-                        if hasattr(target_boxes, "numpy")
-                        else np.array(target_boxes)
+                    # Capture for visualization after inference
+                    if viz_data["img_count"] < 8:
+                        img_display = (img_tensor.numpy() * 255).astype(np.uint8)
+                        gt_boxes = (
+                            target_boxes.numpy()
+                            if hasattr(target_boxes, "numpy")
+                            else np.array(target_boxes)
+                        )
+                        pred_boxes_viz = pred_boxes
+                        viz_images.append(
+                            {
+                                "img": img_display,
+                                "gt_boxes": gt_boxes,
+                                "pred_boxes": pred_boxes_viz,
+                            }
+                        )
+                        viz_data["img_count"] += 1
+
+                    # Calculate metrics for this specific sample
+                    sample_gt_boxes = get_gt_boxes(
+                        target_boxes=target_boxes, target_classes=target_classes
                     )
-                    pred_boxes_viz = pred_boxes
-                    viz_images.append(
-                        {
-                            "img": img_display,
-                            "gt_boxes": gt_boxes,
-                            "pred_boxes": pred_boxes_viz,
-                        }
-                    )
-                    viz_data["img_count"] += 1
+                    
+                    total_predictions += int(tf.shape(pred_boxes)[0])
+                    total_gts += int(tf.shape(sample_gt_boxes)[0])
 
-            gt_boxes = get_gt_boxes(
-                target_boxes=target_boxes, target_classes=target_classes
-            )
-
-            total_predictions += int(tf.shape(pred_boxes)[0])
-            total_gts += int(tf.shape(gt_boxes)[0])
-
-            if len(pred_boxes) == 0 or len(gt_boxes) == 0:
-                continue
-
-            best_ciou_scores, n_corrects = count_correct_detections(
-                pred_boxes=pred_boxes,
-                gt_boxes=gt_boxes,
-                iou_threshold=args.iou_threshold,
-            )
-
-            all_ciou_scores.extend(best_ciou_scores)
-            correct_detections += n_corrects
+                    if len(pred_boxes) > 0 and len(sample_gt_boxes) > 0:
+                        best_ciou_scores, n_corrects = count_correct_detections(
+                            pred_boxes=pred_boxes,
+                            gt_boxes=sample_gt_boxes,
+                            iou_threshold=args.iou_threshold,
+                        )
+                        all_ciou_scores.extend(best_ciou_scores)
+                        correct_detections += n_corrects
+        except (tf.errors.OutOfRangeError, StopIteration):
+            logger.info("End of dataset reached (OutOfRange).")
 
     plot_evaluation_results(
         output_pathbase=output_pathbase, viz_images=viz_images

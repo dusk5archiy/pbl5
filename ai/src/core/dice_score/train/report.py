@@ -8,6 +8,7 @@ from typing import TypedDict, Unpack
 class TrainResults(TypedDict):
     model_name: str
     batch_size: int
+    lr: float
     n_epochs: int
     image_resolution: tuple[int, int]
     
