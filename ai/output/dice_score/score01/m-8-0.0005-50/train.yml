@@ -1,0 +1,6 @@
+model_name: score01
+batch_size: 8
+lr: 0.0005
+n_epochs: 50
+image_resolution: [32, 32]
+n_params: 246310
