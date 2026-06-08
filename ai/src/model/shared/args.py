@@ -14,4 +14,4 @@ class DiceScoreTaskArgs(BaseTaskArgs):
 class DiceDetectionTaskArgs(BaseTaskArgs):
     image_resolution: tuple[int, int]
     conf_threshold: float = 0.5
-    iou_threshold: float = 0.7
+    iou_threshold: float = 0.5

@@ -31,6 +31,7 @@ def evaluate_model(
     args = DiceDetectionTaskArgs(
         colored=config.colored,
         image_resolution=task.image_resolution,
+        iou_threshold=0.5,
     )
 
     inference = DiceDetectionInference(

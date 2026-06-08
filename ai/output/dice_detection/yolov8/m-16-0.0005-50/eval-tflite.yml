@@ -1,9 +1,9 @@
-avg_sample_inference_ms: 33.37333849995048
-correct_detections: 201
-f1_score: 0.966346153846154
-mean_ciou: 0.844809448256076
+avg_sample_inference_ms: 41.37236639999173
+correct_detections: 206
+f1_score: 0.9903846153846153
+mean_ciou: 0.8448094586724216
 model: model
-precision: 0.9757281553398058
-recall: 0.9571428571428572
+precision: 1.0
+recall: 0.9809523809523809
 total_gts: 210
 total_predictions: 206

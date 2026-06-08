@@ -1,4 +1,4 @@
-avg_inference_time: 0.015462568500004182
+avg_inference_time: 0.013458242300066559
 f1_score: 0.9905279417707414
 model: model
 precision: 0.9910480012347584

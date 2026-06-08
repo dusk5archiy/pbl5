@@ -1,4 +1,4 @@
-avg_sample_inference_ms: 37.6997516000074
+avg_sample_inference_ms: 42.33231270009128
 correct_detections: 0
 f1_score: 0.0
 mean_ciou: 0.0
